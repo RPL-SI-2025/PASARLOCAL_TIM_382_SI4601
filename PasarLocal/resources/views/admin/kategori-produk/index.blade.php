@@ -54,11 +54,17 @@
             background-color: #a71d2a;
             color: white;
         }
+
+        .sticky-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    {{-- Navbar --}}
     <nav class="navbar navbar-expand-lg navbar-green">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">PasarLocal</a>
@@ -71,7 +77,7 @@
                         <a class="nav-link" href="#">Manajemen Produk</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('kategori-produk.index') }}">Manajemen Kategori</a>
+                        <a class="nav-link active" href="{{ route('admin.kategori-produk.index') }}">Manajemen Kategori</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" href="#">Manajemen Promosi</a>
@@ -84,18 +90,16 @@
         </div>
     </nav>
 
-    {{-- Konten --}}
     <div class="container py-4">
         <h2 class="mb-4">Manajemen Kategori Produk</h2>
 
-        {{-- Tombol Tambah Kategori --}}
-        <div class="mb-3 text-end">
-            <a href="{{ route('kategori-produk.create') }}" class="btn btn-hijau">
-                + Tambah Kategori
-            </a>
+        <div class="mb-3">
+            <form action="{{ route('admin.kategori-produk.index') }}" method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Cari kategori..." value="{{ request()->query('search') }}">
+                <button type="submit" class="btn btn-hijau">Cari</button>
+            </form>
         </div>
 
-        {{-- Kartu-kartu Kategori --}}
         <div class="row">
             @forelse($kategori as $item)
             <div class="col-md-3 col-sm-6 mb-4">
@@ -108,8 +112,8 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center">{{ $item->nama_kategori }}</h5>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ route('kategori-produk.edit', $item->id) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
-                            <form action="{{ route('kategori-produk.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin mau hapus kategori ini?')" class="w-100 ms-1">
+                            <a href="{{ route('admin.kategori-produk.edit', $item->id) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
+                            <form action="{{ route('admin.kategori-produk.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin mau hapus kategori ini?')" class="w-100 ms-1">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-hijau-danger w-100">Hapus</button>
@@ -123,6 +127,12 @@
                 <p class="text-muted">Belum ada kategori produk.</p>
             </div>
             @endforelse
+        </div>
+
+        <div class="sticky-btn">
+            <a href="{{ route('admin.kategori-produk.create') }}" class="btn btn-hijau">
+                + Tambah Kategori
+            </a>
         </div>
     </div>
 

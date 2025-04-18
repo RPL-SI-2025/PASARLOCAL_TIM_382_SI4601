@@ -8,41 +8,50 @@ use Illuminate\Support\Facades\File;
 
 class KategoriProdukController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kategori = KategoriProduk::all();
-        return view('kategori-produk.index', compact('kategori'));
+        $query = KategoriProduk::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $query->where('nama_kategori', 'like', '%' . $request->search . '%');
+        }
+    
+        $kategori = $query->get();
+    
+        return view('admin.kategori-produk.index', compact('kategori'));
     }
 
     public function create()
     {
-        return view('kategori-produk.create');
+        return view('admin.kategori-produk.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kategori' => 'required|string|max:255',
+            'nama_kategori' => 'required|unique:kategori_produk,nama_kategori|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
+    
         $gambar = null;
+    
         if ($request->hasFile('gambar')) {
-            $gambar = $request->file('gambar')->store('uploads_kategori', 'public');
+            $gambarPath = $request->file('gambar')->store('uploads_kategori', 'public');
+            $gambar = basename($gambarPath);
         }
-
+    
         KategoriProduk::create([
             'nama_kategori' => $request->nama_kategori,
-            'gambar' => $gambar ? basename($gambar) : null,
+            'gambar' => $gambar,
         ]);
-
-        return redirect('/kategori-produk')->with('success', 'Kategori berhasil ditambahkan.');
+    
+        return redirect('/admin/kategori-produk')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $kategori = KategoriProduk::findOrFail($id);
-        return view('kategori-produk.edit', compact('kategori'));
+        return view('admin.kategori-produk.edit', compact('kategori'));
     }
 
     public function update(Request $request, $id)
@@ -66,7 +75,7 @@ class KategoriProdukController extends Controller
         $kategori->nama_kategori = $request->nama_kategori;
         $kategori->save();
 
-        return redirect('/kategori-produk')->with('success', 'Kategori berhasil diupdate.');
+        return redirect('/admin/kategori-produk')->with('success', 'Kategori berhasil diupdate.');
     }
 
     public function destroy($id)
@@ -79,6 +88,8 @@ class KategoriProdukController extends Controller
 
         $kategori->delete();
 
-        return redirect('/kategori-produk')->with('success', 'Kategori berhasil dihapus.');
+        return redirect('/admin/kategori-produk')->with('success', 'Kategori berhasil dihapus.');
     }
+
+    
 }

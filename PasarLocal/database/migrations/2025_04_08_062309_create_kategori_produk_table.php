@@ -18,13 +18,17 @@ return new class extends Migration
 
         DB::afterCommit(function () {
             DB::table('kategori_produk')->insert([
-                ['nama_kategori' => 'Sayur Segar', 'gambar' => 'sayur.jpg'],
+                ['nama_kategori' => 'Sayur', 'gambar' => 'sayur.jpg'],
                 ['nama_kategori' => 'Buah-buahan', 'gambar' => 'buah.jpg'],
-                ['nama_kategori' => 'Daging Ayam', 'gambar' => 'ayam.jpg'],
-                ['nama_kategori' => 'Ikan Laut', 'gambar' => 'ikan.jpg'],
+                ['nama_kategori' => 'Daging Sapi', 'gambar' => 'daging_sapi.jpg'],
+                ['nama_kategori' => 'Daging Ayam', 'gambar' => 'daging_ayam.jpg'],
+                ['nama_kategori' => 'Ikan Laut', 'gambar' => 'ikan_laut.jpg'],
                 ['nama_kategori' => 'Rempah & Bumbu', 'gambar' => 'bumbu.jpg'],
-                ['nama_kategori' => 'Daging Sapi', 'gambar' => 'daging.jpg'],
+                ['nama_kategori' => 'Makanan Instan', 'gambar' => 'makanan_instan.jpg'],
+                ['nama_kategori' => 'Produk Olahan Daging', 'gambar' => 'produk_olahan_daging.jpg'],
+                ['nama_kategori' => 'Produk Olahan Nabati', 'gambar' => 'produk_olahan_nabati.jpg'],
             ]);
+            
         });
     }
 
