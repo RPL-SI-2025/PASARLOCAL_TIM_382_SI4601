@@ -25,23 +25,10 @@
         .btn-secondary, .btn-success {
             font-weight: bold;
         }
-        .navbar-green {
-            background-color: #28a745;
-        }
-        .navbar-green .navbar-brand {
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-        }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-green">
-    <div class="container">
-        <a class="navbar-brand" href="#">PasarLocal</a>
-    </div>
-</nav>
+@include('admin.partials.navbar')
 
 <div class="container">
     <div class="card">

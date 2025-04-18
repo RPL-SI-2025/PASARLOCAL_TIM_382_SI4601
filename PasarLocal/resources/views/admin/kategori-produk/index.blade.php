@@ -6,20 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .navbar-green {
-            background-color: #28a745;
-        }
-
-        .navbar-green .nav-link,
-        .navbar-green .navbar-brand {
-            color: white;
-        }
-
-        .navbar-green .nav-link.active {
-            background-color: #218838;
-            color: white;
-        }
-
         .card-img-top {
             height: 180px;
             object-fit: cover;
@@ -64,31 +50,8 @@
     </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-green">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">PasarLocal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Manajemen Produk</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.kategori-produk.index') }}">Manajemen Kategori</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Manajemen Promosi</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#">Manajemen Pedagang</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+ 
+     @include('admin.partials.navbar')
 
     <div class="container py-4">
         <h2 class="mb-4">Manajemen Kategori Produk</h2>

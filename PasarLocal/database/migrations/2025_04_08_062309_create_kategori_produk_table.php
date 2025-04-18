@@ -27,6 +27,8 @@ return new class extends Migration
                 ['nama_kategori' => 'Makanan Instan', 'gambar' => 'makanan_instan.jpg'],
                 ['nama_kategori' => 'Produk Olahan Daging', 'gambar' => 'produk_olahan_daging.jpg'],
                 ['nama_kategori' => 'Produk Olahan Nabati', 'gambar' => 'produk_olahan_nabati.jpg'],
+                ['nama_kategori' => 'Bahan Pokok', 'gambar' => 'bahan_pokok.jpg'],
+                ['nama_kategori' => 'Minuman', 'gambar' => 'minuman.jpg'],
             ]);
             
         });
@@ -34,6 +36,7 @@ return new class extends Migration
 
     public function down(): void
     {
+    
         Schema::dropIfExists('kategori_produk');
     }
 };
