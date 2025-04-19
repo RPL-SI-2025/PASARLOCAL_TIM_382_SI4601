@@ -1,10 +1,11 @@
 <?php
-
+use App\Http\Controllers\OngkirController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ShippingController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return 'Halo, ini root!';
 });
-Route::get('/ongkir', [ShippingController::class, 'showForm']);
-Route::post('/ongkir', [ShippingController::class, 'calculate'])->name('ongkir.hitung');
+
+Route::get('/cek-ongkir', [OngkirController::class, 'index'])->name('cek-ongkir');
+Route::post('/cek-ongkir', [OngkirController::class, 'cekHarga'])->name('cek-ongkir.submit');
+
