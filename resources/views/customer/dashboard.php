@@ -12,7 +12,6 @@
         body {
             background-color: #f8f9fa;
         }
-
         .brand-logo {
             height: 65px;
             width: auto;
@@ -20,13 +19,11 @@
             object-fit: contain;
             max-width: 200px;
         }
-
         .header-container {
             background-color: white;
             padding: 12px 30px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
         .search-container {
             background-color: #f8f9fa;
             border-radius: 8px;
