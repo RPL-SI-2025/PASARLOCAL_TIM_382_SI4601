@@ -13,7 +13,7 @@
             background-color: #f8f9fa;
         }
         .brand-logo {
-            height: 65px;
+            height: 60px;
             width: auto;
             margin-right: 15px;
             object-fit: contain;
