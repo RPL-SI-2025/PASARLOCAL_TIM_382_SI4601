@@ -32,6 +32,9 @@
                     <a class="nav-link {{ request()->is('admin/promosi*') ? 'active' : '' }}" href="#">Manajemen Promosi</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/pasar*') ? 'active' : '' }}" href="{{ route('admin.pasar.index') }}">Manajemen Pasar</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/pedagang*') ? 'active' : '' }}" href="#">Manajemen Pedagang</a>
                 </li>
             </ul>

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KategoriProdukController;
 use App\Http\Controllers\ManajemenProdukController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,3 +30,11 @@ Route::get('/admin/manajemen-produk/{id}/edit', [ManajemenProdukController::clas
 Route::put('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'update'])->name('admin.manajemen-produk.update');
 Route::delete('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'destroy'])->name('admin.manajemen-produk.destroy');
 Route::get('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'show'])->name('admin.manajemen-produk.show');
+
+#pasar
+Route::get('/admin/pasar', [PasarController::class, 'index'])->name('admin.pasar.index');
+Route::get('/admin/pasar/create', [PasarController::class, 'create'])->name('admin.pasar.create');
+Route::post('/admin/pasar', [PasarController::class, 'store'])->name('admin.pasar.store');
+Route::get('/admin/pasar/{id}/edit', [PasarController::class, 'edit'])->name('admin.pasar.edit');
+Route::put('/admin/pasar/{id}', [PasarController::class, 'update'])->name('admin.pasar.update');
+Route::delete('/admin/pasar/{id}', [PasarController::class, 'destroy'])->name('admin.pasar.destroy');
