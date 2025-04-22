@@ -26,6 +26,7 @@
     </style>
 </head>
 <body class="container mt-5">
+    @extends('navbar-customer')
 
     <h1 class="text-center mb-3 text-success fw-bold">Cek Ongkir</h1>
     <p class="text-center mb-5 text-muted">Cek Tarif Kirimanmu</p>
