@@ -1,14 +1,43 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KategoriProdukController;
+use App\Http\Controllers\ManajemenProdukController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasarController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+#regis&login
+Route::get('/auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
+Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
 
-use App\Http\Controllers\AuthController;
+#kategori-produk
+Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');
+Route::get('/admin/kategori-produk/create', [KategoriProdukController::class, 'create'])->name('admin.kategori-produk.create');
+Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store'])->name('admin.kategori-produk.store');
+Route::get('/admin/kategori-produk/{id}/edit', [KategoriProdukController::class, 'edit'])->name('admin.kategori-produk.edit');
+Route::put('/admin/kategori-produk/{id}', [KategoriProdukController::class, 'update'])->name('admin.kategori-produk.update');
+Route::delete('/admin/kategori-produk/{id}', [KategoriProdukController::class, 'destroy'])->name('admin.kategori-produk.destroy');
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login',    [AuthController::class, 'login']);
-Route::post('/logout',   [AuthController::class, 'logout'])->middleware('auth');
+#produk-admin
+Route::get('/admin/manajemen-produk', [ManajemenProdukController::class, 'index'])->name('admin.manajemen-produk.index');
+Route::get('/admin/manajemen-produk/create', [ManajemenProdukController::class, 'create'])->name('admin.manajemen-produk.create');
+Route::post('/admin/manajemen-produk', [ManajemenProdukController::class, 'store'])->name('admin.manajemen-produk.store');
+Route::get('/admin/manajemen-produk/{id}/edit', [ManajemenProdukController::class, 'edit'])->name('admin.manajemen-produk.edit');
+Route::put('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'update'])->name('admin.manajemen-produk.update');
+Route::delete('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'destroy'])->name('admin.manajemen-produk.destroy');
+Route::get('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'show'])->name('admin.manajemen-produk.show');
+
+#pasar
+Route::get('/admin/pasar', [PasarController::class, 'index'])->name('admin.pasar.index');
+Route::get('/admin/pasar/create', [PasarController::class, 'create'])->name('admin.pasar.create');
+Route::post('/admin/pasar', [PasarController::class, 'store'])->name('admin.pasar.store');
+Route::get('/admin/pasar/{id}/edit', [PasarController::class, 'edit'])->name('admin.pasar.edit');
+Route::put('/admin/pasar/{id}', [PasarController::class, 'update'])->name('admin.pasar.update');
+Route::delete('/admin/pasar/{id}', [PasarController::class, 'destroy'])->name('admin.pasar.destroy');
