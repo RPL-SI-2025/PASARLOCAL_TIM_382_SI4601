@@ -16,12 +16,12 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="mb-0">Edit Pasar</h3>
-                            <a href="{{ route('admin.pasar.index') }}" class="btn btn-secondary">Kembali</a>
+                            <a href="{{ route('admin.manajemen-pasar.index') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('admin.pasar.update', $pasar->id_pasar) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.manajemen-pasar.update', $pasar->id_pasar) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
