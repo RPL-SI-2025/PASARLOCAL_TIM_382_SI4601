@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -18,10 +19,26 @@ return new class extends Migration
             $table->decimal('longitude', 11, 8)->nullable();
             $table->timestamps();
         });
+
+        DB::afterCommit(function () {
+            DB::table('pasar')->insert([
+                [
+                    'id_pasar' => 'P001',
+                    'nama_pasar' => 'Pasar Kordon',
+                    'lokasi' => 'Pasar Kordon, Jalan Marga Cinta, Kujangsari, Bandung Kidul, Bandung City, West Java, Java, 30286, Indonesia',
+                    'deskripsi' => 'Pasar Kordon, terletak di Bandung Kidul, dikenal sebagai pasar tradisional yang cukup lengkap. Selain kebutuhan dapur, pasar ini juga menawarkan peralatan rumah tangga dan beragam produk lokal dengan harga terjangkau',
+                    'gambar' => 'pasar kordon.jpg',
+                    'latitude' => -6.954156,
+                    'longitude' => -107.639308,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ],
+            ]);
+        });
     }
 
     public function down()
     {
         Schema::dropIfExists('pasar');
     }
-}; 
+};

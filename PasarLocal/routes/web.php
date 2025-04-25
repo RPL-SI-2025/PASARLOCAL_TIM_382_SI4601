@@ -11,9 +11,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
+#regis&login
+Route::get('/auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
+Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
 
 #kategori-produk
 Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');
@@ -47,3 +50,8 @@ Route::post('/admin/manajemen-pedagang', [PedagangController::class, 'store'])->
 Route::get('/admin/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
 Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
 Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+
+# Verifikasi routes
+Route::get('/verify-code', [AuthController::class, 'showVerifyCodeForm'])->name('auth.show-verify-code');
+Route::post('/verify-code', [AuthController::class, 'verifyCode'])->name('auth.verify-code');
+Route::get('/resend-code', [AuthController::class, 'resendCode'])->name('auth.resend-code');

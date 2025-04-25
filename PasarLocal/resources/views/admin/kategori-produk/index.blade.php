@@ -86,8 +86,10 @@
                 </div>
             </div>
             @empty
-            <div class="col-12 text-center">
-                <p class="text-muted">Belum ada kategori produk.</p>
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Tidak ada data kategori yang ditemukan.
+                </div>
             </div>
             @endforelse
         </div>
