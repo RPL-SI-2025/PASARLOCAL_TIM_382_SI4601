@@ -29,7 +29,7 @@ return new class extends Migration
                     'deskripsi' => 'Pasar Kordon, terletak di Bandung Kidul, dikenal sebagai pasar tradisional yang cukup lengkap. Selain kebutuhan dapur, pasar ini juga menawarkan peralatan rumah tangga dan beragam produk lokal dengan harga terjangkau',
                     'gambar' => 'pasar kordon.jpg',
                     'latitude' => -6.954156,
-                    'longitude' => -107.639308,
+                    'longitude' => 107.639308,
                     'created_at' => now(),
                     'updated_at' => now()
                 ],

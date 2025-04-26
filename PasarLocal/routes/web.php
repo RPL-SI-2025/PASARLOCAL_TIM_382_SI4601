@@ -7,16 +7,29 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 
+use App\Http\Controllers\ProfileController;
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-#regis&login
-Route::get('/auth/login', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
+// regis&login
+Route::get('auth/login', [AuthController::class, 'showLoginForm']);
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
+Route::post('/register', [AuthController::class, 'register']);
+
+
+
+
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+
 
 #kategori-produk
 Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');

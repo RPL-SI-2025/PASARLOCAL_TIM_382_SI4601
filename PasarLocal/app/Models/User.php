@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,6 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'profile_image', // Pastikan kolom ini ada di tabel users
     ];
 
     /**
@@ -45,11 +47,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    use Notifiable;
-
-
-
-    // Akses role
     public function isPedagang()
     {
         return $this->role === 'pedagang';
@@ -69,5 +66,13 @@ class User extends Authenticatable
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    // Method untuk menghapus gambar profil lama
+    public function deleteProfileImage()
+    {
+        if ($this->profile_image && Storage::disk('public')->exists($this->profile_image)) {
+            Storage::disk('public')->delete($this->profile_image);
+        }
     }
 }
