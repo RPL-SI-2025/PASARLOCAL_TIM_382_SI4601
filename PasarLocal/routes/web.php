@@ -6,6 +6,7 @@ use App\Http\Controllers\ManajemenProdukController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
+use App\Http\Controllers\OngkirController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,6 +18,15 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login')
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
+
+#Ongkir
+Route::get('/admin/ongkir', [OngkirController::class, 'index'])->name('admin.ongkir.index');
+Route::get('/admin/tambah-ongkir', [OngkirController::class, 'create'])->name('admin.ongkir.create');
+Route::get('/admin/detail-ongkir', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
+Route::post('/admin/store', [OngkirController::class, 'store'])->name('admin.ongkir.store');
+route::get('/admin/ongkir/{id}/edit', [OngkirController::class, 'edit'])->name('admin.ongkir.edit');
+Route::put('/admin/ongkir/{ongkir}', [OngkirController::class, 'update'])->name('admin.ongkir.update');
+Route::delete('/admin/ongkir/{ongkir}', [OngkirController::class, 'destroy'])->name('admin.ongkir.destroy');
 
 #kategori-produk
 Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');

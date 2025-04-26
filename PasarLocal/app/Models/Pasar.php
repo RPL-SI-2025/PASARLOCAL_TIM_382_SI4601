@@ -23,4 +23,9 @@ class Pasar extends Model
         'latitude',
         'longitude'
     ];
-} 
+
+    public function ongkir()
+{
+    return $this->hasMany(ongkir::class, 'id_pasar');
+}
+}
