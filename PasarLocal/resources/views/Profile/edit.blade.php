@@ -44,6 +44,7 @@
                 @csrf
                 <input type="hidden" name="_method" value="PUT">
 
+
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Lengkap</label>
                     <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
@@ -84,8 +85,7 @@
                     @endif
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">Kembali</a>
+                <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">Perbarui Profil</button>
                 </div>
             </form>

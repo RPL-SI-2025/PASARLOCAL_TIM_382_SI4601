@@ -30,6 +30,7 @@ Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show')
 Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 #kategori-produk
 Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');
