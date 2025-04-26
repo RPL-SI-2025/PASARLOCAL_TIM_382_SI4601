@@ -85,7 +85,8 @@
                     @endif
                 </div>
 
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">Kembali ke Profil</a>
                     <button type="submit" class="btn btn-success">Perbarui Profil</button>
                 </div>
             </form>
