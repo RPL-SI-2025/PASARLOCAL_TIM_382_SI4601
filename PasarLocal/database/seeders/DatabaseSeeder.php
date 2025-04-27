@@ -19,9 +19,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
-
-        $this->call([
-            PasarSeeder::class,
-        ]);
     }
+    public function ran(): void
+{
+    $this->call([
+        UserSeeder::class,
+    ]);
+}
 }

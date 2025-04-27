@@ -20,5 +20,7 @@ class Pasar extends Model
         'lokasi',
         'deskripsi',
         'gambar',
+        'latitude',
+        'longitude'
     ];
 } 

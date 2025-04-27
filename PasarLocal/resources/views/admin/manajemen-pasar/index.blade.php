@@ -92,11 +92,11 @@
         <h2 class="mb-4">Manajemen Pasar</h2>
 
         <div class="search-container">
-            <form action="{{ route('admin.pasar.index') }}" method="GET" class="d-flex">
+            <form action="{{ route('admin.manajemen-pasar.index') }}" method="GET" class="d-flex">
                 <input type="text" name="search" class="form-control me-2" placeholder="Cari pasar..." value="{{ $search ?? '' }}">
                 <button type="submit" class="btn btn-hijau">Cari</button>
                 @if($search)
-                    <a href="{{ route('admin.pasar.index') }}" class="btn btn-secondary ms-2">Reset</a>
+                    <a href="{{ route('admin.manajemen-pasar.index') }}" class="btn btn-secondary ms-2">Reset</a>
                 @endif
             </form>
         </div>
@@ -127,8 +127,8 @@
                         <h5 class="card-title text-center">{{ $item->nama_pasar }}</h5>
                         <p class="text-center">{{ $item->lokasi }}</p>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ route('admin.pasar.edit', $item->id_pasar) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
-                            <form action="{{ route('admin.pasar.destroy', $item->id_pasar) }}" method="POST" onsubmit="return confirm('Yakin mau hapus pasar ini?')" class="w-100 ms-1">
+                            <a href="{{ route('admin.manajemen-pasar.edit', $item->id_pasar) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
+                            <form action="{{ route('admin.manajemen-pasar.destroy', $item->id_pasar) }}" method="POST" onsubmit="return confirm('Yakin mau hapus pasar ini?')" class="w-100 ms-1">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-hijau-danger w-100">Hapus</button>
@@ -173,14 +173,16 @@
                 </div>
             </div>
             @empty
-            <div class="col-12 text-center">
-                <p class="text-muted">{{ $search ? 'Tidak ditemukan pasar yang sesuai dengan pencarian.' : 'Belum ada pasar.' }}</p>
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Tidak ada data pasar yang ditemukan.
+                </div>
             </div>
             @endforelse
         </div>
 
         <div class="sticky-btn">
-            <a href="{{ route('admin.pasar.create') }}" class="btn btn-hijau">
+            <a href="{{ route('admin.manajemen-pasar.create') }}" class="btn btn-hijau">
                 + Tambah Pasar
             </a>
         </div>

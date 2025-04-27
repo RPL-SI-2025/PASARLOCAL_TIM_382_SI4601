@@ -125,8 +125,10 @@
                 </div>
             </div>
             @empty
-            <div class="col-12 text-center">
-                <p class="text-muted">Belum ada produk.</p>
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Tidak ada data produk yang ditemukan.
+                </div>
             </div>
             @endforelse
         </div>

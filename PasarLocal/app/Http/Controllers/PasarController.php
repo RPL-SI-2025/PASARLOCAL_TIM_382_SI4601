@@ -20,12 +20,12 @@ class PasarController extends Controller
             ->orderBy('nama_pasar')
             ->get();
 
-        return view('admin.pasar.index', compact('pasar', 'search'));
+        return view('admin.manajemen-pasar.index', compact('pasar', 'search'));
     }
 
     public function create()
     {
-        return view('admin.pasar.create');
+        return view('admin.manajemen-pasar.create');
     }
 
     public function store(Request $request)
@@ -34,7 +34,9 @@ class PasarController extends Controller
             'nama_pasar' => 'required',
             'lokasi' => 'required',
             'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric'
         ]);
 
         $data = $request->all();
@@ -58,14 +60,14 @@ class PasarController extends Controller
 
         Pasar::create($data);
 
-        return redirect()->route('admin.pasar.index')
+        return redirect()->route('admin.manajemen-pasar.index')
             ->with('success', 'Pasar berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
         $pasar = Pasar::findOrFail($id);
-        return view('admin.pasar.edit', compact('pasar'));
+        return view('admin.manajemen-pasar.edit', compact('pasar'));
     }
 
     public function update(Request $request, $id)
@@ -74,7 +76,9 @@ class PasarController extends Controller
             'nama_pasar' => 'required',
             'lokasi' => 'required',
             'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric'
         ]);
 
         $pasar = Pasar::findOrFail($id);
@@ -93,7 +97,7 @@ class PasarController extends Controller
 
         $pasar->update($data);
 
-        return redirect()->route('admin.pasar.index')
+        return redirect()->route('admin.manajemen-pasar.index')
             ->with('success', 'Pasar berhasil diperbarui.');
     }
 
@@ -107,7 +111,7 @@ class PasarController extends Controller
 
         $pasar->delete();
 
-        return redirect()->route('admin.pasar.index')
+        return redirect()->route('admin.manajemen-pasar.index')
             ->with('success', 'Pasar berhasil dihapus.');
     }
 } 
