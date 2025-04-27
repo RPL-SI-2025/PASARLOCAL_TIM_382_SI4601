@@ -20,4 +20,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
     }
+    public function ran(): void
+{
+    $this->call([
+        UserSeeder::class,
+    ]);
+}
 }
