@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id('id_pedagang');
             $table->unsignedBigInteger('id_pasar');
             $table->string('nama_pemilik', 100);
+            $table->string('email', 100);
             $table->string('alamat', 100);
             $table->string('nama_toko', 100);
             $table->string('nomor_telepon', 100);
@@ -26,6 +27,7 @@ return new class extends Migration
                 'id_pasar'       => 1,
                 'nama_pemilik'   => 'Budi Santoso',
                 'alamat'         => 'Jl. Melati No. 12',
+                'email'         => 'budisantoso@email.com',
                 'nama_toko'      => 'Toko Sembako Budi',
                 'nomor_telepon'  => '081234567890',
                 'created_at'     => now(),
@@ -35,6 +37,7 @@ return new class extends Migration
                 'id_pasar'       => 1,
                 'nama_pemilik'   => 'Siti Aminah',
                 'alamat'         => 'Jl. Kenanga No. 5',
+                'email'         => 'sitiaminah@email.com',
                 'nama_toko'      => 'Aminah Grosir',
                 'nomor_telepon'  => '082345678901',
                 'created_at'     => now(),
@@ -44,6 +47,7 @@ return new class extends Migration
                 'id_pasar'       => 2,
                 'nama_pemilik'   => 'Rahmat Hidayat',
                 'alamat'         => 'Jl. Anggrek No. 7',
+                'email'         => 'rahmathidayat@email.com',
                 'nama_toko'      => 'Rahmat Elektronik',
                 'nomor_telepon'  => '083456789012',
                 'created_at'     => now(),
