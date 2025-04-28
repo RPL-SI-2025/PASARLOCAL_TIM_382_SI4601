@@ -17,10 +17,13 @@ class Pasar extends Model
     protected $fillable = [
         'id_pasar',
         'nama_pasar',
-        'lokasi',
+        'alamat',
         'deskripsi',
-        'gambar',
-        'latitude',
-        'longitude'
+        'gambar'
     ];
-} 
+
+    public function ongkir()
+    {
+        return $this->hasMany(ongkir::class, 'id_pasar');
+    }
+}

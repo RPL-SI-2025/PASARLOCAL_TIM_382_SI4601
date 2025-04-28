@@ -125,7 +125,7 @@
 
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center">{{ $item->nama_pasar }}</h5>
-                        <p class="text-center">{{ $item->lokasi }}</p>
+                        <p class="text-center">{{ $item->alamat }}</p>
                         <div class="mt-auto d-flex justify-content-between">
                             <a href="{{ route('admin.manajemen-pasar.edit', $item->id_pasar) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
                             <form action="{{ route('admin.manajemen-pasar.destroy', $item->id_pasar) }}" method="POST" onsubmit="return confirm('Yakin mau hapus pasar ini?')" class="w-100 ms-1">
@@ -143,28 +143,18 @@
             </div>
 
             <div class="modal fade" id="pasarModal{{ $item->id_pasar }}" tabindex="-1" aria-labelledby="pasarModalLabel{{ $item->id_pasar }}" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="pasarModalLabel{{ $item->id_pasar }}">{{ $item->nama_pasar }}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    @if($item->gambar)
-                                        <img src="{{ asset('uploads_pasar/' . $item->gambar) }}" class="img-fluid rounded mb-3" alt="{{ $item->nama_pasar }}">
-                                    @else
-                                        <img src="https://via.placeholder.com/500x300?text=No+Image" class="img-fluid rounded mb-3" alt="No Image">
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <h6 class="fw-bold mb-3">Informasi Pasar</h6>
-                                    <p><strong>ID Pasar:</strong> {{ $item->id_pasar }}</p>
-                                    <p><strong>Lokasi:</strong> {{ $item->lokasi }}</p>
-                                    <p><strong>Deskripsi:</strong> {{ $item->deskripsi ?? 'Deskripsi belum tersedia.' }}</p>
-                                </div>
-                            </div>
+                            @if($item->gambar)
+                                <img src="{{ url('uploads_pasar/' . $item->gambar) }}" class="img-fluid mb-3" alt="{{ $item->nama_pasar }}">
+                            @endif
+                            <p><strong>Alamat:</strong> {{ $item->alamat }}</p>
+                            <p><strong>Deskripsi:</strong> {{ $item->deskripsi }}</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>

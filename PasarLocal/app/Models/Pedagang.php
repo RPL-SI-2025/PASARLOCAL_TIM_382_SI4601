@@ -17,10 +17,10 @@ class Pedagang extends Model
     protected $fillable = [
         'id_pedagang',
         'id_pasar',
-        'nama_pedagang',
-        'lokasi_toko',
-        'deskripsi',
-        'gambar'
+        'nama_pemilik',
+        'alamat',
+        'nama_toko',
+        'nomor_telepon'
     ];
 
     public function pasar()
