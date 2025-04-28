@@ -91,9 +91,6 @@
             <!-- Menu manajemen di tengah -->
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('admin/ongkir*') ? 'active' : '' }}" href="{{ route('admin.ongkir.index') }}">Manajemen Ongkir</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/manajemen-produk*') ? 'active' : '' }}" href="{{ route('admin.manajemen-produk.index') }}">Manajemen Produk</a>
                 </li>
                 <li class="nav-item">
@@ -101,6 +98,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/promosi*') ? 'active' : '' }}" href="#">Manajemen Promosi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/ongkir*') ? 'active' : '' }}" href="{{ route('admin.ongkir.index') }}">Manajemen Ongkir</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/manajemen-pasar*') ? 'active' : '' }}" href="{{ route('admin.manajemen-pasar.index') }}">Manajemen Pasar</a>

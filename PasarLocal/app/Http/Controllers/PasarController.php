@@ -15,7 +15,7 @@ class PasarController extends Controller
         $pasar = Pasar::query()
             ->when($search, function ($query) use ($search) {
                 $query->where('nama_pasar', 'LIKE', '%' . $search . '%')
-                      ->orWhere('lokasi', 'LIKE', '%' . $search . '%');
+                      ->orWhere('alamat', 'LIKE', '%' . $search . '%');
             })
             ->orderBy('nama_pasar')
             ->get();
@@ -32,24 +32,12 @@ class PasarController extends Controller
     {
         $request->validate([
             'nama_pasar' => 'required',
-            'lokasi' => 'required',
+            'alamat' => 'required',
             'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric'
+            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $data = $request->all();
-
-        // Generate ID Pasar (P001, P002, etc.)
-        $lastPasar = Pasar::orderBy('id_pasar', 'desc')->first();
-        if ($lastPasar) {
-            $lastNumber = intval(substr($lastPasar->id_pasar, 1));
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
-        $data['id_pasar'] = 'P' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        $data = $request->only(['nama_pasar', 'alamat', 'deskripsi']);
 
         if ($request->hasFile('gambar')) {
             $gambar = $request->file('gambar');
@@ -74,11 +62,9 @@ class PasarController extends Controller
     {
         $request->validate([
             'nama_pasar' => 'required',
-            'lokasi' => 'required',
+            'alamat' => 'required',
             'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric'
+            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $pasar = Pasar::findOrFail($id);
