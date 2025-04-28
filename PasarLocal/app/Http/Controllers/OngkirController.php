@@ -41,14 +41,19 @@ class OngkirController extends Controller
 
     public function detail()
     {
-        $pasar = Pasar::with('ongkir')->get();
-        return view('admin.ongkir.index-detail', compact('pasar'));
+
+        // ambil hanya ongkir yang id_pasar == $id
+        $pasar = Pasar::all();
+        $ongkirs = Ongkir::all();
+
+        return view('admin.ongkir.index-detail', compact('ongkirs', 'pasar'));
     }
 
     public function edit($id)
     {
         $ongkir = Ongkir::findOrFail($id);
-        return view('admin.ongkir.edit', compact('ongkir'));
+        $pasar = Pasar::all();
+        return view('admin.ongkir.edit', compact('ongkir', 'pasar'));
     }
 
     public function update(Request $request, $id)
