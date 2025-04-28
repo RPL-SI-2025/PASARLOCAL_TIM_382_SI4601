@@ -56,14 +56,20 @@ class AuthController extends Controller
 
         // Jika email dan password adalah admin
         if ($credentials['email'] === 'pasarlocal382@gmail.com' && $credentials['password'] === 'p4sarl0c4l123') {
-            // Generate dan kirim kode verifikasi
-            $this->verificationService->generateCode($credentials['email']);
+            // Login sebagai admin
+            $admin = User::where('email', $credentials['email'])->first();
+            if (!$admin) {
+                // Jika admin belum ada, buat user admin
+                $admin = User::create([
+                    'name' => 'Admin PasarLocal',
+                    'email' => $credentials['email'],
+                    'password' => Hash::make($credentials['password']),
+                    'role' => 'admin'
+                ]);
+            }
             
-            // Simpan email ke session
-            session(['verification_email' => $credentials['email']]);
-            
-            // Redirect ke halaman verifikasi
-            return redirect()->route('auth.show-verify-code');
+            Auth::login($admin);
+            return redirect()->route('admin.manajemen-produk.index');
         }
 
         // Untuk user biasa

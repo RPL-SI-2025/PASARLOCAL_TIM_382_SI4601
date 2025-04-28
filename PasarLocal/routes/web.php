@@ -60,8 +60,3 @@ Route::post('/admin/manajemen-pedagang', [PedagangController::class, 'store'])->
 Route::get('/admin/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
 Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
 Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
-
-# Verifikasi routes
-Route::get('/verify-code', [AuthController::class, 'showVerifyCodeForm'])->name('auth.show-verify-code');
-Route::post('/verify-code', [AuthController::class, 'verifyCode'])->name('auth.verify-code');
-Route::get('/resend-code', [AuthController::class, 'resendCode'])->name('auth.resend-code');
