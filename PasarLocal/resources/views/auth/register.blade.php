@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PasarLocal</title>
+    <title>Register - PasarLocal</title>
     <style>
         body {
             margin: 0;
@@ -26,7 +26,7 @@
             height: 40px;
         }
 
-        .login-container {
+        .register-container {
             background-color: #4CAF50;
             padding: 40px;
             border-radius: 20px;
@@ -102,20 +102,6 @@
             margin-top: 5px;
             padding-left: 15px;
         }
-
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .register-link a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -123,18 +109,21 @@
         <img src="{{ asset('images/logo.png') }}" alt="PasarLocal">
     </div>
 
-    <div class="login-container">
-        <h1>LOGIN</h1>
+    <div class="register-container">
+        <h1>REGISTER</h1>
 
-        @if (session('success'))
-            <div style="background-color: #4BB543; color: white; padding: 10px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('auth.login') }}">
+        <form method="POST" action="{{ route('auth.register') }}">
             @csrf
 
+            {{-- Nama --}}
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Username" value="{{ old('name') }}" required>
+                @error('name')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Email --}}
             <div class="form-group">
                 <input type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
                 @error('email')
@@ -142,29 +131,22 @@
                 @enderror
             </div>
 
+            {{-- Password --}}
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="password" placeholder="Password Baru" required>
                 @error('password')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
 
+            {{-- Konfirmasi Password --}}
             <div class="form-group">
-                <select name="role" required style="width: 100%; padding: 12px; border: none; border-radius: 25px; font-size: 16px; background-color: white;">
-                    <option value="">-- Login Sebagai --</option>
-                    <option value="customer">Customer</option>
-                    <option value="pedagang">Pedagang</option>
-                </select>
-                @error('role')
-                    <div class="error-message">{{ $message }}</div>
-                @enderror
+                <input type="password" name="password_confirmation" placeholder="Masukkan Ulang Password Baru" required>
             </div>
 
-            <button type="submit" class="login-btn">Log in</button>
+            <input type="hidden" name="role" value="customer">
 
-            <div class="register-link">
-                <a href="{{ route('auth.register.form') }}">Don't have an account? Register here</a>
-            </div>
+            <button type="submit" class="login-btn">Register</button>
         </form>
     </div>
 </body>

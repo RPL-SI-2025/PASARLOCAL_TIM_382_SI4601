@@ -11,6 +11,7 @@ class Pedagang extends Model
 
     protected $table = 'pedagang';
     protected $primaryKey = 'id_pedagang';
+<<<<<<< HEAD
 
     protected $fillable = [
         'user_id',
@@ -28,5 +29,22 @@ class Pedagang extends Model
     public function produkPedagang()
     {
         return $this->hasMany(ProdukPedagang::class, 'id_pedagang');
+=======
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'id_pedagang',
+        'id_pasar',
+        'nama_pemilik',
+        'alamat',
+        'nama_toko',
+        'nomor_telepon'
+    ];
+
+    public function pasar()
+    {
+        return $this->belongsTo(Pasar::class, 'id_pasar', 'id_pasar');
+>>>>>>> dbaa521cb2b340872797bb9a31ee58e00748fb72
     }
 } 
