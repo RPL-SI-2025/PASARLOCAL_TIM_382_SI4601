@@ -37,17 +37,19 @@ class ManajemenProdukController extends Controller
         $request->validate([
             'id_kategori' => 'required',
             'nama_produk' => 'required',
-            'foto' => 'required|image|mimes:jpeg,jpg,png,jfif|max:2048',
+            'deskripsi_produk' => 'required',
+            'gambar' => 'required|image|mimes:jpeg,jpg,png,jfif|max:2048',
         ]);
 
-        $gambar = $request->file('foto');
+        $gambar = $request->file('gambar');
         $namaFile = time() . '_' . $gambar->getClientOriginalName();
         $gambar->move(public_path('uploads_produk'), $namaFile);
 
         Produk::create([
             'id_kategori' => $request->id_kategori,
             'nama_produk' => $request->nama_produk,
-            'foto' => $namaFile,
+            'deskripsi_produk' => $request->deskripsi_produk, // <-- ini tadi hilang
+            'gambar' => $namaFile,
         ]);
 
         return redirect()->route('admin.manajemen-produk.index');
@@ -63,26 +65,34 @@ class ManajemenProdukController extends Controller
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
-
+    
         $request->validate([
             'id_kategori' => 'required',
             'nama_produk' => 'required',
-            'foto' => 'image|mimes:jpeg,jpg,png,jfif|max:2048',
+            'deskripsi_produk' => 'required',
+            'gambar' => 'nullable|image|mimes:jpeg,jpg,png,jfif|max:2048',
         ]);
-
-        if ($request->hasFile('foto')) {
-            $gambar = $request->file('foto');
+    
+        if ($request->hasFile('gambar')) {
+            if ($produk->gambar && file_exists(public_path('uploads_produk/' . $produk->gambar))) {
+                unlink(public_path('uploads_produk/' . $produk->gambar));
+            }
+    
+            $gambar = $request->file('gambar');
             $namaFile = time() . '_' . $gambar->getClientOriginalName();
             $gambar->move(public_path('uploads_produk'), $namaFile);
-            $produk->foto = $namaFile;
+    
+            $produk->gambar = $namaFile;
         }
-
+    
         $produk->id_kategori = $request->id_kategori;
         $produk->nama_produk = $request->nama_produk;
+        $produk->deskripsi_produk = $request->deskripsi_produk;
         $produk->save();
-
-        return redirect()->route('admin.manajemen-produk.index');
+    
+        return redirect()->route('admin.manajemen-produk.index')->with('success', 'Produk berhasil diupdate');
     }
+    
 
     public function destroy($id)
     {
@@ -90,9 +100,10 @@ class ManajemenProdukController extends Controller
         $produk->delete();
         return redirect()->route('admin.manajemen-produk.index');
     }
+
     public function show($id)
     {
-        $produk = Produk::findOrFail($id); // Mengambil produk berdasarkan ID
+        $produk = Produk::findOrFail($id);
         return view('admin.manajemen-produk.show', compact('produk'));
     }
 }

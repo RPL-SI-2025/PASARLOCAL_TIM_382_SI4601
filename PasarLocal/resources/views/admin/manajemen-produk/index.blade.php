@@ -111,7 +111,7 @@
                             <p><strong>Kategori:</strong> {{ $item->kategori->nama_kategori }}</p>
                             <p><strong>Deskripsi:</strong> {{ $item->deskripsi ?? 'Deskripsi belum tersedia.' }}</p>
                             <div>
-                                @if($item->foto)
+                                @if($item->gambar)
                                     <img src="{{ asset('uploads_produk/' . $item->foto) }}" class="img-fluid" alt="{{ $item->nama_produk }}">
                                 @else
                                     <img src="https://via.placeholder.com/500x300?text=No+Image" class="img-fluid" alt="No Image">
