@@ -29,7 +29,9 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ $item->nama_pasar }}</h5>
                         <p class="card-text">{{ $item->lokasi }}</p>
-                        <a href="{{ url('admin/detail-ongkir') }}" class="btn btn-primary mt-auto">Lihat Ongkir</a>
+                        <a href="{{ url('admin/detail-ongkir/' . $item->id_pasar) }}" class="btn btn-primary mt-auto" dusk="lihat-ongkir-button">
+                            Lihat Ongkir
+                        </a>
                     </div>
                 </div>
             </div>

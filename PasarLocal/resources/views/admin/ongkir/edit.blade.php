@@ -25,7 +25,7 @@
                 <div class="card shadow mb-4">
                     <div class="card-header py-3 d-flex justify-content-between align-items-center">
                         <h6 class="m-0 font-weight-bold text-primary">Edit Data Ongkir</h6>
-                        <a href="{{ route('admin.ongkir.detail') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm">
                             <i class="bi bi-arrow-left"></i> Kembali
                         </a>
                     </div>

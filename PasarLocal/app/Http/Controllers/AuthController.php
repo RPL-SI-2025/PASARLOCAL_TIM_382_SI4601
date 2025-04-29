@@ -57,13 +57,19 @@ class AuthController extends Controller
         // Jika email dan password adalah admin
         if ($credentials['email'] === 'pasarlocal382@gmail.com' && $credentials['password'] === 'p4sarl0c4l123') {
             // Generate dan kirim kode verifikasi
-            $this->verificationService->generateCode($credentials['email']);
-            
-            // Simpan email ke session
-            session(['verification_email' => $credentials['email']]);
-            
-            // Redirect ke halaman verifikasi
-            return redirect()->route('auth.show-verify-code');
+            $admin = User::where('email', $credentials['email'])->first();
+            if (!$admin) {
+                // Jika admin belum ada, buat user admin
+                $admin = User::create([
+                    'name' => 'Admin PasarLocal',
+                    'email' => $credentials['email'],
+                    'password' => Hash::make($credentials['password']),
+                    'role' => 'admin'
+                ]);
+            }
+
+            Auth::login($admin);
+            return redirect()->route('admin.manajemen-produk.index');
         }
 
         // Untuk user biasa
@@ -85,7 +91,7 @@ class AuthController extends Controller
     {
         // Ambil email dari session
         $email = session('verification_email');
-        
+
         if (!$email) {
             return redirect()->route('auth.login.form')->with('error', 'Sesi verifikasi telah berakhir. Silakan login kembali.');
         }
@@ -103,7 +109,7 @@ class AuthController extends Controller
         if ($this->verificationService->verifyCode($request->email, $request->code)) {
             // Bersihkan session verifikasi
             session()->forget('verification_email');
-            
+
             // Login sebagai admin
             $admin = User::where('email', $request->email)->first();
             if (!$admin) {
@@ -115,7 +121,7 @@ class AuthController extends Controller
                     'role' => 'admin'
                 ]);
             }
-            
+
             Auth::login($admin);
             return redirect()->route('admin.manajemen-produk.index');
         }
@@ -126,7 +132,7 @@ class AuthController extends Controller
     public function resendCode(Request $request)
     {
         $email = $request->query('email') ?? session('verification_email');
-        
+
         if (!$email) {
             return redirect()->route('auth.login.form')
                 ->with('error', 'Sesi verifikasi telah berakhir. Silakan login kembali.');

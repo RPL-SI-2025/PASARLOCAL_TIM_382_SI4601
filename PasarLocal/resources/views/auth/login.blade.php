@@ -150,7 +150,7 @@
             </div>
 
             <div class="form-group">
-                <select name="role" required style="width: 100%; padding: 12px; border: none; border-radius: 25px; font-size: 16px; background-color: white;">
+                <select name="role" required style="width: 100%; padding: 12px; border: none; border-radius: 25px; font-size: 16px; background-color: white;" dusk="role-select">
                     <option value="">-- Login Sebagai --</option>
                     <option value="customer">Customer</option>
                     <option value="pedagang">Pedagang</option>
