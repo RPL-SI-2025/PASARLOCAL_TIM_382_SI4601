@@ -42,13 +42,13 @@ class ManajemenProdukController extends Controller
         ]);
 
         $gambar = $request->file('gambar');
-        $namaFile = time() . '_' . $gambar->getClientOriginalName();
+        $namaFile = $gambar->getClientOriginalName();
         $gambar->move(public_path('uploads_produk'), $namaFile);
 
         Produk::create([
             'id_kategori' => $request->id_kategori,
             'nama_produk' => $request->nama_produk,
-            'deskripsi_produk' => $request->deskripsi_produk, // <-- ini tadi hilang
+            'deskripsi_produk' => $request->deskripsi_produk,
             'gambar' => $namaFile,
         ]);
 
@@ -65,40 +65,34 @@ class ManajemenProdukController extends Controller
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
-    
+
         $request->validate([
             'id_kategori' => 'required',
             'nama_produk' => 'required',
             'deskripsi_produk' => 'required',
             'gambar' => 'nullable|image|mimes:jpeg,jpg,png,jfif|max:2048',
         ]);
-    
+
         if ($request->hasFile('gambar')) {
-            if ($produk->gambar && file_exists(public_path('uploads_produk/' . $produk->gambar))) {
-                unlink(public_path('uploads_produk/' . $produk->gambar));
-            }
-    
             $gambar = $request->file('gambar');
-            $namaFile = time() . '_' . $gambar->getClientOriginalName();
+            $namaFile = $produk->gambar ?? $gambar->getClientOriginalName();
             $gambar->move(public_path('uploads_produk'), $namaFile);
-    
             $produk->gambar = $namaFile;
         }
-    
+
         $produk->id_kategori = $request->id_kategori;
         $produk->nama_produk = $request->nama_produk;
         $produk->deskripsi_produk = $request->deskripsi_produk;
         $produk->save();
-    
+
         return redirect()->route('admin.manajemen-produk.index')->with('success', 'Produk berhasil diupdate');
     }
-    
 
     public function destroy($id)
     {
         $produk = Produk::findOrFail($id);
         $produk->delete();
-        return redirect()->route('admin.manajemen-produk.index');
+        return redirect()->route('admin.manajemen-produk.index')->with('success', 'Produk berhasil dihapus');
     }
 
     public function show($id)
