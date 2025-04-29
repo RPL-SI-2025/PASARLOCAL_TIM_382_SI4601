@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\KategoriProduk;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 
 class KategoriProdukController extends Controller
 {
@@ -15,9 +14,9 @@ class KategoriProdukController extends Controller
         if ($request->has('search') && $request->search != '') {
             $query->where('nama_kategori', 'like', '%' . $request->search . '%');
         }
-    
+
         $kategori = $query->get();
-    
+
         return view('admin.kategori-produk.index', compact('kategori'));
     }
 
@@ -32,19 +31,19 @@ class KategoriProdukController extends Controller
             'nama_kategori' => 'required|unique:kategori_produk,nama_kategori|string|max:255',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-    
-        $gambar = null;
-    
+
+        $namaFile = null;
         if ($request->hasFile('gambar')) {
-            $gambarPath = $request->file('gambar')->store('uploads_kategori', 'public');
-            $gambar = basename($gambarPath);
+            $gambar = $request->file('gambar');
+            $namaFile = $gambar->getClientOriginalName();
+            $gambar->move(public_path('uploads_kategori'), $namaFile);
         }
-    
+
         KategoriProduk::create([
             'nama_kategori' => $request->nama_kategori,
-            'gambar' => $gambar,
+            'gambar' => $namaFile,
         ]);
-    
+
         return redirect('/admin/kategori-produk')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
@@ -64,12 +63,10 @@ class KategoriProdukController extends Controller
         ]);
 
         if ($request->hasFile('gambar')) {
-            if ($kategori->gambar && File::exists(public_path('uploads_kategori/' . $kategori->gambar))) {
-                File::delete(public_path('uploads_kategori/' . $kategori->gambar));
-            }
-
-            $gambar = $request->file('gambar')->store('uploads_kategori', 'public');
-            $kategori->gambar = basename($gambar);
+            $gambar = $request->file('gambar');
+            $namaFile = $gambar->getClientOriginalName();
+            $gambar->move(public_path('uploads_kategori'), $namaFile);
+            $kategori->gambar = $namaFile;
         }
 
         $kategori->nama_kategori = $request->nama_kategori;
@@ -81,15 +78,8 @@ class KategoriProdukController extends Controller
     public function destroy($id)
     {
         $kategori = KategoriProduk::findOrFail($id);
-
-        if ($kategori->gambar && File::exists(public_path('uploads_kategori/' . $kategori->gambar))) {
-            File::delete(public_path('uploads_kategori/' . $kategori->gambar));
-        }
-
         $kategori->delete();
 
         return redirect('/admin/kategori-produk')->with('success', 'Kategori berhasil dihapus.');
     }
-
-    
 }
