@@ -160,7 +160,7 @@
                 @enderror
             </div>
 
-            <button type="submit" class="login-btn">Log in</button>
+            <button type="submit" class="login-btn" dusk='login'>Log in</button>
 
             <div class="register-link">
                 <a href="{{ route('auth.register.form') }}">Don't have an account? Register here</a>

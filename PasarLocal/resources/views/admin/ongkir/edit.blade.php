@@ -49,7 +49,7 @@
                                         <label for="kecamatan_tujuan">Kecamatan Tujuan</label>
                                         <input type="text" class="form-control @error('kecamatan_tujuan') is-invalid @enderror"
                                                id="kecamatan_tujuan" name="kecamatan_tujuan"
-                                               value="{{ old('kecamatan_tujuan', $ongkir->kecamatan_tujuan) }}" required>
+                                               value="{{ old('kecamatan_tujuan', $ongkir->kecamatan_tujuan) }}" required dusk="update-tujuan">
                                         @error('kecamatan_tujuan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -62,7 +62,7 @@
                                         <input type="number" class="form-control @error('ongkir') is-invalid @enderror"
                                                id="ongkir" name="ongkir"
                                                min="0" step="1000"
-                                               value="{{ old('ongkir', $ongkir->ongkir) }}" required>
+                                               value="{{ old('ongkir', $ongkir->ongkir) }}" required dusk="update-ongkir">
                                                <div class="form-text">Isikan tanpa titik atau koma (contoh: 10000)</div>
                                         @error('ongkir')
                                             <div class="invalid-feedback">{{ $message }}</div>

@@ -21,7 +21,7 @@ class OngkirTest extends DuskTestCase
                     ->type('password', 'p4sarl0c4l123')
                     ->select('@role-select', 'pedagang')
                     ->assertSelected('@role-select', 'pedagang')
-                    ->press('Log in')
+                    ->click('@login')
                     ->assertPathIs('/admin/manajemen-produk')
                     ->assertSee('Manajemen Ongkir')
                     ->clickLink('Manajemen Ongkir')
@@ -36,7 +36,10 @@ class OngkirTest extends DuskTestCase
                     ->click('@simpan-ongkir');
         });
     }
-
+    /**
+     * A Dusk test example.
+     * @group Ongkir
+     */
     public function test_read_ongkir(): void
     {
         $this->browse(function(Browser $browser){
@@ -45,11 +48,53 @@ class OngkirTest extends DuskTestCase
                     ->type('password', 'p4sarl0c4l123')
                     ->select('@role-select', 'pedagang')
                     ->assertSelected('@role-select', 'pedagang')
-                    ->press('Log in')
+                    ->click('@login')
                     ->assertPathIs('/admin/manajemen-produk')
                     ->assertSee('Manajemen Ongkir')
                     ->clickLink('Manajemen Ongkir')
                     ->click('@lihat-ongkir-button');
         });
     }
+    /**
+     * A Dusk test example.
+     * @group Ongkir
+     */
+    public function test_update_ongkir(): void
+    {
+        $this->browse(function(Browser $browser){
+            $browser->visit('/')
+                    ->type('email', 'pasarlocal382@gmail.com')
+                    ->type('password', 'p4sarl0c4l123')
+                    ->select('@role-select', 'pedagang')
+                    ->assertSelected('@role-select', 'pedagang')
+                    ->click('@login')
+                    ->assertSee('Manajemen Ongkir')
+                    ->clickLink('Manajemen Ongkir')
+                    ->click('@lihat-ongkir-button')
+                    ->click('@edit-ongkir')
+                    ->type('@update-tujuan', 'Kecamatan B')
+                    ->type('@update-ongkir', '10000');
+        });
+    }
+    /**
+     * A Dusk test example.
+     * @group Ongkir
+     */
+    public function test_delete_ongkir() : void
+    {
+        $this->browse(function(Browser $browser){
+            $browser->visit('/')
+            ->type('email', 'pasarlocal382@gmail.com')
+            ->type('password', 'p4sarl0c4l123')
+            ->select('@role-select', 'pedagang')
+            ->assertSelected('@role-select', 'pedagang')
+            ->click('@login')
+            ->assertPathIs('/admin/manajemen-produk')
+            ->assertSee('Manajemen Ongkir')
+            ->clickLink('Manajemen Ongkir')
+            ->click('@lihat-ongkir-button')
+            ->click('@hapus-ongkir');
+        });
+    }
+
 }

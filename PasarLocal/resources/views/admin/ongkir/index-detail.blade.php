@@ -38,7 +38,8 @@
                                 <!-- Edit Button -->
                                 <a href="{{ route('admin.ongkir.edit', $ongkir->id) }}"
                                    class="btn btn-sm btn-warning"
-                                   title="Edit">
+                                   title="Edit"
+                                   dusk = "edit-ongkir">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>
 
@@ -49,7 +50,8 @@
                                     <button type="submit"
                                             class="btn btn-sm btn-danger"
                                             onclick="return confirm('Yakin ingin menghapus ongkir ke {{ $ongkir->kecamatan_tujuan }}?')"
-                                            title="Hapus">
+                                            title="Hapus"
+                                            dusk = "hapus-ongkir">
                                         <i class="bi bi-trash"></i> Hapus
                                     </button>
                                 </form>
