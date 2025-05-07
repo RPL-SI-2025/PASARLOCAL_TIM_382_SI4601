@@ -165,21 +165,21 @@
     </div>
     <div class="row mb-4">
         <div class="col-12">
-            <div class="p-3 bg-white rounded shadow-sm" style="max-width:900px; margin:auto;">
-                <form class="row g-2 align-items-center">
+            <div class="p-3 bg-white rounded shadow-sm" style="width:100%; max-width:100%; margin:auto;">
+                <form class="row g-0 align-items-center" method="GET" action="{{ route('pedagang.manajemen-produk') }}">
                     <div class="col-md-6">
-                        <input type="text" class="form-control" placeholder="Cari produk...">
+                        <input type="text" class="form-control" name="search" placeholder="Cari produk..." value="{{ request('search') }}">
                     </div>
                     <div class="col-md-4">
                         <select class="form-select" name="kategori">
-                            <option value="">Semua Kategori</option>
+                            <option value="">Pilih Kategori</option>
                             @foreach($kategoris as $kategori)
-                                <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                                <option value="{{ $kategori->id }}" {{ request('kategori') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama_kategori }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button class="btn btn-success w-100" type="submit">Search</button>
+                        <button class="btn btn-success w-100" type="submit">Cari</button>
                     </div>
                 </form>
             </div>

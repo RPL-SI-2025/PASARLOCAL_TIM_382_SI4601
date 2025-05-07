@@ -11,9 +11,23 @@ class ProdukPedagangController extends Controller
 {
     protected $pedagangId = 1; // Default pedagang ID untuk testing
 
-    public function index()
+    public function index(Request $request)
     {
-        $produkPedagang = ProdukPedagang::where('id_pedagang', $this->pedagangId)->get();
+        $query = ProdukPedagang::where('id_pedagang', $this->pedagangId)->with(['produk.kategori']);
+
+        if ($request->filled('search')) {
+            $query->whereHas('produk', function($q) use ($request) {
+                $q->where('nama_produk', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->whereHas('produk', function($q) use ($request) {
+                $q->where('id_kategori', $request->kategori);
+            });
+        }
+
+        $produkPedagang = $query->get();
         $kategoris = \App\Models\KategoriProduk::all();
         return view('pedagang.manajemen_produk.index', compact('produkPedagang', 'kategoris'));
     }
