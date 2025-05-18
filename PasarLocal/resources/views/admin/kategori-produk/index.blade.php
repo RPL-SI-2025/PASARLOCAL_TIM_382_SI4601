@@ -93,10 +93,15 @@
                 </div>
             </div>
             @empty
+<<<<<<< HEAD
+            <div class="col-12 text-center">
+                <p class="text-muted">Belum ada kategori produk.</p>
+=======
             <div class="col-12">
                 <div class="alert alert-info">
                     Tidak ada data kategori yang ditemukan.
                 </div>
+>>>>>>> dbaa521cb2b340872797bb9a31ee58e00748fb72
             </div>
             @endforelse
         </div>

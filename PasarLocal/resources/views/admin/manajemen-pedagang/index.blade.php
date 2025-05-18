@@ -29,7 +29,7 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm border-0">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ $p->nama_pemilik}}</h5>
+                    <h5 class="card-title">{{ $p->nama_toko}}</h5>
                     <div class="mb-1">
                         <i class="fas fa-store"></i> {{ $p->pasar->nama_pasar }}
                     </div>
