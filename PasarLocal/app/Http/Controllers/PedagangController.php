@@ -37,23 +37,20 @@ class PedagangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_pasar' => 'required',
-            'nama_pedagang' => 'required',
-            'lokasi_toko' => 'required',
-            'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'id_pasar' => 'required|exists:pasar,id_pasar',
+            'nama_pemilik' => 'required|string|max:100',
+            'nama_toko' => 'required|string|max:100',
+            'alamat' => 'required|string|max:100',
+            'nomor_telepon' => 'required|string|max:100',
         ]);
 
-        $data = $request->all();
-
-        if ($request->hasFile('gambar')) {
-            $gambar = $request->file('gambar');
-            $nama_gambar = time() . '.' . $gambar->getClientOriginalExtension();
-            $gambar->move(public_path('uploads_pedagang'), $nama_gambar);
-            $data['gambar'] = $nama_gambar;
-        }
-
-        Pedagang::create($data);
+        Pedagang::create([
+            'id_pasar' => $request->id_pasar,
+            'nama_pemilik' => $request->nama_pemilik,
+            'nama_toko' => $request->nama_toko,
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
+        ]);
 
         return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil ditambahkan.');
@@ -69,28 +66,22 @@ class PedagangController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'id_pasar' => 'required',
-            'nama_pedagang' => 'required',
-            'lokasi_toko' => 'required',
-            'deskripsi' => 'required',
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'id_pasar' => 'required|exists:pasar,id_pasar',
+            'nama_pemilik' => 'required|string|max:100',
+            'nama_toko' => 'required|string|max:100',
+            'alamat' => 'required|string|max:100',
+            'nomor_telepon' => 'required|string|max:100',
         ]);
 
         $pedagang = Pedagang::findOrFail($id);
-        $data = $request->all();
 
-        if ($request->hasFile('gambar')) {
-            if ($pedagang->gambar && file_exists(public_path('uploads_pedagang/' . $pedagang->gambar))) {
-                unlink(public_path('uploads_pedagang/' . $pedagang->gambar));
-            }
-
-            $gambar = $request->file('gambar');
-            $nama_gambar = time() . '.' . $gambar->getClientOriginalExtension();
-            $gambar->move(public_path('uploads_pedagang'), $nama_gambar);
-            $data['gambar'] = $nama_gambar;
-        }
-
-        $pedagang->update($data);
+        $pedagang->update([
+            'id_pasar' => $request->id_pasar,
+            'nama_pemilik' => $request->nama_pemilik,
+            'nama_toko' => $request->nama_toko,
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
+        ]);
 
         return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil diperbarui.');
@@ -106,7 +97,7 @@ class PedagangController extends Controller
 
         $pedagang->delete();
 
-        return redirect()->route('admin.pedagang.index')
+        return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil dihapus.');
     }
 } 

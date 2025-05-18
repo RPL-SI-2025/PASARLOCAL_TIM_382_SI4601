@@ -28,26 +28,26 @@
         @forelse($pedagang as $p)
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $p->nama_pedagang }}</h5>
-                    <p class="card-text">
-                        <i class="fas fa-store"></i> {{ $p->pasar->nama_pasar }}<br>
-                        <i class="fas fa-map-marker-alt"></i> {{ $p->lokasi_toko }}
-                    </p>
-                    <div class="btn-group">
-                        <a href="{{ route('admin.manajemen-pedagang.edit', $p->id_pedagang) }}" class="btn btn-hijau btn-sm">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <button type="button" class="btn btn-hijau-light btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $p->id_pedagang }}">
-                            <i class="fas fa-info-circle"></i> Detail
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ $p->nama_pemilik}}</h5>
+                    <div class="mb-1">
+                        <i class="fas fa-store"></i> {{ $p->pasar->nama_pasar }}
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-map-marker-alt"></i> {{ $p->alamat }}
+                    </div>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between mb-2">
+                            <a href="{{ route('admin.manajemen-pedagang.edit', $p->id_pedagang) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
+                            <form action="{{ route('admin.manajemen-pedagang.destroy', $p->id_pedagang) }}" method="POST" onsubmit="return confirm('Yakin mau hapus pedagang ini?')" class="w-100 ms-1">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-hijau-danger w-100">Hapus</button>
+                            </form>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-info w-100" data-bs-toggle="modal" data-bs-target="#detailModal{{ $p->id_pedagang }}">
+                            Lihat Detail
                         </button>
-                        <form action="{{ route('admin.manajemen-pedagang.destroy', $p->id_pedagang) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-hijau-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus pedagang ini?')">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -62,17 +62,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="text-center mb-3">
-                            @if($p->gambar)
-                                <img src="{{ asset('storage/' . $p->gambar) }}" alt="{{ $p->nama_pedagang }}" class="img-fluid rounded" style="max-height: 200px;">
-                            @else
-                                <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="img-fluid rounded" style="max-height: 200px;">
-                            @endif
-                        </div>
-                        <p><strong>Nama Pedagang:</strong> {{ $p->nama_pedagang }}</p>
+                        <p><strong>Nama Pemilik:</strong> {{ $p->nama_pemilik }}</p>
+                        <p><strong>Nama Toko:</strong> {{ $p->nama_toko }}</p>
                         <p><strong>Pasar:</strong> {{ $p->pasar->nama_pasar }}</p>
-                        <p><strong>Lokasi Toko:</strong> {{ $p->lokasi_toko }}</p>
-                        <p><strong>Deskripsi:</strong> {{ $p->deskripsi }}</p>
+                        <p><strong>Alamat:</strong> <i class="fas fa-map-marker-alt"></i> {{ $p->alamat }}</p>
+                        <p><strong>Nomor Telepon:</strong> {{ $p->nomor_telepon }}</p>
                     </div>
                 </div>
             </div>

@@ -41,13 +41,13 @@
                             </div>
 
                             <div class="form-group mb-3">
-                                <label for="lokasi">Lokasi</label>
-                                <textarea class="form-control @error('lokasi') is-invalid @enderror" 
-                                          id="lokasi" 
-                                          name="lokasi" 
+                                <label for="alamat">Alamat</label>
+                                <textarea class="form-control @error('alamat') is-invalid @enderror" 
+                                          id="alamat" 
+                                          name="alamat" 
                                           rows="3" 
-                                          required>{{ old('lokasi', $pasar->lokasi) }}</textarea>
-                                @error('lokasi')
+                                          required>{{ old('alamat', $pasar->alamat) }}</textarea>
+                                @error('alamat')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

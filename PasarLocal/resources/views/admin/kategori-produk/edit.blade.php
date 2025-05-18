@@ -53,9 +53,10 @@
                 <div class="mb-3">
                     <label for="gambar" class="form-label">Gambar Kategori (opsional)</label><br>
                     <div class="custom-file">
-                        @if ($kategori->gambar)
-                            <img src="{{ url('uploads_kategori/' . $kategori->gambar) }}" alt="Gambar Kategori" class="img-thumbnail mb-2" style="max-width: 200px;">
-                        @endif
+                    @if ($kategori->gambar)
+                     <img src="{{ asset('storage/' . $kategori->gambar) }}" alt="Gambar Kategori" class="img-thumbnail mb-2" style="max-width: 200px;">
+                    @endif
+
                     </div>
                     <input type="file" name="gambar" class="form-control mt-2" id="gambar">
                 </div>

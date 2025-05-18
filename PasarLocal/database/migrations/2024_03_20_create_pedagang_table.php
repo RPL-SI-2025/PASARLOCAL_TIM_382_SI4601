@@ -3,26 +3,61 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up()
     {
         Schema::create('pedagang', function (Blueprint $table) {
-            $table->string('id_pedagang', 10)->primary();
-            $table->string('id_pasar', 10);
-            $table->string('nama_pedagang', 100);
-            $table->string('lokasi_toko', 100);
-            $table->text('deskripsi');
-            $table->string('gambar')->nullable();
+            $table->id('id_pedagang');
+            $table->unsignedBigInteger('id_pasar');
+            $table->string('nama_pemilik', 100);
+            $table->string('email', 100);
+            $table->string('alamat', 100);
+            $table->string('nama_toko', 100);
+            $table->string('nomor_telepon', 100);
             $table->timestamps();
 
             $table->foreign('id_pasar')->references('id_pasar')->on('pasar')->onDelete('cascade');
         });
+
+        DB::table('pedagang')->insert([
+            [
+                'id_pasar'       => 1,
+                'nama_pemilik'   => 'Budi Santoso',
+                'alamat'         => 'Jl. Melati No. 12',
+                'email'         => 'budisantoso@email.com',
+                'nama_toko'      => 'Toko Sembako Budi',
+                'nomor_telepon'  => '081234567890',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+            [
+                'id_pasar'       => 1,
+                'nama_pemilik'   => 'Siti Aminah',
+                'alamat'         => 'Jl. Kenanga No. 5',
+                'email'         => 'sitiaminah@email.com',
+                'nama_toko'      => 'Aminah Grosir',
+                'nomor_telepon'  => '082345678901',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+            [
+                'id_pasar'       => 2,
+                'nama_pemilik'   => 'Rahmat Hidayat',
+                'alamat'         => 'Jl. Anggrek No. 7',
+                'email'         => 'rahmathidayat@email.com',
+                'nama_toko'      => 'Rahmat Elektronik',
+                'nomor_telepon'  => '083456789012',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+        ]);
     }
 
     public function down()
     {
         Schema::dropIfExists('pedagang');
     }
-}; 
+};
