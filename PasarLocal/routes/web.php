@@ -7,56 +7,63 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 use App\Http\Controllers\OngkirController;
+use App\Http\Controllers\Customer\IndexController;
 
 
-
-#regis&login
-Route::get('/', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
+# Auth
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
 
-#Ongkir
-Route::get('/admin/ongkir', [OngkirController::class, 'index'])->name('admin.ongkir.index');
-Route::get('/admin/tambah-ongkir', [OngkirController::class, 'create'])->name('admin.ongkir.create');
-Route::get('/admin/detail-ongkir/{id}', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
-Route::post('/admin/store', [OngkirController::class, 'store'])->name('admin.ongkir.store');
-route::get('/admin/ongkir/{id}/edit', [OngkirController::class, 'edit'])->name('admin.ongkir.edit');
-Route::put('/admin/ongkir/{ongkir}', [OngkirController::class, 'update'])->name('admin.ongkir.update');
-Route::delete('/admin/ongkir/{ongkir}', [OngkirController::class, 'destroy'])->name('admin.ongkir.destroy');
+# Semua route admin dikelompokkan dan dibatasi role admin
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    # Ongkir
+    Route::get('/ongkir', [OngkirController::class, 'index'])->name('admin.ongkir.index');
+    Route::get('/tambah-ongkir', [OngkirController::class, 'create'])->name('admin.ongkir.create');
+    Route::get('/detail-ongkir/{id}', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
+    Route::post('/store', [OngkirController::class, 'store'])->name('admin.ongkir.store');
+    Route::get('/ongkir/{id}/edit', [OngkirController::class, 'edit'])->name('admin.ongkir.edit');
+    Route::put('/ongkir/{ongkir}', [OngkirController::class, 'update'])->name('admin.ongkir.update');
+    Route::delete('/ongkir/{ongkir}', [OngkirController::class, 'destroy'])->name('admin.ongkir.destroy');
 
-#kategori-produk
-Route::get('/admin/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');
-Route::get('/admin/kategori-produk/create', [KategoriProdukController::class, 'create'])->name('admin.kategori-produk.create');
-Route::post('/admin/kategori-produk', [KategoriProdukController::class, 'store'])->name('admin.kategori-produk.store');
-Route::get('/admin/kategori-produk/{id}/edit', [KategoriProdukController::class, 'edit'])->name('admin.kategori-produk.edit');
-Route::put('/admin/kategori-produk/{id}', [KategoriProdukController::class, 'update'])->name('admin.kategori-produk.update');
-Route::delete('/admin/kategori-produk/{id}', [KategoriProdukController::class, 'destroy'])->name('admin.kategori-produk.destroy');
+    # Kategori Produk
+    Route::get('/kategori-produk', [KategoriProdukController::class, 'index'])->name('admin.kategori-produk.index');
+    Route::get('/kategori-produk/create', [KategoriProdukController::class, 'create'])->name('admin.kategori-produk.create');
+    Route::post('/kategori-produk', [KategoriProdukController::class, 'store'])->name('admin.kategori-produk.store');
+    Route::get('/kategori-produk/{id}/edit', [KategoriProdukController::class, 'edit'])->name('admin.kategori-produk.edit');
+    Route::put('/kategori-produk/{id}', [KategoriProdukController::class, 'update'])->name('admin.kategori-produk.update');
+    Route::delete('/kategori-produk/{id}', [KategoriProdukController::class, 'destroy'])->name('admin.kategori-produk.destroy');
 
-#produk-admin
-Route::get('/admin/manajemen-produk', [ManajemenProdukController::class, 'index'])->name('admin.manajemen-produk.index');
-Route::get('/admin/manajemen-produk/create', [ManajemenProdukController::class, 'create'])->name('admin.manajemen-produk.create');
-Route::post('/admin/manajemen-produk', [ManajemenProdukController::class, 'store'])->name('admin.manajemen-produk.store');
-Route::get('/admin/manajemen-produk/{id}/edit', [ManajemenProdukController::class, 'edit'])->name('admin.manajemen-produk.edit');
-Route::put('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'update'])->name('admin.manajemen-produk.update');
-Route::delete('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'destroy'])->name('admin.manajemen-produk.destroy');
-Route::get('/admin/manajemen-produk/{id}', [ManajemenProdukController::class, 'show'])->name('admin.manajemen-produk.show');
+    # Manajemen Produk
+    Route::get('/manajemen-produk', [ManajemenProdukController::class, 'index'])->name('admin.manajemen-produk.index');
+    Route::get('/manajemen-produk/create', [ManajemenProdukController::class, 'create'])->name('admin.manajemen-produk.create');
+    Route::post('/manajemen-produk', [ManajemenProdukController::class, 'store'])->name('admin.manajemen-produk.store');
+    Route::get('/manajemen-produk/{id}/edit', [ManajemenProdukController::class, 'edit'])->name('admin.manajemen-produk.edit');
+    Route::put('/manajemen-produk/{id}', [ManajemenProdukController::class, 'update'])->name('admin.manajemen-produk.update');
+    Route::delete('/manajemen-produk/{id}', [ManajemenProdukController::class, 'destroy'])->name('admin.manajemen-produk.destroy');
+    Route::get('/manajemen-produk/{id}', [ManajemenProdukController::class, 'show'])->name('admin.manajemen-produk.show');
 
-#pasar
-Route::get('/admin/manajemen-pasar', [PasarController::class, 'index'])->name('admin.manajemen-pasar.index');
-Route::get('/admin/manajemen-pasar/create', [PasarController::class, 'create'])->name('admin.manajemen-pasar.create');
-Route::post('/admin/manajemen-pasar', [PasarController::class, 'store'])->name('admin.manajemen-pasar.store');
-Route::get('/admin/manajemen-pasar/{id}/edit', [PasarController::class, 'edit'])->name('admin.manajemen-pasar.edit');
-Route::put('/admin/manajemen-pasar/{id}', [PasarController::class, 'update'])->name('admin.manajemen-pasar.update');
-Route::delete('/admin/manajemen-pasar/{id}', [PasarController::class, 'destroy'])->name('admin.manajemen-pasar.destroy');
+    # Manajemen Pasar
+    Route::get('/manajemen-pasar', [PasarController::class, 'index'])->name('admin.manajemen-pasar.index');
+    Route::get('/manajemen-pasar/create', [PasarController::class, 'create'])->name('admin.manajemen-pasar.create');
+    Route::post('/manajemen-pasar', [PasarController::class, 'store'])->name('admin.manajemen-pasar.store');
+    Route::get('/manajemen-pasar/{id}/edit', [PasarController::class, 'edit'])->name('admin.manajemen-pasar.edit');
+    Route::put('/manajemen-pasar/{id}', [PasarController::class, 'update'])->name('admin.manajemen-pasar.update');
+    Route::delete('/manajemen-pasar/{id}', [PasarController::class, 'destroy'])->name('admin.manajemen-pasar.destroy');
 
-#pedagang
-Route::get('/admin/manajemen-pedagang', [PedagangController::class, 'index'])->name('admin.manajemen-pedagang.index');
-Route::get('/admin/manajemen-pedagang/create', [PedagangController::class, 'create'])->name('admin.manajemen-pedagang.create');
-Route::post('/admin/manajemen-pedagang', [PedagangController::class, 'store'])->name('admin.manajemen-pedagang.store');
-Route::get('/admin/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
-Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
-Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+    # Manajemen Pedagang
+    Route::get('/manajemen-pedagang', [PedagangController::class, 'index'])->name('admin.manajemen-pedagang.index');
+    Route::get('/manajemen-pedagang/create', [PedagangController::class, 'create'])->name('admin.manajemen-pedagang.create');
+    Route::post('/manajemen-pedagang', [PedagangController::class, 'store'])->name('admin.manajemen-pedagang.store');
+    Route::get('/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
+    Route::put('/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
+    Route::delete('/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+});
 
-# Verifikasi routes
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    # Ongkir
+    Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
+});
+
