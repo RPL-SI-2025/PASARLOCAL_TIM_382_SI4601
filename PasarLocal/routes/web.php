@@ -8,35 +8,19 @@ use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 use App\Http\Controllers\OngkirController;
 
-use App\Http\Controllers\ProfileController;
 
 
-Route::get('/', function () {
-    return view('auth/login' );
-});
-
-// regis&login
-Route::get('auth/login', [AuthController::class, 'showLoginForm']);
+#regis&login
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('auth.login.form');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
-Route::post('/register', [AuthController::class, 'register']);
-
-
-
-
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 #Ongkir
 Route::get('/admin/ongkir', [OngkirController::class, 'index'])->name('admin.ongkir.index');
 Route::get('/admin/tambah-ongkir', [OngkirController::class, 'create'])->name('admin.ongkir.create');
-Route::get('/admin/detail-ongkir', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
+Route::get('/admin/detail-ongkir/{id}', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
 Route::post('/admin/store', [OngkirController::class, 'store'])->name('admin.ongkir.store');
 route::get('/admin/ongkir/{id}/edit', [OngkirController::class, 'edit'])->name('admin.ongkir.edit');
 Route::put('/admin/ongkir/{ongkir}', [OngkirController::class, 'update'])->name('admin.ongkir.update');
@@ -76,6 +60,3 @@ Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update
 Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
 
 # Verifikasi routes
-Route::get('/verify-code', [AuthController::class, 'showVerifyCodeForm'])->name('auth.show-verify-code');
-Route::post('/verify-code', [AuthController::class, 'verifyCode'])->name('auth.verify-code');
-Route::get('/resend-code', [AuthController::class, 'resendCode'])->name('auth.resend-code');

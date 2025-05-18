@@ -150,7 +150,8 @@
             </div>
 
             <div class="form-group">
-            <select name="role" required style="width: 100%; padding: 12px; border: none; border-radius: 25px; font-size: 16px; background-color: white;" dusk="role-select">
+                <select name="role" required style="width: 100%; padding: 12px; border: none; border-radius: 25px; font-size: 16px; background-color: white;" dusk="role-select">
+                    <option value="">-- Login Sebagai --</option>
                     <option value="customer">Customer</option>
                     <option value="pedagang">Pedagang</option>
                 </select>
@@ -159,7 +160,7 @@
                 @enderror
             </div>
 
-            <button type="submit" class="login-btn">Log in</button>
+            <button type="submit" class="login-btn" dusk='login'>Log in</button>
 
             <div class="register-link">
                 <a href="{{ route('auth.register.form') }}">Don't have an account? Register here</a>
