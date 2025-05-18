@@ -49,7 +49,7 @@
 
                 <div class="mb-3">
                     <label for="id_kategori" class="form-label">Pilih Kategori</label>
-                    <select name="id_kategori" class="form-control @error('id_kategori') is-invalid @enderror" id="id_kategori" required>
+                    <select name="id_kategori" class="form-control @error('id_kategori') is-invalid @enderror" id="id_kategori" required data-testid="kategori-select" dusk="kategori-select">
                         <option value="">Pilih Kategori</option>
                         @foreach($kategoris as $kategori)
                             <option value="{{ $kategori->id }}" {{ old('id_kategori') == $kategori->id ? 'selected' : '' }}>
@@ -61,7 +61,8 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                
+
+    
                 <div class="mb-3">
                     <label for="deskripsi_produk" class="form-label">Deskripsi Produk</label>
                     <textarea name="deskripsi_produk" class="form-control @error('deskripsi_produk') is-invalid @enderror" id="deskripsi_produk" rows="4" required>{{ old('deskripsi_produk') }}</textarea>

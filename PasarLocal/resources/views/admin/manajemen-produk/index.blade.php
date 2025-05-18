@@ -112,7 +112,7 @@
                             <p><strong>Deskripsi:</strong> {{ $item->deskripsi ?? 'Deskripsi belum tersedia.' }}</p>
                             <div>
                                 @if($item->gambar)
-                                    <img src="{{ asset('uploads_produk/' . $item->foto) }}" class="img-fluid" alt="{{ $item->nama_produk }}">
+                                    <img src="{{ asset('uploads_produk/' . $item->gambar) }}" class="img-fluid" alt="{{ $item->nama_produk }}">
                                 @else
                                     <img src="https://via.placeholder.com/500x300?text=No+Image" class="img-fluid" alt="No Image">
                                 @endif
@@ -134,7 +134,7 @@
         </div>
 
         <div class="sticky-btn">
-            <a href="{{ route('admin.manajemen-produk.create') }}" class="btn btn-hijau">
+            <a href="{{ route('admin.manajemen-produk.create') }}" class="btn btn-hijau" dusk="tambah-produk">
                 + Tambah Produk
             </a>
         </div>
