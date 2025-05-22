@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 use App\Http\Controllers\OngkirController;
+use App\Http\Controllers\ProdukPedagangController;
 
 
 
@@ -60,3 +61,9 @@ Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update
 Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
 
 # Verifikasi routes
+Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('admin.manajemen_produk.index');
+Route::get('/pedagang/manajemen_produk/create', [ProdukPedagangController::class, 'create'])->name('pedagang.manajemen_produk.create');
+Route::post('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'store'])->name('pedagang.manajemen_produk.store');
+Route::get('/pedagang/manajemen_produk/{id}/edit', [ProdukPedagangController::class, 'edit'])->name('pedagang.manajemen_produk.edit');
+Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
+Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
