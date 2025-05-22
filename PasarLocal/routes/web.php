@@ -79,3 +79,6 @@ Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'des
 Route::get('/verify-code', [AuthController::class, 'showVerifyCodeForm'])->name('auth.show-verify-code');
 Route::post('/verify-code', [AuthController::class, 'verifyCode'])->name('auth.verify-code');
 Route::get('/resend-code', [AuthController::class, 'resendCode'])->name('auth.resend-code');
+
+#produk-admin
+Route::get('/admin/manajemen-pesanan', [AdminPesananController::class, 'index'])->name('admin.manajemen-pesanan.index');
