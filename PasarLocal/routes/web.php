@@ -8,6 +8,7 @@ use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 use App\Http\Controllers\OngkirController;
 use App\Http\Controllers\Customer\IndexController;
+use App\Http\Controllers\Customer\RiwayatController;
 
 
 # Auth
@@ -64,6 +65,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     # Ongkir
-    Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
+    Route::get('/home', [RiwayatController::class, 'index'])->name('customer.index');
 });
 
