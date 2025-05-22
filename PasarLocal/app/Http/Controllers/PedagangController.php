@@ -42,6 +42,8 @@ class PedagangController extends Controller
             'nama_toko' => 'required|string|max:100',
             'alamat' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:100',
+            'email' => 'required|email|unique:pedagang,email|max:100',
+            'password' => 'required|string|min:8|max:100',
         ]);
 
         Pedagang::create([
@@ -50,6 +52,8 @@ class PedagangController extends Controller
             'nama_toko' => $request->nama_toko,
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
         ]);
 
         return redirect()->route('admin.manajemen-pedagang.index')
