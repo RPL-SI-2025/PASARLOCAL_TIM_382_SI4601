@@ -70,9 +70,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="foto" class="form-label">Gambar Produk</label><br>
-                    <input type="file" name="foto" class="form-control mt-2 @error('foto') is-invalid @enderror" id="foto">
-                    @error('foto')
+                    <label for="gambar" class="form-label">Gambar Produk</label><br>
+                    <input type="file" name="gambar" class="form-control mt-2 @error('gambar') is-invalid @enderror" id="gambar">
+                    @error('gambar')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -85,6 +85,7 @@
                         <p class="text-muted">Tidak ada gambar produk</p>
                     @endif
                 </div>
+
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('admin.manajemen-produk.index') }}" class="btn btn-secondary">Kembali</a>

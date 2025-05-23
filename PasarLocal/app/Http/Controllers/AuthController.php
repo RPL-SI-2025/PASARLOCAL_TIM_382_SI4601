@@ -75,6 +75,21 @@ class AuthController extends Controller
             Auth::login($user);
             return redirect()->route('admin.manajemen-produk.index');
         }
+        // 2. Untuk Pedagang
+        if ($request->email === 'f@gmail.com' && $request->password === '123456') {
+            if (!$user) {
+                // Buat user admin jika belum ada
+                $user = User::create([
+                    'name'     => 'Fadli M',
+                    'email'    => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role'     => 'pedagang',
+                ]);
+            }
+
+            Auth::login($user);
+            return redirect()->route('pedagang.manajemen_produk.index');
+        }
 
         // 2. Untuk user biasa
         if ($user && Hash::check($request->password, $user->password)) {
@@ -91,7 +106,7 @@ class AuthController extends Controller
     {
         return match ($role) {
             'admin'    => redirect()->route('admin.manajemen-produk.index'),
-            'pedagang' => redirect()->route('pedagang.dashboard'),
+            'pedagang' => redirect()->route('pedagang.manajemen_produk.index'),
             'pembeli', 'customer' => redirect()->route('customer.index'),
             default    => redirect('/'),
         };

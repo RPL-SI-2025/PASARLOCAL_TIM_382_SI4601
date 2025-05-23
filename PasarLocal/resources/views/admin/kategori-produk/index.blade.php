@@ -50,8 +50,8 @@
     </style>
 </head>
 <body>
- 
-     @include('admin.partials.navbar')
+
+    @include('admin.partials.navbar')
 
     <div class="container py-4">
         <h2 class="mb-4">Manajemen Kategori Produk</h2>
@@ -75,27 +75,34 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center">{{ $item->nama_kategori }}</h5>
                         <div class="mt-auto d-flex justify-content-between">
-                            <a href="{{ route('admin.kategori-produk.edit', $item->id) }}" class="btn btn-sm btn-hijau-light w-100 me-1">Edit</a>
-                            <form action="{{ route('admin.kategori-produk.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin mau hapus kategori ini?')" class="w-100 ms-1">
+                            <a href="{{ route('admin.kategori-produk.edit', $item->id) }}"
+                               class="btn btn-sm btn-hijau-light w-100 me-1"
+                               dusk="edit-{{ $item->id }}">Edit</a>
+                            <form action="{{ route('admin.kategori-produk.destroy', $item->id) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Yakin mau hapus kategori ini?')"
+                                  class="w-100 ms-1">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-hijau-danger w-100">Hapus</button>
+                                <button type="submit"
+                                        class="btn btn-sm btn-hijau-danger w-100"
+                                        dusk="hapus-{{ $item->id }}">Hapus</button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
             @empty
-            <div class="col-12">
-                <div class="alert alert-info">
-                    Tidak ada data kategori yang ditemukan.
-                </div>
+            <div class="col-12 text-center">
+                <p class="text-muted">Belum ada kategori produk.</p>
             </div>
             @endforelse
         </div>
 
         <div class="sticky-btn">
-            <a href="{{ route('admin.kategori-produk.create') }}" class="btn btn-hijau">
+            <a href="{{ route('admin.kategori-produk.create') }}"
+               class="btn btn-hijau"
+               dusk="tambah-kategori">
                 + Tambah Kategori
             </a>
         </div>

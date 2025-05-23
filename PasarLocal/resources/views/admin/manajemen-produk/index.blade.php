@@ -111,8 +111,8 @@
                             <p><strong>Kategori:</strong> {{ $item->kategori->nama_kategori }}</p>
                             <p><strong>Deskripsi:</strong> {{ $item->deskripsi ?? 'Deskripsi belum tersedia.' }}</p>
                             <div>
-                                @if($item->foto)
-                                    <img src="{{ asset('uploads_produk/' . $item->foto) }}" class="img-fluid" alt="{{ $item->nama_produk }}">
+                                @if($item->gambar)
+                                    <img src="{{ asset('uploads_produk/' . $item->gambar) }}" class="img-fluid" alt="{{ $item->nama_produk }}">
                                 @else
                                     <img src="https://via.placeholder.com/500x300?text=No+Image" class="img-fluid" alt="No Image">
                                 @endif
@@ -125,16 +125,21 @@
                 </div>
             </div>
             @empty
+<<<<<<< HEAD
+            <div class="col-12 text-center">
+                <p class="text-muted">Belum ada produk.</p>
+=======
             <div class="col-12">
                 <div class="alert alert-info">
                     Tidak ada data produk yang ditemukan.
                 </div>
+>>>>>>> dbaa521cb2b340872797bb9a31ee58e00748fb72
             </div>
             @endforelse
         </div>
 
         <div class="sticky-btn">
-            <a href="{{ route('admin.manajemen-produk.create') }}" class="btn btn-hijau">
+            <a href="{{ route('admin.manajemen-produk.create') }}" class="btn btn-hijau" dusk="tambah-produk">
                 + Tambah Produk
             </a>
         </div>

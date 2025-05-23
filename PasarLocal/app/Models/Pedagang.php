@@ -17,14 +17,21 @@ class Pedagang extends Model
     protected $fillable = [
         'id_pedagang',
         'id_pasar',
-        'nama_pedagang',
-        'lokasi_toko',
-        'deskripsi',
-        'gambar'
+        'nama_pemilik',
+        'email',
+        'password',
+        'alamat',
+        'nama_toko',
+        'nomor_telepon'
     ];
 
     public function pasar()
     {
         return $this->belongsTo(Pasar::class, 'id_pasar', 'id_pasar');
+    }
+
+    public function produkPedagang()
+    {
+        return $this->hasMany(ProdukPedagang::class, 'id_pedagang');
     }
 } 

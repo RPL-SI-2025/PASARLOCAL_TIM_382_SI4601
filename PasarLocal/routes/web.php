@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasarController;
 use App\Http\Controllers\PedagangController;
 use App\Http\Controllers\OngkirController;
+use App\Http\Controllers\ProdukPedagangController;
 use App\Http\Controllers\Customer\IndexController;
 use App\Http\Controllers\Customer\RiwayatController;
 
@@ -66,5 +67,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:customer'])->group(function () {
     # Ongkir
     Route::get('/home', [RiwayatController::class, 'index'])->name('customer.index');
+});
+
+Route::middleware(['auth', 'role:pedagang'])->group(function () {
+    # Ongkir
+    Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('pedagang.manajemen_produk.index');
+    Route::get('/pedagang/manajemen_produk/create', [ProdukPedagangController::class, 'create'])->name('pedagang.manajemen_produk.create');
+    Route::post('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'store'])->name('pedagang.manajemen_produk.store');
+    Route::get('/pedagang/manajemen_produk/{id}/edit', [ProdukPedagangController::class, 'edit'])->name('pedagang.manajemen_produk.edit');
+    Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
+    Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
 });
 
