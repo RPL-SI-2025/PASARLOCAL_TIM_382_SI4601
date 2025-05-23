@@ -11,6 +11,7 @@ use App\Http\Controllers\ProdukPedagangController;
 use App\Http\Controllers\Customer\IndexController;
 use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 
 
 # Auth
@@ -70,11 +71,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    # Ongkir
-    Route::get('/home', [RiwayatController::class, 'index'])->name('customer.index');
+    # Dashboard
+    Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
