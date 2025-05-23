@@ -33,7 +33,8 @@
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h3>Edit Profil</h3>
+        <h3 id="edit-profile-title">Edit Profil</h3>
+
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -86,7 +87,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">Kembali ke Profil</a>
+                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">Kembali</a>
                     <button type="submit" class="btn btn-success">Perbarui Profil</button>
                 </div>
             </form>
