@@ -132,7 +132,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-4">
-                        <a href="{{ route('pedagang.manajemen-produk') }}" class="btn btn-secondary px-4 py-2 fw-bold">Kembali ke Daftar Produk</a>
+                        <a href="{{ route('pedagang.manajemen_produk.index') }}" class="btn btn-secondary px-4 py-2 fw-bold">Kembali ke Daftar Produk</a>
                     </div>
                 </div>
             </div>

@@ -185,7 +185,7 @@
     <a class="nav-link {{ request()->is('admin/kategori-produk*') ? 'active' : '' }}" href="{{ route('admin.kategori-produk.index') }}">
         <i class="fas fa-tags"></i> <span>Manajemen Kategori</span>
     </a>
-    <a class="nav-link {{ request()->is('admin/promosi*') ? 'active' : '' }}" href="#">
+    <a class="nav-link {{ request()->is('diskons*') ? 'active' : '' }}" href="{{ route('diskons.index') }}">
         <i class="fas fa-bullhorn"></i> <span>Manajemen Diskon</span>
     </a>
     <a class="nav-link {{ request()->is('admin/ongkir*') ? 'active' : '' }}" href="{{ route('admin.ongkir.index') }}">

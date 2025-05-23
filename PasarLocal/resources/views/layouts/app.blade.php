@@ -61,7 +61,7 @@
                 <img src="{{ asset('PASARLOCALLL.png') }}" alt="Logo" class="navbar-logo">
             </a>
             <div class="navbar-menu d-flex align-items-center flex-grow-1">
-                <a class="nav-link{{ request()->routeIs('pedagang.manajemen-produk') ? ' active' : '' }}" href="{{ route('pedagang.manajemen-produk') }}">Manajemen Produk</a>
+                <a class="nav-link{{ request()->routeIs('pedagang.manajemen_produk.index') ? ' active' : '' }}" href="{{ route('pedagang.manajemen_produk.index') }}">Manajemen Produk</a>
                 <a class="nav-link{{ request()->routeIs('pedagang.review-produk') ? ' active' : '' }}" href="#">Melihat Review Produk</a>
             </div>
             <div class="profile-dropdown ms-auto">

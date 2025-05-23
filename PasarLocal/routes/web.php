@@ -11,6 +11,7 @@ use App\Http\Controllers\ProdukPedagangController;
 use App\Http\Controllers\Customer\IndexController;
 use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DiskonController;
 
 
 # Auth
@@ -67,6 +68,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
     Route::put('/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
     Route::delete('/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+
+    # Diskon
+    Route::resource('diskons', DiskonController::class);
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
