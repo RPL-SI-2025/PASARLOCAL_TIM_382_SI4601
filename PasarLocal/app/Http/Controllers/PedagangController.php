@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedagang;
 use App\Models\Pasar;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PedagangController extends Controller
 {
@@ -42,10 +44,19 @@ class PedagangController extends Controller
             'nama_toko' => 'required|string|max:100',
             'alamat' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:100',
-            'email' => 'required|email|unique:pedagang,email|max:100',
+            'email' => 'required|email|unique:pedagang,email|unique:users,email|max:100',
             'password' => 'required|string|min:8|max:100',
         ]);
 
+        // Create user with role pedagang
+        $user = User::create([
+            'name' => $request->nama_pemilik,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'pedagang',
+        ]);
+
+        // Create pedagang
         Pedagang::create([
             'id_pasar' => $request->id_pasar,
             'nama_pemilik' => $request->nama_pemilik,
@@ -53,7 +64,7 @@ class PedagangController extends Controller
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()->route('admin.manajemen-pedagang.index')
@@ -87,6 +98,14 @@ class PedagangController extends Controller
             'nomor_telepon' => $request->nomor_telepon,
         ]);
 
+        // Update corresponding user
+        $user = User::where('email', $pedagang->email)->first();
+        if ($user) {
+            $user->update([
+                'name' => $request->nama_pemilik,
+            ]);
+        }
+
         return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil diperbarui.');
     }
@@ -95,6 +114,12 @@ class PedagangController extends Controller
     {
         $pedagang = Pedagang::findOrFail($id);
         
+        // Delete corresponding user
+        $user = User::where('email', $pedagang->email)->first();
+        if ($user) {
+            $user->delete();
+        }
+
         if ($pedagang->gambar && file_exists(public_path('uploads_pedagang/' . $pedagang->gambar))) {
             unlink(public_path('uploads_pedagang/' . $pedagang->gambar));
         }

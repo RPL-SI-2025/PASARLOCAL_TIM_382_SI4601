@@ -45,9 +45,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    use Notifiable;
 
-
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 
     // Akses role
     public function isPedagang()
@@ -60,9 +62,9 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function isPembeli()
+    public function isCustomer()
     {
-        return $this->role === 'pembeli';
+        return $this->role === 'customer';
     }
 
     // Relasi jika pedagang punya produk

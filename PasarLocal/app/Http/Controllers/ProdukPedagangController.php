@@ -6,14 +6,25 @@ use App\Models\Produk;
 use App\Models\ProdukPedagang;
 use App\Models\Pedagang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller as BaseController;
 
-class ProdukPedagangController extends Controller
+class ProdukPedagangController extends BaseController
 {
-    protected $pedagangId = 1; // Default pedagang ID untuk testing
+    public function __construct()
+    {
+        $this->middleware(['web', 'auth', 'role:pedagang']);
+    }
 
     public function index(Request $request)
     {
-        $query = ProdukPedagang::where('id_pedagang', $this->pedagangId)->with(['produk.kategori']);
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
+        $query = ProdukPedagang::where('id_pedagang', $pedagang->id_pedagang)->with(['produk.kategori']);
 
         if ($request->filled('search')) {
             $query->whereHas('produk', function($q) use ($request) {
@@ -48,10 +59,16 @@ class ProdukPedagangController extends Controller
             'harga' => 'required|numeric',
         ]);
 
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
         $produk = \App\Models\Produk::findOrFail($request->id_produk);
 
         ProdukPedagang::create([
-            'id_pedagang' => $this->pedagangId,
+            'id_pedagang' => $pedagang->id_pedagang,
             'id_produk' => $request->id_produk,
             'stok' => $request->stok,
             'jumlah_satuan' => $request->jumlah_satuan,
@@ -66,13 +83,29 @@ class ProdukPedagangController extends Controller
 
     public function show($id)
     {
-        $produkPedagang = ProdukPedagang::findOrFail($id);
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
+        $produkPedagang = ProdukPedagang::where('id_pedagang', $pedagang->id_pedagang)
+                                      ->where('id_produk_pedagang', $id)
+                                      ->firstOrFail();
         return view('pedagang.manajemen_produk.show', compact('produkPedagang'));
     }
 
     public function edit($id)
     {
-        $produk_pedagang = ProdukPedagang::findOrFail($id);
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
+        $produk_pedagang = ProdukPedagang::where('id_pedagang', $pedagang->id_pedagang)
+                                       ->where('id_produk_pedagang', $id)
+                                       ->firstOrFail();
         $produks = Produk::all();
         return view('pedagang.manajemen_produk.edit', compact('produk_pedagang', 'produks'));
     }
@@ -87,7 +120,15 @@ class ProdukPedagangController extends Controller
             'foto_produk' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $produkPedagang = ProdukPedagang::findOrFail($id);
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
+        $produkPedagang = ProdukPedagang::where('id_pedagang', $pedagang->id_pedagang)
+                                      ->where('id_produk_pedagang', $id)
+                                      ->firstOrFail();
 
         if ($request->hasFile('foto_produk')) {
             // Hapus foto lama jika ada
@@ -116,7 +157,15 @@ class ProdukPedagangController extends Controller
 
     public function destroy($id)
     {
-        $produkPedagang = ProdukPedagang::findOrFail($id);
+        // Get the logged-in pedagang's ID
+        $pedagang = Pedagang::where('email', Auth::user()->email)->first();
+        if (!$pedagang) {
+            return redirect()->route('login')->with('error', 'Akun pedagang tidak ditemukan');
+        }
+
+        $produkPedagang = ProdukPedagang::where('id_pedagang', $pedagang->id_pedagang)
+                                      ->where('id_produk_pedagang', $id)
+                                      ->firstOrFail();
 
         // Hapus foto produk jika ada
         if ($produkPedagang->foto_produk) {
