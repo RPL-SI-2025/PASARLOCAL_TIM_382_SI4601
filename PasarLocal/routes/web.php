@@ -10,6 +10,7 @@ use App\Http\Controllers\OngkirController;
 use App\Http\Controllers\ProdukPedagangController;
 use App\Http\Controllers\Customer\IndexController;
 use App\Http\Controllers\Customer\RiwayatController;
+use App\Http\Controllers\ProfileController;
 
 
 # Auth
@@ -18,6 +19,10 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login')
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
+
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {

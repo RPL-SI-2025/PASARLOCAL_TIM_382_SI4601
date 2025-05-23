@@ -110,7 +110,7 @@
             <div class="card shadow-sm mt-4" style="border: 1.5px solid #28a745;">
                 <div class="card-header bg-success text-white fw-bold" style="font-size:1.3rem;">Edit Produk</div>
                 <div class="card-body">
-                    <form action="{{ route('pedagang.update-produk', $produk_pedagang->id_produk_pedagang) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('pedagang.manajemen_produk.update', $produk_pedagang->id_produk_pedagang) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ route('pedagang.manajemen-produk') }}" class="btn btn-secondary px-4 py-2 fw-bold">Kembali</a>
+                            <a href="{{ route('pedagang.manajemen_produk.index') }}" class="btn btn-secondary px-4 py-2 fw-bold">Kembali</a>
                             <button type="submit" class="btn btn-success px-4 py-2 fw-bold">Simpan Perubahan</button>
                         </div>
                     </form>
@@ -179,7 +179,7 @@ document.getElementById('id_produk').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const gambar = selectedOption.getAttribute('data-gambar');
     const previewImg = document.querySelector('#preview-gambar img');
-    
+
     if (gambar) {
         previewImg.src = '/uploads_produk/' + gambar;
     } else {
@@ -187,4 +187,4 @@ document.getElementById('id_produk').addEventListener('change', function() {
     }
 });
 </script>
-@endsection 
+@endsection

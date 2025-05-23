@@ -60,7 +60,7 @@ class ProdukPedagangController extends Controller
             'foto_produk' => $produk->gambar
         ]);
 
-        return redirect()->route('pedagang.manajemen-produk')
+        return redirect()->route('pedagang.manajemen_produk.index')
                         ->with('success', 'Produk berhasil ditambahkan');
     }
 
@@ -97,7 +97,7 @@ class ProdukPedagangController extends Controller
                     unlink($old_file);
                 }
             }
-            
+
             $foto_produk = $request->file('foto_produk');
             $nama_foto = time() . '_' . $foto_produk->getClientOriginalName();
             $foto_produk->move(public_path('uploads_produk'), $nama_foto);
@@ -110,14 +110,14 @@ class ProdukPedagangController extends Controller
         $produkPedagang->harga = $request->harga;
         $produkPedagang->save();
 
-        return redirect()->route('pedagang.manajemen-produk')
+        return redirect()->route('pedagang.manajemen_produk.index')
                         ->with('success', 'Produk berhasil diperbarui');
     }
 
     public function destroy($id)
     {
         $produkPedagang = ProdukPedagang::findOrFail($id);
-        
+
         // Hapus foto produk jika ada
         if ($produkPedagang->foto_produk) {
             $file_path = public_path('uploads_produk/' . $produkPedagang->foto_produk);
@@ -125,10 +125,10 @@ class ProdukPedagangController extends Controller
                 unlink($file_path);
             }
         }
-        
+
         $produkPedagang->delete();
 
-        return redirect()->route('pedagang.manajemen-produk')
+        return redirect()->route('pedagang.manajemen_produk.index')
                         ->with('success', 'Produk berhasil dihapus');
     }
-} 
+}

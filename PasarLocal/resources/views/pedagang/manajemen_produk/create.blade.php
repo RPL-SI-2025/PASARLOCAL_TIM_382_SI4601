@@ -7,7 +7,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h3 class="fw-bold text-center mb-4">Tambah Produk</h3>
-                    <form method="POST" action="{{ route('pedagang.store-produk') }}">
+                    <form method="POST" action="{{ route('pedagang.manajemen_produk.store') }}">
                         @csrf
                         <div class="mb-3">
                             <label for="id_produk" class="form-label">Pilih Produk</label>
@@ -67,7 +67,7 @@
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success btn-lg" style="font-size:1.1rem;">Tambah Produk</button>
-                            <a href="{{ route('pedagang.manajemen-produk') }}" class="btn btn-secondary btn-lg" style="font-size:1.1rem; background:#656d78; border:none;">Batal</a>
+                            <a href="{{ route('pedagang.manajemen_produk.index') }}" class="btn btn-secondary btn-lg" style="font-size:1.1rem; background:#656d78; border:none;">Batal</a>
                         </div>
                     </form>
                 </div>
@@ -97,4 +97,4 @@ function updateProductInfo() {
     document.getElementById('kategori').value = kategori || '';
 }
 </script>
-@endsection 
+@endsection
