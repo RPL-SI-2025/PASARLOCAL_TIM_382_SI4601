@@ -34,7 +34,7 @@ return new class extends Migration
                     'nama_pasar' => 'Pasar Baleendah',
                     'alamat' => 'Jl. Siliwangi, Baleendah, Kec. Baleendah, Kabupaten Bandung, Jawa Barat 40375',
                     'deskripsi' => 'Pasar Baleendah di Kabupaten Bandung adalah pasar tradisional yang ramai dan menjadi pusat ekonomi lokal. Di sini, masyarakat bisa menemukan bahan makanan segar, kebutuhan rumah tangga, pakaian, dan produk lokal dengan harga terjangkau. Suasana khasnya terasa dari interaksi hangat antara pedagang dan pembeli, menjadikannya tempat belanja sekaligus pengalaman budaya yang menarik.',
-                    'gambar' => 'pasar baleendah.jpeg',
+                    'gambar' => 'pasar baleendah.jpg',
                     'created_at' => now(),
                     'updated_at' => now()
                 ],
