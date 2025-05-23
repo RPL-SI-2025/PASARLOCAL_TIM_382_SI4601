@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone')->nullable(); // kolom baru
             $table->string('address')->nullable(); // kolom baru
             $table->string('profile_image')->nullable(); // kolom baru
+            $table->string('role')->default('customer');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

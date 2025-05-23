@@ -12,7 +12,7 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
 
 // regis&login
 Route::get('auth/login', [AuthController::class, 'showLoginForm']);
