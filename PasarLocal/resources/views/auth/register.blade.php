@@ -144,8 +144,6 @@
                 <input type="password" name="password_confirmation" placeholder="Masukkan Ulang Password Baru" required>
             </div>
 
-            <input type="hidden" name="role" value="customer">
-
             <button type="submit" class="login-btn">Register</button>
         </form>
     </div>
