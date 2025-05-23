@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration
 {
@@ -13,16 +15,23 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('email')->unique();
-            $table->string('phone')->nullable(); // kolom baru
-            $table->string('address')->nullable(); // kolom baru
-            $table->string('profile_image')->nullable(); // kolom baru
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'pedagang', 'customer'])->default('customer');
             $table->rememberToken();
             $table->timestamps();
         });
+
+        // Insert default admin user
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'email' => 'pasarlocal382@gmail.com',
+            'password' => Hash::make('p4sarl0c4l123'),
+            'role' => 'admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

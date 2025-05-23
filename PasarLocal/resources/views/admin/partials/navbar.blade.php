@@ -186,7 +186,7 @@
         <i class="fas fa-tags"></i> <span>Manajemen Kategori</span>
     </a>
     <a class="nav-link {{ request()->is('admin/promosi*') ? 'active' : '' }}" href="#">
-        <i class="fas fa-bullhorn"></i> <span>Manajemen Promosi</span>
+        <i class="fas fa-bullhorn"></i> <span>Manajemen Diskon</span>
     </a>
     <a class="nav-link {{ request()->is('admin/ongkir*') ? 'active' : '' }}" href="{{ route('admin.ongkir.index') }}">
         <i class="fas fa-shipping-fast"></i> <span>Manajemen Ongkir</span>

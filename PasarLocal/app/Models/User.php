@@ -20,9 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone',
-        'address',
-        'profile_image', // Pastikan kolom ini ada di tabel users
+        'role'
     ];
 
     /**
@@ -47,5 +45,31 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // Akses role
+    public function isPedagang()
+    {
+        return $this->role === 'pedagang';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isCustomer()
+    {
+        return $this->role === 'customer';
+    }
+
+    // Relasi jika pedagang punya produk
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

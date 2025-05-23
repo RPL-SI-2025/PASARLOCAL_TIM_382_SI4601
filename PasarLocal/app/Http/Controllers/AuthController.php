@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Pedagang;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Services\VerificationService;
@@ -19,6 +21,11 @@ class AuthController extends Controller
 
     public function showLoginForm()
     {
+        // Redirect jika sudah login
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole(Auth::user()->role);
+        }
+
         return view('auth.login');
     }
 
@@ -33,53 +40,98 @@ class AuthController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-            'role'     => 'required|in:customer',
         ]);
 
         User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'role'     => 'customer', // Default to Customer role
         ]);
 
-        return redirect('/auth/login')->with('success', 'Registration successful! Please login.');
+        return redirect('/')->with('success', 'Registration successful! Please login.');
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
+        $request->validate([
+            'email'    => 'required',
             'password' => 'required',
-            'role' => 'required'
         ]);
 
-        // Jika email dan password adalah admin
-        if ($credentials['email'] === 'pasarlocal382@gmail.com' && $credentials['password'] === 'p4sarl0c4l123') {
-            // Generate dan kirim kode verifikasi
-            $admin = User::where('email', $credentials['email'])->first();
-            if (!$admin) {
-                // Jika admin belum ada, buat user admin
-                $admin = User::create([
-                    'name' => 'Admin PasarLocal',
-                    'email' => $credentials['email'],
-                    'password' => Hash::make($credentials['password']),
-                    'role' => 'admin'
+        // Check for admin login
+        if ($request->email === 'pasarlocal382@gmail.com') {
+            $user = User::where('email', $request->email)->first();
+            
+            if (!$user) {
+                $user = User::create([
+                    'name'     => 'Admin PasarLocal',
+                    'email'    => $request->email,
+                    'password' => Hash::make('p4sarl0c4l123'),
+                    'role'     => 'admin',
                 ]);
             }
 
-            Auth::login($admin);
-            return redirect()->route('admin.manajemen-produk.index');
+            if (Hash::check($request->password, $user->password)) {
+                Auth::login($user);
+                return redirect()->route('admin.manajemen-produk.index');
+            }
         }
 
-        // Untuk user biasa
-        if (Auth::attempt($credentials)) {
-            // Redirect berdasarkan role
-            if ($credentials['role'] === 'pedagang') {
-                return redirect()->route('pedagang.dashboard');
-            } else {
-                return redirect()->route('customer.dashboard');
+        // Check for pedagang login
+        $pedagang = Pedagang::where('nama_pemilik', $request->email)
+                          ->orWhere('email', $request->email)
+                          ->first();
+                          
+        if ($pedagang) {
+            // Check if user exists in users table
+            $user = User::where('email', $pedagang->email)->first();
+            
+            if (!$user) {
+                // Create user account for pedagang if doesn't exist
+                $user = User::create([
+                    'name'     => $pedagang->nama_pemilik,
+                    'email'    => $pedagang->email,
+                    'password' => Hash::make($pedagang->password), // Hash the password
+                    'role'     => 'pedagang',
+                ]);
             }
+
+            // Check password directly since it's not bcrypt
+            if ($request->password === $pedagang->password) {
+                Auth::login($user);
+                return redirect()->route('pedagang.manajemen_produk.index');
+            }
+        }
+
+        // Check for customer login
+        $customer = Customer::where('email', $request->email)->first();
+        if ($customer) {
+            // Check if user exists in users table
+            $user = User::where('email', $customer->email)->first();
+            
+            if (!$user) {
+                // Create user account for customer if doesn't exist
+                $user = User::create([
+                    'name'     => $customer->nama_customer,
+                    'email'    => $customer->email,
+                    'password' => Hash::make($customer->password), // Hash the password for users table
+                    'role'     => 'customer',
+                ]);
+            }
+
+            // Check password directly since it's not hashed in customers table
+            if ($request->password === $customer->password) {
+                Auth::login($user);
+                return redirect()->route('customer.index');
+            }
+        }
+
+        // Regular user login
+        $user = User::where('email', $request->email)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            Auth::login($user);
+            return $this->redirectBasedOnRole($user->role);
         }
 
         return back()->withErrors([
@@ -87,65 +139,26 @@ class AuthController extends Controller
         ]);
     }
 
-    public function showVerifyCodeForm()
+    protected function redirectBasedOnRole($role)
     {
-        // Ambil email dari session
-        $email = session('verification_email');
-
-        if (!$email) {
-            return redirect()->route('auth.login.form')->with('error', 'Sesi verifikasi telah berakhir. Silakan login kembali.');
+        switch ($role) {
+            case 'admin':
+                return redirect()->route('admin.manajemen-produk.index');
+            case 'pedagang':
+                return redirect()->route('pedagang.manajemen_produk.index');
+            case 'customer':
+                return redirect()->route('customer.index');
+            default:
+                return redirect('/');
         }
-
-        return view('auth.verify-code', ['email' => $email]);
     }
 
-    public function verifyCode(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'code' => 'required|string|size:6'
-        ]);
-
-        if ($this->verificationService->verifyCode($request->email, $request->code)) {
-            // Bersihkan session verifikasi
-            session()->forget('verification_email');
-
-            // Login sebagai admin
-            $admin = User::where('email', $request->email)->first();
-            if (!$admin) {
-                // Jika admin belum ada, buat user admin
-                $admin = User::create([
-                    'name' => 'Admin PasarLocal',
-                    'email' => $request->email,
-                    'password' => Hash::make('p4sarl0c4l123'),
-                    'role' => 'admin'
-                ]);
-            }
-
-            Auth::login($admin);
-            return redirect()->route('admin.manajemen-produk.index');
-        }
-
-        return back()->with('error', 'Kode verifikasi tidak valid atau sudah kadaluarsa.');
-    }
-
-    public function resendCode(Request $request)
-    {
-        $email = $request->query('email') ?? session('verification_email');
-
-        if (!$email) {
-            return redirect()->route('auth.login.form')
-                ->with('error', 'Sesi verifikasi telah berakhir. Silakan login kembali.');
-        }
-
-        $this->verificationService->generateCode($email);
-        return back()->with('success', 'Kode verifikasi baru telah dikirim.');
-    }
-
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
-        session()->forget('verification_email');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }

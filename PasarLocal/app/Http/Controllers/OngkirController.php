@@ -39,16 +39,19 @@ class OngkirController extends Controller
         return redirect()->route('admin.ongkir.index')->with('success', 'Data berhasil disimpan!');
     }
 
-    public function detail()
+    public function detail($id_pasar)
     {
-        $pasar = Pasar::with('ongkir')->get();
+
+        // ambil hanya ongkir yang id_pasar == $id
+        $pasar = Pasar::with('ongkir')->findOrFail($id_pasar);
         return view('admin.ongkir.index-detail', compact('pasar'));
     }
 
     public function edit($id)
     {
         $ongkir = Ongkir::findOrFail($id);
-        return view('admin.ongkir.edit', compact('ongkir'));
+        $pasar = Pasar::all();
+        return view('admin.ongkir.edit', compact('ongkir', 'pasar'));
     }
 
     public function update(Request $request, $id)
@@ -78,7 +81,7 @@ class OngkirController extends Controller
 
             // 4. Redirect dengan pesan sukses
             return redirect()
-                ->route('admin.ongkir.detail')
+                ->route('admin.ongkir.index')
                 ->with('success', 'Data ongkir berhasil diperbarui!');
         }
 

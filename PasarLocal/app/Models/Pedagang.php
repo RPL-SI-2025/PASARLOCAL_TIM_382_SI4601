@@ -18,6 +18,8 @@ class Pedagang extends Model
         'id_pedagang',
         'id_pasar',
         'nama_pemilik',
+        'email',
+        'password',
         'alamat',
         'nama_toko',
         'nomor_telepon'
@@ -26,5 +28,10 @@ class Pedagang extends Model
     public function pasar()
     {
         return $this->belongsTo(Pasar::class, 'id_pasar', 'id_pasar');
+    }
+
+    public function produkPedagang()
+    {
+        return $this->hasMany(ProdukPedagang::class, 'id_pedagang');
     }
 } 
