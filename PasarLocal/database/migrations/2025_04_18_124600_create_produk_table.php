@@ -46,7 +46,7 @@ return new class extends Migration
                 //2. Buah-buahan
                 ['nama_produk' => 'Apel Merah', 'deskripsi_produk' => 'Apel manis dan segar.', 'id_kategori' => 2, 'gambar' => 'apel_merah.jpg', 'created_at' => now(), 'updated_at' => now()],
                 ['nama_produk' => 'Pisang Ambon', 'deskripsi_produk' => 'Pisang ambon matang.', 'id_kategori' => 2, 'gambar' => 'pisang_ambon.jpg', 'created_at' => now(), 'updated_at' => now()],
-                ['nama_produk' => 'Mangga Harum Manis', 'deskripsi_produk' => 'Mangga harum dan manis.', 'id_kategori' => 2, 'gambar' => 'mangga_harummanis.jpg', 'created_at' => now(), 'updated_at' => now()],
+                ['nama_produk' => 'Mangga Harum Manis', 'deskripsi_produk' => 'Mangga harum dan manis.', 'id_kategori' => 2, 'gambar' => 'mangga_harum_manis.jpg', 'created_at' => now(), 'updated_at' => now()],
                 ['nama_produk' => 'Jeruk Medan', 'deskripsi_produk' => 'Jeruk Medan segar dan juicy.', 'id_kategori' => 2, 'gambar' => 'jeruk_medan.jpg', 'created_at' => now(), 'updated_at' => now()],
                 ['nama_produk' => 'Semangka Merah', 'deskripsi_produk' => 'Semangka tanpa biji.', 'id_kategori' => 2, 'gambar' => 'semangka_merah.jpg', 'created_at' => now(), 'updated_at' => now()],
                 ['nama_produk' => 'Melon Hijau', 'deskripsi_produk' => 'Melon hijau segar dan manis.', 'id_kategori' => 2, 'gambar' => 'melon_hijau.jpg', 'created_at' => now(), 'updated_at' => now()],

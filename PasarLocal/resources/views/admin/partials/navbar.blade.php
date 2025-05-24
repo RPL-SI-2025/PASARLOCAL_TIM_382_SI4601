@@ -32,7 +32,7 @@
         right: -15px;
         background-color: #28a745;
         color: #fff;
-        border-radius: 50%;
+        border-radius: 0;
         padding: 6px 8px;
         cursor: pointer;
         z-index: 1100;
@@ -135,9 +135,9 @@
 
     .admin-avatar {
         flex-shrink: 0;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        border-radius: 100%;
         background-color: #28a745;
         color: white;
         display: flex;
@@ -164,7 +164,7 @@
 </style>
 
 <!-- Sidebar -->
-<div id="sidebar" class="sidebar">
+<div id="sidebar" class="sidebar collapsed">
     <!-- Toggle Button -->
     <div class="toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
         <i id="toggle-icon" class="fas fa-angle-left"></i>
@@ -201,7 +201,7 @@
     <!-- Admin Info -->
     <div class="admin-section">
         <a href="#" class="admin-profile dropdown-toggle" data-bs-toggle="dropdown">
-            <div class="admin-avatar">A</div>
+            <div class="admin-avatar"><i class="fas fa-user"></i></div>
             <span>Admin</span>
         </a>
         <ul class="dropdown-menu">
