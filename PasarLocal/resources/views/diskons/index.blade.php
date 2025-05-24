@@ -1,14 +1,14 @@
-@extends('admin.layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+    <div class="row">
+        <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header">
                     <h3 class="card-title">Manajemen Diskon</h3>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-hijau" data-bs-toggle="modal" data-bs-target="#modal-create">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create">
                             <i class="fas fa-plus"></i> Tambah Diskon
                         </button>
                     </div>
@@ -22,7 +22,6 @@
                                     <th>Nama Diskon</th>
                                     <th>Jenis</th>
                                     <th>Min. Pembelian</th>
-                                    <th>Maks. Diskon</th>
                                     <th>Status</th>
                                     <th>Periode</th>
                                     <th>Aksi</th>
@@ -49,7 +48,6 @@
                                     <td>{{ $diskon->nama_diskon }}</td>
                                     <td>{{ ucfirst($diskon->jenis_diskon) }}</td>
                                     <td>{{ $diskon->min_pembelian ? number_format($diskon->min_pembelian, 0, ',', '.') : '-' }}</td>
-                                    <td>{{ $diskon->max_diskon ? number_format($diskon->max_diskon, 0, ',', '.') : '-' }}</td>
                                     <td>
                                         <span class="badge {{ $statusClass }} text-white">
                                             {{ $statusText }}
@@ -60,17 +58,17 @@
                                         {{ $diskon->tanggal_berakhir->format('d/m/Y') }}
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-hijau-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-{{ $diskon->id_diskon }}" title="Edit Diskon">
+                                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-{{ $diskon->id_diskon }}" title="Edit Diskon">
                                             <i class="fas fa-edit"></i> Edit
                                         </button>
-                                        <button type="button" class="btn btn-hijau-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ $diskon->id_diskon }}" title="Hapus Diskon">
+                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-delete-{{ $diskon->id_diskon }}" title="Hapus Diskon">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">Belum ada diskon</td>
+                                    <td colspan="7" class="text-center">Belum ada diskon</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -130,7 +128,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-hijau">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
         </div>
@@ -147,7 +145,9 @@
                 @method('PUT')
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal-edit-label-{{ $diskon->id_diskon }}">Edit Diskon</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group mb-2">
@@ -183,8 +183,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-hijau">Simpan Perubahan</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -200,14 +200,16 @@
                 @method('DELETE')
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal-delete-label-{{ $diskon->id_diskon }}">Konfirmasi Hapus</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <p>Apakah Anda yakin ingin menghapus diskon "{{ $diskon->nama_diskon }}"?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-hijau-danger">Hapus</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Hapus</button>
                 </div>
             </form>
         </div>
@@ -216,92 +218,6 @@
 @endforeach
 
 @endsection
-
-@push('styles')
-<style>
-    /* Add margin to the main content area to make space for the sidebar */
-    body {
-        padding-left: 50px; /* Adjust based on your sidebar width */
-    }
-
-    .card {
-        border: none;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        border-radius: 10px;
-    }
-
-    .card-header {
-        background-color: #fff;
-        border-bottom: 1px solid #eee;
-        padding: 20px;
-        border-radius: 10px 10px 0 0;
-    }
-
-    .card-body {
-        padding: 20px; /* Add padding to the card body */
-    }
-
-    .card-title {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        border-top: none;
-    }
-
-    .badge {
-        padding: 8px 12px;
-        font-weight: 500;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 0.875rem;
-    }
-
-    .modal-content {
-        border: none;
-        border-radius: 10px;
-    }
-
-    .modal-header {
-        border-bottom: 1px solid #eee;
-        padding: 20px;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #eee;
-        padding: 20px;
-    }
-
-    .form-control {
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        padding: 8px 12px;
-    }
-
-    .form-control:focus {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    }
-
-    /* Adjust main content when sidebar is collapsed */
-    @media (max-width: 768px) {
-        body {
-            padding-left: 70px; /* Adjust based on collapsed sidebar width */
-        }
-    }
-</style>
-@endpush
 
 @push('scripts')
 <script>

@@ -55,6 +55,8 @@ class PedagangController extends Controller
             'email' => $request->email,
             'password' => $request->password, // Storing as plain text as requested
             'role' => 'pedagang',
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
         ]);
 
         // Create pedagang
@@ -122,7 +124,7 @@ class PedagangController extends Controller
     public function destroy($id)
     {
         $pedagang = Pedagang::findOrFail($id);
-        
+
         // Delete corresponding user
         $user = User::where('email', $pedagang->email)->first();
         if ($user) {
@@ -138,4 +140,4 @@ class PedagangController extends Controller
         return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil dihapus.');
     }
-} 
+}

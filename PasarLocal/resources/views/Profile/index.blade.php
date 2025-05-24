@@ -28,8 +28,21 @@
     </style>
 </head>
 <body>
-@include('admin.partials.navbar')
-
+@auth
+    <div class="dropdown">
+        <div class="d-flex align-items-center" data-bs-toggle="dropdown">
+            <div class="fw-bold">{{ Auth::user()->name }}</div>
+            <div class="small text-muted">{{ Auth::user()->email }}</div>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end">
+            @if (Auth::user()->role === 'pedagang')
+                @include('pedagang.partials.navbar')
+            @elseif (Auth::user()->role === 'customer')
+                @include('customer.partials.navbar')
+            @endif
+        </ul>
+    </div>
+@endauth
 <div class="container">
     <div class="card">
         <div class="card-header">
@@ -58,17 +71,17 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="phone" class="form-label">Nomor Telepon</label>
-                    <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror"
-                           value="{{ old('phone', auth()->user()->phone) }}">
-                    @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <label for="nomor_telepon" class="form-label">Nomor Telepon</label>
+                    <input type="text" name="nomor_telepon" class="form-control @error('nomor_telepon') is-invalid @enderror"
+                           value="{{ old('nomor_telepon', auth()->user()->nomor_telepon) }}">
+                    @error('nomor_telepon') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="address" class="form-label">Alamat</label>
-                    <input type="text" name="address" class="form-control @error('address') is-invalid @enderror"
-                           value="{{ old('address', auth()->user()->address) }}">
-                    @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <label for="alamat" class="form-label">Alamat</label>
+                    <input type="text" name="alamat" class="form-control @error('alamat') is-invalid @enderror"
+                           value="{{ old('alamat', auth()->user()->alamat) }}">
+                    @error('alamat') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="mb-3">

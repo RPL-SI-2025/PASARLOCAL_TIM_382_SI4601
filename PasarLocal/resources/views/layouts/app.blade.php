@@ -7,6 +7,8 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     
     <!-- Custom CSS -->
     <style>
@@ -39,6 +41,21 @@
             font-weight: 500;
             margin-right: 8px;
         }
+        .cart-icon {
+            font-size: 1.2rem;
+            color: #27ae60;
+        }
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: -5px;
+            padding: 0.25em 0.4em;
+            font-size: 75%;
+            font-weight: 700;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 0.25rem;
+        }
         .profile-dropdown .dropdown-toggle {
             color: #222;
             font-weight: 600;
@@ -61,21 +78,38 @@
                 <img src="{{ asset('PASARLOCALLL.png') }}" alt="Logo" class="navbar-logo">
             </a>
             <div class="navbar-menu d-flex align-items-center flex-grow-1">
-                <a class="nav-link{{ request()->routeIs('pedagang.manajemen_produk.index') ? ' active' : '' }}" href="{{ route('pedagang.manajemen_produk.index') }}">Manajemen Produk</a>
-                <a class="nav-link{{ request()->routeIs('pedagang.review-produk') ? ' active' : '' }}" href="#">Melihat Review Produk</a>
+                @if(auth()->user()->role === 'pedagang')
+                    <a class="nav-link{{ request()->routeIs('pedagang.manajemen_produk') ? ' active' : '' }}" href="{{ route('pedagang.manajemen_produk.index') }}">Manajemen Produk</a>
+                    <a class="nav-link{{ request()->routeIs('pedagang.review_produk') ? ' active' : '' }}" href="#">Melihat Review Produk</a>
+                @endif
             </div>
-            <div class="profile-dropdown ms-auto">
-                <div class="dropdown">
-                    <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="fw-bold">Gilang</span>
-                        <span class="d-none d-md-inline text-muted" style="font-size: 0.9em;">gilang123@gmail.com</span>
+            <div class="d-flex align-items-center">
+                @if(auth()->user()->role === 'customer')
+                    <a href="{{ route('cart.index') }}" class="position-relative me-3">
+                        <i class="bi bi-cart cart-icon"></i>
+                        @if(auth()->user()->customer && auth()->user()->customer->carts()->exists())
+                            <span class="cart-badge">{{ auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); }) }}</span>
+                        @endif
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-                        <li><a class="dropdown-item" href="#"><strong>Gilang</strong><br><small>gilang123@gmail.com</small></a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Lihat Profil</a></li>
-                        <li><a class="dropdown-item" href="#">Logout</a></li>
-                    </ul>
+                @endif
+                <div class="profile-dropdown">
+                    <div class="dropdown">
+                        <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="fw-bold">{{ auth()->user()->name }}</span>
+                            <span class="d-none d-md-inline text-muted" style="font-size: 0.9em;">{{ auth()->user()->email }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#"><strong>{{ auth()->user()->name }}</strong><br><small>{{ auth()->user()->email }}</small></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Lihat Profil</a></li>
+                            <li>
+                                <form action="{{ route('auth.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,4 +122,4 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
