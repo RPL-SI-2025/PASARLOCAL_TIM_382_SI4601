@@ -40,6 +40,8 @@ class AuthController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'alamat' => 'required|string|max:100',
+            'nomor_telepon' => 'required|string|max:100',
         ]);
 
         User::create([
@@ -47,6 +49,16 @@ class AuthController extends Controller
             'email'    => $request->email,
             'password' => Hash::make($request->password),
             'role'     => 'customer', // Default to Customer role
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
+        ]);
+
+        Customer::create([
+            'nama_customer' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password), // jika memang tabel ini menyimpan password juga
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
         ]);
 
         return redirect('/')->with('success', 'Registration successful! Please login.');
@@ -62,7 +74,7 @@ class AuthController extends Controller
         // Check for admin login
         if ($request->email === 'pasarlocal382@gmail.com') {
             $user = User::where('email', $request->email)->first();
-            
+
             if (!$user) {
                 $user = User::create([
                     'name'     => 'Admin PasarLocal',
@@ -82,11 +94,11 @@ class AuthController extends Controller
         $pedagang = Pedagang::where('nama_pemilik', $request->email)
                           ->orWhere('email', $request->email)
                           ->first();
-                          
+
         if ($pedagang) {
             // Check if user exists in users table
             $user = User::where('email', $pedagang->email)->first();
-            
+
             if (!$user) {
                 // Create user account for pedagang if doesn't exist
                 $user = User::create([
@@ -109,7 +121,7 @@ class AuthController extends Controller
         if ($customer) {
             // Check if user exists in users table
             $user = User::where('email', $customer->email)->first();
-            
+
             if (!$user) {
                 // Create user account for customer if doesn't exist
                 $user = User::create([

@@ -249,70 +249,7 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header-container mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-4">
-                <img src="{{ asset('uploads_logo/PASARLOCALLL.png') }}" alt="PasarLocal" class="brand-logo">
-                <div class="search-container">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
-                        <input type="text" class="form-control" placeholder="Search..." id="searchTrigger">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-4">
-                <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
-                <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-                <a href="/user/cart" class="text-dark"><i class="fas fa-shopping-cart fs-5"></i></a>
-                <div class="user-profile dropdown">
-                    <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                        <div class="ms-2">
-                            <div class="fw-bold">{{ Auth::user()->name }}</div>
-                            <div class="small text-muted">{{ Auth::user()->email }}</div>
-                        </div>
-                        <i class="fas fa-chevron-down ms-2"></i>
-                    </div>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="/user/settings">Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form action="{{ route('auth.logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="dropdown-item">Logout</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search Modal -->
-    <div class="search-modal" id="searchModal">
-        <div class="search-modal-content">
-            <div class="search-tabs">
-                <div class="search-tab active" data-tab="products">Produk</div>
-                <div class="search-tab" data-tab="markets">Pasar</div>
-            </div>
-
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari produk atau pasar..." id="searchInput">
-            </div>
-
-            <div class="category-tags" id="categoryTags">
-                <!-- Categories will be loaded dynamically -->
-            </div>
-
-            <div class="search-results" id="searchResults">
-                <!-- Results will be loaded dynamically -->
-            </div>
-        </div>
-    </div>
-
+    @include('customer.partials.navbar')
     <!-- Main Content -->
     <div class="container-fluid px-4">
         <!-- Discover Section -->
@@ -322,18 +259,17 @@
             </div>
             <div class="row g-4">
                 @foreach($markets as $market)
-                <div class="col-md-6">
-                    href="{{ url('detail-ongkir/' . $item->id_pasar) }}"
-                    <a href="{{ url('/pasar/'.$market->id) }}" style="text-decoration:none;color:inherit;">
-                        <div class="market-card">
-                            <img src="{{ asset('uploads_pasar/' . $market->gambar) }}" alt="{{ $market->nama_pasar }}">
-                            <div class="market-info">
-                                <h5 class="mb-1">{{ $market->nama_pasar }}</h5>
-                                <p class="mb-0 small">{{ $market->alamat }}</p>
+                    <div class="col-md-6">
+                        <a href="{{ route('customer.pasar.show', $market->id_pasar) }}" style="text-decoration:none;color:inherit;">
+                            <div class="market-card">
+                                <img src="{{ asset('uploads_pasar/' . $market->gambar) }}" alt="{{ $market->nama_pasar }}">
+                                <div class="market-info">
+                                    <h5 class="mb-1">{{ $market->nama_pasar }}</h5>
+                                    <p class="mb-0 small">{{ $market->alamat }}</p>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -359,7 +295,7 @@
 
             // Load categories
             function loadCategories() {
-                categoryTags.innerHTML = categories.map(category => 
+                categoryTags.innerHTML = categories.map(category =>
                     `<div class="category-tag" data-category="${category}">${category}</div>`
                 ).join('');
             }
@@ -406,7 +342,7 @@
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase();
                 const activeTab = document.querySelector('.search-tab.active').dataset.tab;
-                
+
                 if (activeTab === 'products') {
                     // Product search data
                     const products = [
@@ -558,7 +494,7 @@
                         { name: 'Mineral Water', category: 'Minuman', image: 'mineral_water.jpg', price: '5K' }
                     ];
 
-                    const filtered = products.filter(product => 
+                    const filtered = products.filter(product =>
                         product.name.toLowerCase().includes(searchTerm) ||
                         product.category.toLowerCase().includes(searchTerm)
                     );
@@ -617,4 +553,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

@@ -131,6 +131,22 @@
                 @enderror
             </div>
 
+            {{-- Alamat --}}
+            <div class="form-group">
+                <input type="text" name="alamat" placeholder="Alamat" required>
+                @error('alamat')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Alamat --}}
+            <div class="form-group">
+                <input type="text" name="nomor_telepon" placeholder="nomor_telepon" required>
+                @error('nomor_telepon')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
             {{-- Password --}}
             <div class="form-group">
                 <input type="password" name="password" placeholder="Password Baru" required>
