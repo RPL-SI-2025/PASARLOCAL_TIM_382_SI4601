@@ -25,7 +25,17 @@
                         <h6 class="card-title">{{ $item->produk->nama_produk }}</h6>
                         <div class="mb-2">Pedagang: {{ $item->pedagang->nama_pemilik }}</div>
                         <div class="mb-2">Harga: Rp {{ number_format($item->harga, 0, ',', '.') }}</div>
-                        <a href="#" class="btn btn-success mt-auto w-100">Lihat Produk</a>
+                        <div class="mb-2">Stok: {{ $item->stok }} {{ $item->satuan }}</div>
+                        <form action="{{ route('cart.add') }}" method="POST" class="mt-auto"
+                             onsubmit="return confirm('Yakin ingin menambahkan produk ini ke keranjang?');">
+                            @csrf
+                            <input type="hidden" name="produk_pedagang_id" value="{{ $item->id_produk_pedagang }}">
+                            <div class="input-group mb-3">
+                                <input type="number" name="quantity" class="form-control" value="1" min="1">
+                                <span class="input-group-text">{{ $item->satuan }}</span>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Tambahkan ke Keranjang</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -33,6 +43,12 @@
             <div class="col-12 text-center text-muted">Belum ada produk di pasar ini.</div>
         @endforelse
     </div>
+
+    @if(session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+    @endif
 
 </body>
 </html>

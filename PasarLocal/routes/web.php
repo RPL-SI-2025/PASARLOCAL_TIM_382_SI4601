@@ -11,7 +11,9 @@ use App\Http\Controllers\ProdukPedagangController;
 use App\Http\Controllers\Customer\IndexController;
 use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
+use App\Http\Controllers\CartController;
 
 
 # Auth
@@ -68,6 +70,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
     Route::put('/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
     Route::delete('/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+
+    # Diskon
+    Route::resource('diskons', DiskonController::class);
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -78,7 +83,13 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
     # Riwayat Pemesanan
-    Route::get('/history', [RiwayatController::class, 'index'])->name('customer.index');
+    Route::get('/history', [RiwayatController::class, 'index'])->name('customer.history');
+
+    # Cart Routes
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {

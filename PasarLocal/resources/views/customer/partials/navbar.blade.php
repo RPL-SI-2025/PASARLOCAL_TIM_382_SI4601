@@ -40,11 +40,17 @@
         gap: 8px;
     }
 
-    .user-profile img {
+    .user-avatar {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        object-fit: cover;
+        background-color: #28a745;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
     }
 
     .market-card {
@@ -265,26 +271,30 @@
         <div class="d-flex align-items-center gap-4">
             <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
             <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-            <a href="/user/cart" class="text-dark"><i class="fas fa-shopping-cart fs-5"></i></a>
+            <a href="{{ route('cart.index') }}" class="nav-link">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
 
             <!-- User Dropdown -->
-            <div class="dropdown user-profile">
-                <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown">
-                    <img src="https://via.placeholder.com/40" alt="User">
-                    <div class="ms-2 d-none d-md-block">
-                        <div class="fw-bold">{{ Auth::user()->name }}</div>
-                        <div class="small text-muted">{{ Auth::user()->email }}</div>
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                    <i class="fas fa-chevron-down ms-2"></i>
-                </div>
+                    <span>{{ Auth::user()->name }}</span>
+                </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                    <li><a class="dropdown-item" href="/history">Riwayat Pemesanan</a></li>
+                    <li class="px-3 pt-2 pb-0">
+                        <small class="text-muted">Signed in as</small><br>
+                        <span class="fw-bold">{{ Auth::user()->email }}</span>
+                    </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                         <form action="{{ route('auth.logout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="dropdown-item">Logout</button>
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt me-2"></i> Logout
+                            </button>
                         </form>
                     </li>
                 </ul>
