@@ -249,172 +249,28 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header-container mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-4">
-                <img src="/public/uploads_logo/PASARLOCALLL.png" alt="PasarLocal" class="brand-logo">
-                <div class="search-container">
-                    <div class="position-relative">
-                        <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
-                        <input type="text" class="form-control" placeholder="Search..." id="searchTrigger">
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex align-items-center gap-4">
-                <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
-                <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-                <a href="/user/cart" class="text-dark"><i class="fas fa-shopping-cart fs-5"></i></a>
-                <div class="user-profile dropdown">
-                    <div class="d-flex align-items-center" role="button" data-bs-toggle="dropdown">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                        <div class="ms-2">
-                            <div class="fw-bold"><?php echo isset($_SESSION['nama']) ? $_SESSION['nama'] : 'Fadli'; ?></div>
-                            <div class="small text-muted"><?php echo isset($_SESSION['email']) ? $_SESSION['email'] : 'fadli123@gmail.com'; ?></div>
-        </div>
-                        <i class="fas fa-chevron-down ms-2"></i>
-                    </div>
-                <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/user/profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="/user/settings">Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search Modal -->
-    <div class="search-modal" id="searchModal">
-        <div class="search-modal-content">
-            <div class="search-tabs">
-                <div class="search-tab active" data-tab="products">Produk</div>
-                <div class="search-tab" data-tab="markets">Pasar</div>
-            </div>
-
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Cari produk atau pasar..." id="searchInput">
-            </div>
-
-            <div class="category-tags" id="categoryTags">
-                <!-- Categories will be loaded dynamically -->
-            </div>
-
-            <div class="search-results" id="searchResults">
-                <!-- Results will be loaded dynamically -->
-            </div>
-        </div>
-    </div>
-
+    @include('customer.partials.navbar')
     <!-- Main Content -->
     <div class="container-fluid px-4">
-    <!-- Discover Section -->
+        <!-- Discover Section -->
         <div class="mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="m-0">Discover, Pasar Tradisional</h4>
-                <a href="/user/markets" class="text-decoration-none">Show More <i class="fas fa-chevron-right"></i></a>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6">
-                    <div class="market-card">
-                        <img src="/public/uploads_pasar/pasar_temanggung.jpg" alt="Pasar Temanggung">
-                        <div class="market-info">
-                            <h5 class="mb-1">Pasar Kordon</h5>
-                            <p class="mb-0 small">00.00 - 12.00 • Buahbatu, Bandung</p>
-                        </div>
-                    </div>
-                </div>
-            <div class="col-md-6">
-                    <div class="market-card">
-                        <img src="/public/uploads_pasar/pasar_kopo.jpg" alt="Pasar Kopo">
-                        <div class="market-info">
-                            <h5 class="mb-1">Pasar Kopo</h5>
-                            <p class="mb-0 small">00.00 - 00.00 • Kopo, Soreang</p>
-                    </div>
-                </div>
+                <h4 class="m-0">Discover, Pasar Tradisional</h4>
             </div>
-        </div>
-    </div>
-
-    <!-- Best Seller Section -->
-    <div>
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success category-btn active">All</button>
-                    <button class="btn btn-outline-success category-btn">Sayur</button>
-                    <button class="btn btn-outline-success category-btn">Buah-buahan</button>
-                    <button class="btn btn-outline-success category-btn">Daging Sapi</button>
-                    <button class="btn btn-outline-success category-btn">Daging Ayam</button>
-                    <button class="btn btn-outline-success category-btn">Ikan Laut</button>
-                    <button class="btn btn-outline-success category-btn">Rempah & Bumbu</button>
-                    <button class="btn btn-outline-success category-btn">Makanan Instan</button>
-                    <button class="btn btn-outline-success category-btn">Produk Olahan Daging</button>
-                    <button class="btn btn-outline-success category-btn">Produk Olahan Nabati</button>
-                    <button class="btn btn-outline-success category-btn">Bahan Pokok</button>
-                    <button class="btn btn-outline-success category-btn">Minuman</button>
-                </div>
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Sort <i class="fas fa-sort-amount-down-alt"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" data-sort="price-asc">Price: Low to High</a></li>
-                        <li><a class="dropdown-item" href="#" data-sort="price-desc">Price: High to Low</a></li>
-                        <li><a class="dropdown-item" href="#" data-sort="popular">Most Popular</a></li>
-                    </ul>
-            </div>
-        </div>
-
-        <!-- Product Grid -->
             <div class="row g-4">
-                <?php
-                $products = [
-                    // Sayur
-                    ['id' => 1, 'name' => 'Bayam Hijau', 'image' => 'bayam_hijau.jpg', 'price' => 5, 'sales' => 320, 'rating' => 5],
-                    ['id' => 2, 'name' => 'Kangkung Air', 'image' => 'kangkung.jpg', 'price' => 4, 'sales' => 280, 'rating' => 4],
-                    ['id' => 3, 'name' => 'Wortel', 'image' => 'wortel.jpg', 'price' => 8, 'sales' => 450, 'rating' => 5],
-                    ['id' => 4, 'name' => 'Tomat Merah', 'image' => 'tomat_merah.jpg', 'price' => 10, 'sales' => 380, 'rating' => 4],
-                    ['id' => 5, 'name' => 'Selada Hijau', 'image' => 'selada_hijau.jpg', 'price' => 6, 'sales' => 200, 'rating' => 4],
-                    ['id' => 6, 'name' => 'Brokoli', 'image' => 'brokoli.jpg', 'price' => 15, 'sales' => 290, 'rating' => 5],
-                    
-                    // Buah-buahan
-                    ['id' => 7, 'name' => 'Apel Merah', 'image' => 'apel_merah.jpg', 'price' => 25, 'sales' => 420, 'rating' => 5],
-                    ['id' => 8, 'name' => 'Pisang Ambon', 'image' => 'pisang_ambon.jpg', 'price' => 15, 'sales' => 350, 'rating' => 4],
-                    ['id' => 9, 'name' => 'Mangga Harum Manis', 'image' => 'mangga_harummanis.jpg', 'price' => 20, 'sales' => 280, 'rating' => 5],
-                    
-                    // Daging Sapi
-                    ['id' => 10, 'name' => 'Daging Sapi Has Dalam', 'image' => 'sapi_has_dalam.jpg', 'price' => 140, 'sales' => 150, 'rating' => 5],
-                    ['id' => 11, 'name' => 'Iga Sapi', 'image' => 'iga_sapi.jpg', 'price' => 120, 'sales' => 180, 'rating' => 4],
-                    ['id' => 12, 'name' => 'Daging Sapi Giling', 'image' => 'sapi_giling.jpg', 'price' => 100, 'sales' => 200, 'rating' => 4],
-                ];
-
-                foreach ($products as $product): ?>
-            <div class="col-lg-2 col-md-3 col-sm-6">
-                    <div class="product-card h-100">
-                        <img src="/public/uploads_produk/<?php echo $product['image']; ?>" class="card-img-top" alt="<?php echo $product['name']; ?>">
-                    <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-shopping-cart text-success me-2"></i>
-                                    <span class="fw-bold"><?php echo number_format($product['price'], 0, ',', '.'); ?>K</span>
-                                </div>
-                                <div class="text-end">
-                                    <div class="text-muted small"><?php echo $product['sales']; ?>+</div>
-                                <div class="rating-dots">
-                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                            <span class="dot <?php echo $i <= $product['rating'] ? 'active' : ''; ?>"></span>
-                                    <?php endfor; ?>
-                                    </div>
+                @foreach($markets as $market)
+                    <div class="col-md-6">
+                        <a href="{{ route('customer.pasar.show', $market->id_pasar) }}" style="text-decoration:none;color:inherit;">
+                            <div class="market-card">
+                                <img src="{{ asset('uploads_pasar/' . $market->gambar) }}" alt="{{ $market->nama_pasar }}">
+                                <div class="market-info">
+                                    <h5 class="mb-1">{{ $market->nama_pasar }}</h5>
+                                    <p class="mb-0 small">{{ $market->alamat }}</p>
                                 </div>
                             </div>
-                            <h6 class="card-title mb-3"><?php echo $product['name']; ?></h6>
-                            <a href="/user/product/<?php echo $product['id']; ?>" class="btn btn-outline-success w-100">SHOP NOW <i class="fas fa-arrow-right"></i></a>
-                        </div>
+                        </a>
                     </div>
-                </div>
-                <?php endforeach; ?>
+                @endforeach
             </div>
         </div>
     </div>
@@ -439,7 +295,7 @@
 
             // Load categories
             function loadCategories() {
-                categoryTags.innerHTML = categories.map(category => 
+                categoryTags.innerHTML = categories.map(category =>
                     `<div class="category-tag" data-category="${category}">${category}</div>`
                 ).join('');
             }
@@ -486,7 +342,7 @@
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase();
                 const activeTab = document.querySelector('.search-tab.active').dataset.tab;
-                
+
                 if (activeTab === 'products') {
                     // Product search data
                     const products = [
@@ -638,7 +494,7 @@
                         { name: 'Mineral Water', category: 'Minuman', image: 'mineral_water.jpg', price: '5K' }
                     ];
 
-                    const filtered = products.filter(product => 
+                    const filtered = products.filter(product =>
                         product.name.toLowerCase().includes(searchTerm) ||
                         product.category.toLowerCase().includes(searchTerm)
                     );
@@ -694,7 +550,7 @@
             // Initial search results
             loadCategories();
             performSearch();
-});
-</script>
+        });
+    </script>
 </body>
-</html> 
+</html>

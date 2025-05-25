@@ -22,6 +22,7 @@ return new class extends Migration
         // Insert dummy customer data with plain passwords
         DB::table('customers')->insert([
             [
+                'id' => 1,
                 'nama_customer' => 'John Doe',
                 'email' => 'john@example.com',
                 'password' => 'customer123',
@@ -31,6 +32,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'id' => 2,
                 'nama_customer' => 'Jane Smith',
                 'email' => 'jane@example.com',
                 'password' => 'customer123',

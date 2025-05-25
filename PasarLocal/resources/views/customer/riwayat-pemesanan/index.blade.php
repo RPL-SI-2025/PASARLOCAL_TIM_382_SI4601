@@ -48,6 +48,38 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-center">
+    <div style="position: relative; width: 200px; height: 100px; overflow: hidden;">
+        <!-- Lingkaran abu-abu -->
+        <div style="width: 200px; height: 200px; border-radius: 50%; background: #e9ecef;"></div>
+
+        <!-- Lingkaran nilai -->
+        <div style="
+            position: absolute;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            clip-path: inset(0 50% 0 0);
+            background: #28a745;
+            transform: rotate(126deg); /* atur sesuai nilai */
+        "></div>
+
+        <!-- Penunjuk tengah -->
+        <div style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 50px;
+            background: black;
+            transform-origin: bottom center;
+            transform: rotate(126deg) translate(-50%, -100%);
+        "></div>
+    </div>
+</div>
+<p class="text-center mt-2">63%</p>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

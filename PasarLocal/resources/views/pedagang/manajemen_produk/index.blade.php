@@ -1,4 +1,4 @@
-@extends('pedagang.layouts.app')
+@extends('pedagang.partials.navbar')
 
 @section('title', 'Manajemen Produk - PasarLocal')
 
@@ -150,7 +150,6 @@
     }
 </style>
 @endsection
-
 @section('content')
 <div class="container">
     <div class="row mb-4">

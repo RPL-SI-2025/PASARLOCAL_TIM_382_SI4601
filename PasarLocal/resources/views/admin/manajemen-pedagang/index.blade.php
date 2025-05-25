@@ -67,6 +67,10 @@
                         <p><strong>Pasar:</strong> {{ $p->pasar->nama_pasar }}</p>
                         <p><strong>Alamat:</strong> <i class="fas fa-map-marker-alt"></i> {{ $p->alamat }}</p>
                         <p><strong>Nomor Telepon:</strong> {{ $p->nomor_telepon }}</p>
+                        <p><strong>Email:</strong> {{ $p->email }}</p>
+                        <p><strong>Password:</strong> {{ $p->password }}</p>
+                        <p><strong>Dibuat Pada:</strong> {{ $p->created_at->format('d/m/Y H:i') }}</p>
+                        <p><strong>Terakhir Diperbarui:</strong> {{ $p->updated_at->format('d/m/Y H:i') }}</p>
                     </div>
                 </div>
             </div>

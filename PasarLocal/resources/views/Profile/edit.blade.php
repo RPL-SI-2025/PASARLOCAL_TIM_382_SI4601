@@ -28,7 +28,7 @@
     </style>
 </head>
 <body>
-@include('admin.partials.navbar')
+@include('customer.partials.navbar')
 
 <div class="container">
     <div class="card">

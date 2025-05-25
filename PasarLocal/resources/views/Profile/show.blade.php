@@ -36,7 +36,13 @@
     </style>
 </head>
 <body>
-@include('admin.partials.navbar')
+@auth
+@if (Auth::user()->role === 'pedagang')
+            @include('pedagang.partials.navbar')
+        @elseif (Auth::user()->role === 'customer')
+            @include('customer.partials.navbar')
+        @endif
+@endauth
 
 <div class="container">
     <div class="card">
@@ -67,11 +73,11 @@
                         </div>
                         <div class="mb-3">
                             <span class="profile-label">Nomor Telepon:</span>
-                            <span>{{ $user->phone ?? 'Belum diisi' }}</span>
+                            <span>{{ $user->nomor_telepon ?? 'Belum diisi' }}</span>
                         </div>
                         <div class="mb-3">
                             <span class="profile-label">Alamat:</span>
-                            <span>{{ $user->address ?? 'Belum diisi' }}</span>
+                            <span>{{ $user->alamat ?? 'Belum diisi' }}</span>
                         </div>
                     </div>
                 </div>
@@ -83,4 +89,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
-</html> 
+</html>

@@ -49,14 +49,18 @@ class PedagangController extends Controller
         ]);
 
         // Create user with role pedagang
+        // WARNING: Storing plain text passwords is a security risk.
         $user = User::create([
             'name' => $request->nama_pemilik,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // Storing as plain text as requested
             'role' => 'pedagang',
+            'alamat' => $request->alamat,
+            'nomor_telepon' => $request->nomor_telepon,
         ]);
 
         // Create pedagang
+        // WARNING: Storing plain text passwords is a security risk.
         Pedagang::create([
             'id_pasar' => $request->id_pasar,
             'nama_pemilik' => $request->nama_pemilik,
@@ -64,7 +68,7 @@ class PedagangController extends Controller
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password, // Storing as plain text as requested
         ]);
 
         return redirect()->route('admin.manajemen-pedagang.index')
@@ -80,15 +84,19 @@ class PedagangController extends Controller
 
     public function update(Request $request, $id)
     {
+        $pedagang = Pedagang::findOrFail($id);
+        $user = User::where('email', $pedagang->email)->first();
+        $userId = $user ? $user->id : null;
+
         $request->validate([
             'id_pasar' => 'required|exists:pasar,id_pasar',
             'nama_pemilik' => 'required|string|max:100',
             'nama_toko' => 'required|string|max:100',
             'alamat' => 'required|string|max:100',
             'nomor_telepon' => 'required|string|max:100',
+            'email' => 'required|email|max:100|unique:pedagang,email,' . $id . ',id_pedagang|unique:users,email,' . $userId . ',id',
+            'password' => 'nullable|string|min:8|max:100', // Password is optional
         ]);
-
-        $pedagang = Pedagang::findOrFail($id);
 
         $pedagang->update([
             'id_pasar' => $request->id_pasar,
@@ -96,14 +104,17 @@ class PedagangController extends Controller
             'nama_toko' => $request->nama_toko,
             'alamat' => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
+            'email' => $request->email,
+            // WARNING: Storing plain text passwords is a security risk.
+            'password' => $request->filled('password') ? $request->password : $pedagang->password, // Store as plain text if updated, otherwise keep existing (plain text)
         ]);
 
         // Update corresponding user
-        $user = User::where('email', $pedagang->email)->first();
         if ($user) {
-            $user->update([
-                'name' => $request->nama_pemilik,
-            ]);
+            $userData = ['name' => $request->nama_pemilik, 'email' => $request->email];
+            // WARNING: Storing plain text passwords is a security risk.
+            $userData['password'] = $request->filled('password') ? $request->password : $user->password; // Store as plain text if updated, otherwise keep existing (plain text)
+            $user->update($userData);
         }
 
         return redirect()->route('admin.manajemen-pedagang.index')
@@ -113,7 +124,7 @@ class PedagangController extends Controller
     public function destroy($id)
     {
         $pedagang = Pedagang::findOrFail($id);
-        
+
         // Delete corresponding user
         $user = User::where('email', $pedagang->email)->first();
         if ($user) {
@@ -129,4 +140,4 @@ class PedagangController extends Controller
         return redirect()->route('admin.manajemen-pedagang.index')
             ->with('success', 'Pedagang berhasil dihapus.');
     }
-} 
+}

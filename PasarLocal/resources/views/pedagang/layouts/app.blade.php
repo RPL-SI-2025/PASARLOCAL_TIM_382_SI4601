@@ -49,6 +49,11 @@
         .main-content {
             margin-top: 32px;
         }
+        .admin-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 100%;
+        }
     </style>
 </head>
 <body>
