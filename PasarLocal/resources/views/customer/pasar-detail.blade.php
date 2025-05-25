@@ -35,8 +35,9 @@
                                 <input type="number" name="quantity" class="form-control" value="1" min="1">
                                 <span class="input-group-text">{{ $item->satuan }}</span>
                             </div>
-                            <button type="submit" class="btn btn-success w-100">Tambahkan ke Keranjang</button>
+                            <button type="submit" class="btn btn-success w-100 mb-2">Tambahkan ke Keranjang</button>
                         </form>
+                        <a href="{{ route('produk.detail', $item->id_produk_pedagang) }}" class="btn btn-primary w-100">Lihat Detail</a>
                     </div>
                 </div>
             </div>
@@ -52,4 +53,4 @@
     @endif
 
 </body>
-</html>
+</html> 

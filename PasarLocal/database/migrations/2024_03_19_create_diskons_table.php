@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->decimal('min_pembelian', 10, 2)->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamp('tanggal_mulai');
-            $table->timestamp('tanggal_berakhir');
+            $table->timestamp('tanggal_berakhir')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -109,3 +109,5 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
 });
 
+Route::get('/produk/{id}', [App\Http\Controllers\ProdukPedagangController::class, 'detail'])->name('produk.detail');
+

@@ -13,7 +13,7 @@ class ProdukPedagangController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware(['web', 'auth', 'role:pedagang']);
+        $this->middleware(['web', 'auth', 'role:pedagang'])->except('detail');
     }
 
     public function index(Request $request)
@@ -179,5 +179,12 @@ class ProdukPedagangController extends BaseController
 
         return redirect()->route('pedagang.manajemen_produk.index')
                         ->with('success', 'Produk berhasil dihapus');
+    }
+
+    // Tambahkan method untuk detail produk customer
+    public function detail($id)
+    {
+        $produkPedagang = \App\Models\ProdukPedagang::with(['produk', 'pedagang'])->findOrFail($id);
+        return view('customer.produk-detail', compact('produkPedagang'));
     }
 }
