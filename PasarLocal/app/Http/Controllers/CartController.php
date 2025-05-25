@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProdukPedagang;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,15 +16,18 @@ class CartController extends Controller
     public function index()
     {
         $customer = Auth::user()->customer;
-        if (!$customer) {
-            return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
+
+        if (!$customer || !$customer->id) {
+            return redirect()->back()->with('error', 'Anda belum login.');
         }
 
-        // Ambil data langsung dari database tanpa cache
-        $carts = Cart::with(['pasar', 'items.produkPedagang' => function ($query) {
-            $query->select('*')->withoutGlobalScopes();
-        }])
-            ->where('customer_id', $customer->id)
+        $customerId = $customer->id;
+
+        $carts = Cart::with([
+            'pasar',
+            'items.produkPedagang.produk' // Tambahkan relasi produk
+        ])
+            ->where('customer_id', $customerId)
             ->get()
             ->groupBy('pasar_id');
 
@@ -39,11 +43,12 @@ class CartController extends Controller
             ]);
 
             $customer = Auth::user()->customer;
-            if (!$customer) {
-                return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
+            $customerId = $customer->id;
+            if (!$customerId) {
+                return redirect()->back()->with('error', 'Anda belum login.');
             }
 
-            // Lock the row for update to prevent race conditions
+            // Lock produk
             $produkPedagang = ProdukPedagang::where('id_produk_pedagang', $request->produk_pedagang_id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -54,16 +59,16 @@ class CartController extends Controller
 
             $pedagang = $produkPedagang->pedagang;
             if (!$pedagang) {
-                return redirect()->back()->with('error', 'Pedagang untuk produk ini tidak ditemukan.');
+                return redirect()->back()->with('error', 'Pedagang tidak ditemukan.');
             }
 
-            // Get or create cart
+            // Gunakan user_id sebagai penanda pemilik keranjang
             $cart = Cart::firstOrCreate([
-                'customer_id' => $customer->id,
+                'customer_id' => $customerId,
                 'pasar_id' => $pedagang->id_pasar,
             ]);
 
-            // Update or create cart item
+            // Tambah atau update item di cart
             $cartItem = $cart->items()
                 ->where('produk_pedagang_id', $request->produk_pedagang_id)
                 ->first();
@@ -80,12 +85,13 @@ class CartController extends Controller
                 ]);
             }
 
-            // Update stock
+            // Kurangi stok
             $produkPedagang->decrement('stok', $request->quantity);
 
-            return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang');
+            return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
         });
     }
+
 
     public function updateQuantity(Request $request, CartItem $cartItem)
     {

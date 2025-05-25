@@ -37,28 +37,32 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'alamat' => 'required|string|max:100',
-            'nomor_telepon' => 'required|string|max:100',
+            'name'           => 'required|string|max:255',
+            'email'          => 'required|string|email|max:255|unique:users',
+            'password'       => 'required|string|min:6|confirmed',
+            'alamat'         => 'required|string|max:100',
+            'nomor_telepon'  => 'required|string|max:100',
         ]);
 
-        User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'customer', // Default to Customer role
-            'alamat' => $request->alamat,
+        // Buat user dulu, simpan ke variabel agar dapat id-nya
+        $user = User::create([
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'role'          => 'customer',
+            'alamat'        => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
         ]);
 
+        // Buat customer dengan foreign key user_id mengacu ke $user->id
         Customer::create([
+            'user_id'       => $user->id, // ini foreign key ke users.id
             'nama_customer' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // jika memang tabel ini menyimpan password juga
-            'alamat' => $request->alamat,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'alamat'        => $request->alamat,
             'nomor_telepon' => $request->nomor_telepon,
+            // jangan simpan password di sini kalau memang gak perlu
         ]);
 
         return redirect('/')->with('success', 'Registration successful! Please login.');

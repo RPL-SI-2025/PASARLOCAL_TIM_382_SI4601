@@ -89,7 +89,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {

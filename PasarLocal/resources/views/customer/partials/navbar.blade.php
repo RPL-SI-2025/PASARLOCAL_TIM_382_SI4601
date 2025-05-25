@@ -271,7 +271,7 @@
         <div class="d-flex align-items-center gap-4">
             <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
             <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-            <a href="{{ route('cart.index') }}" class="nav-link">
+            <a href="/cart" class="nav-link">
                 <i class="fas fa-shopping-cart"></i>
             </a>
 

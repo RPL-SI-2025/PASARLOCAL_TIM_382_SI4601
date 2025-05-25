@@ -7,10 +7,11 @@
     @if($carts->isEmpty())
         <div class="bg-white rounded-lg shadow p-6 text-center">
             <p class="text-gray-600">Keranjang belanja Anda kosong</p>
-            <a href="{{ route('produk.index') }}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <a href="{{ route('customer.index') }}">
                 Belanja Sekarang
             </a>
         </div>
+
     @else
         @foreach($carts as $pasarId => $marketCarts)
             @php
@@ -21,11 +22,10 @@
                 <div class="p-4 border-b">
                     <h2 class="text-xl font-semibold">{{ $pasar->nama_pasar }}</h2>
                 </div>
-                
                 <div class="p-4">
                     <div class="overflow-x-auto">
                         <table class="min-w-full">
-                            <thead>
+                            <thead class="thead-light">
                                 <tr class="bg-gray-50">
                                     <th class="px-4 py-2 text-left">Produk</th>
                                     <th class="px-4 py-2 text-left">Harga</th>
@@ -34,12 +34,12 @@
                                     <th class="px-4 py-2 text-left">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="customtable">
                                 @foreach($cart->items as $item)
                                     <tr class="border-t">
                                         <td class="px-4 py-2">
                                             <div class="flex items-center">
-                                                <img src="{{ asset('storage/' . $item->produkPedagang->produk->gambar) }}" 
+                                                <img src="{{ asset('storage/' . $item->produkPedagang->produk->gambar) }}"
                                                      alt="{{ $item->produkPedagang->produk->nama_produk }}"
                                                      class="w-16 h-16 object-cover rounded">
                                                 <div class="ml-4">
@@ -53,7 +53,7 @@
                                             <form action="{{ route('cart.update-quantity', $item) }}" method="POST" class="flex items-center">
                                                 @csrf
                                                 @method('PUT')
-                                                <input type="number" name="quantity" value="{{ $item->quantity }}" 
+                                                <input type="number" name="quantity" value="{{ $item->quantity }}"
                                                        min="1" class="w-20 border rounded px-2 py-1">
                                                 <button type="submit" class="ml-2 text-blue-500 hover:text-blue-700">
                                                     <i class="fas fa-sync-alt"></i>
@@ -81,7 +81,7 @@
                             <p class="text-lg font-semibold">Total: Rp {{ number_format($cart->total, 0, ',', '.') }}</p>
                         </div>
                         <div>
-                            <a href="{{ route('checkout.index', ['pasar_id' => $pasar->id]) }}" 
+                            <a href="#"
                                class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
                                 Checkout
                             </a>
@@ -92,4 +92,4 @@
         @endforeach
     @endif
 </div>
-@endsection 
+@endsection
