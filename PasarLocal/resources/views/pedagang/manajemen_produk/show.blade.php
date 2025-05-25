@@ -1,4 +1,4 @@
-@extends('pedagang.layouts.app')
+@extends('pedagang.partials.navbar')
 
 @section('title', 'Detail Produk - PasarLocal')
 

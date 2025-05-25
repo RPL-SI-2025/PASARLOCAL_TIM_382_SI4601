@@ -1,4 +1,4 @@
-@extends('pedagang.layouts.app')
+@extends('pedagang.partials.navbar')
 
 @section('content')
 <div class="container">
@@ -83,4 +83,4 @@
         font-size: 1.5em;
     }
 </style>
-@endpush 
+@endpush

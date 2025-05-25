@@ -1,4 +1,4 @@
-@extends('pedagang.layouts.app')
+@extends('pedagang.partials.navbar')
 
 @section('content')
 <div class="container" style="max-width: 900px;">

@@ -82,6 +82,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
+    
     # Riwayat Pemesanan
     Route::get('/history', [RiwayatController::class, 'index'])->name('customer.history');
 
@@ -97,12 +98,14 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
-    # Ongkir
+
+    # Manajemen Produk
     Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('pedagang.manajemen_produk.index');
     Route::get('/pedagang/manajemen_produk/create', [ProdukPedagangController::class, 'create'])->name('pedagang.manajemen_produk.create');
     Route::post('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'store'])->name('pedagang.manajemen_produk.store');
     Route::get('/pedagang/manajemen_produk/{id}/edit', [ProdukPedagangController::class, 'edit'])->name('pedagang.manajemen_produk.edit');
     Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
+    Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
 });
 

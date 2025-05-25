@@ -1,6 +1,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
     body {
         background-color: #f8f9fa;
@@ -251,6 +253,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome (gunakan hanya satu versi) -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
     <div class="container d-flex justify-content-between align-items-center">
@@ -271,8 +274,11 @@
         <div class="d-flex align-items-center gap-4">
             <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
             <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-            <a href="/cart" class="nav-link">
+            <a href="{{ route('cart.index') }}" class="position-relative me-3">
                 <i class="fas fa-shopping-cart"></i>
+                @if(auth()->user()->customer && auth()->user()->customer->carts()->exists())
+                    <span class="cart-badge">{{ auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); }) }}</span>
+                @endif
             </a>
 
             <!-- User Dropdown -->

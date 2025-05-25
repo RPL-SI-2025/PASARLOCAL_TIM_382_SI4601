@@ -73,7 +73,9 @@
                     <div class="d-flex align-items-center user-profile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="ms-2 text-end">
                             <div class="fw-bold">Pedagang</div>
-                            <div class="small text-muted">gilang123@gmail.com</div>
+                            <div class="small text-muted">
+                                <span class="fw-bold">{{ auth()->user()->name }}</span>
+                            </div>
                         </div>
                         <i class="fas fa-chevron-down ms-2"></i>
                     </div>

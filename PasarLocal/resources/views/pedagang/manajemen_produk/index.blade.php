@@ -212,7 +212,7 @@
                                 <td class="fw-bold text-success">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
                                 <td class="text-center">
                                     <div class="d-flex gap-2 justify-content-center">
-                                        <a href="{{ route('pedagang.manajemen_produk.edit', $item->id_produk_pedagang) }}" class="btn btn-info btn-sm fw-bold" style="min-width:60px;">Lihat</a>
+                                        <a href="{{ route('pedagang.manajemen_produk.show', $item->id_produk_pedagang) }}" class="btn btn-info btn-sm fw-bold" style="min-width:60px;">Lihat</a>
                                         <a href="{{ route('pedagang.manajemen_produk.edit', $item->id_produk_pedagang) }}" class="btn btn-warning btn-sm fw-bold" style="min-width:60px;">Edit</a>
                                         <form action="{{ route('pedagang.manajemen_produk.destroy', $item->id_produk_pedagang) }}" method="POST" class="d-inline">
                                             @csrf
