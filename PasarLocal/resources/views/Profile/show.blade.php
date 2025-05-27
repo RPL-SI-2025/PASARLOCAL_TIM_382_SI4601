@@ -42,13 +42,13 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3>Profil Saya</h3>
-            <a href="{{ route('profile.edit') }}" class="btn btn-light">Edit Profil</a>
+            <a href="{{ $role === 'pedagang' ? route('pedagang.profile.edit') : route('profile.edit') }}" class="btn btn-light">Edit Profil</a>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4 text-center">
-                    @if($user->profile_image)
-                        <img src="{{ asset('storage/' . $user->profile_image) }}" alt="Foto Profil" class="profile-image mb-3">
+                    @if($profile->profile_image)
+                        <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Foto Profil" class="profile-image mb-3">
                     @else
                         <div class="profile-image mb-3 d-flex align-items-center justify-content-center bg-light">
                             <i class="fas fa-user fa-3x text-secondary"></i>
@@ -57,21 +57,32 @@
                 </div>
                 <div class="col-md-8">
                     <div class="profile-info">
-                        <div class="mb-3">
-                            <span class="profile-label">Nama Lengkap:</span>
-                            <span>{{ $user->name }}</span>
-                        </div>
+                        @if($role === 'pedagang')
+                            <div class="mb-3">
+                                <span class="profile-label">Nama Pemilik:</span>
+                                <span>{{ $profile->nama_pemilik }}</span>
+                            </div>
+                            <div class="mb-3">
+                                <span class="profile-label">Nama Toko:</span>
+                                <span>{{ $profile->nama_toko }}</span>
+                            </div>
+                        @else
+                            <div class="mb-3">
+                                <span class="profile-label">Nama Customer:</span>
+                                <span>{{ $profile->nama_customer }}</span>
+                            </div>
+                        @endif
                         <div class="mb-3">
                             <span class="profile-label">Email:</span>
-                            <span>{{ $user->email }}</span>
+                            <span>{{ $profile->email }}</span>
                         </div>
                         <div class="mb-3">
                             <span class="profile-label">Nomor Telepon:</span>
-                            <span>{{ $user->phone ?? 'Belum diisi' }}</span>
+                            <span>{{ $profile->nomor_telepon }}</span>
                         </div>
                         <div class="mb-3">
                             <span class="profile-label">Alamat:</span>
-                            <span>{{ $user->address ?? 'Belum diisi' }}</span>
+                            <span>{{ $profile->alamat }}</span>
                         </div>
                     </div>
                 </div>

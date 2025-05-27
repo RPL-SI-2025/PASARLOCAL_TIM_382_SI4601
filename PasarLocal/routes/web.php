@@ -57,6 +57,7 @@ Route::get('/admin/manajemen-pasar/{id}/edit', [PasarController::class, 'edit'])
 Route::put('/admin/manajemen-pasar/{id}', [PasarController::class, 'update'])->name('admin.manajemen-pasar.update');
 Route::delete('/admin/manajemen-pasar/{id}', [PasarController::class, 'destroy'])->name('admin.manajemen-pasar.destroy');
 
+<<<<<<< Updated upstream
 #pedagang
 Route::get('/admin/manajemen-pedagang', [PedagangController::class, 'index'])->name('admin.manajemen-pedagang.index');
 Route::get('/admin/manajemen-pedagang/create', [PedagangController::class, 'create'])->name('admin.manajemen-pedagang.create');
@@ -64,6 +65,31 @@ Route::post('/admin/manajemen-pedagang', [PedagangController::class, 'store'])->
 Route::get('/admin/manajemen-pedagang/{id}/edit', [PedagangController::class, 'edit'])->name('admin.manajemen-pedagang.edit');
 Route::put('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'update'])->name('admin.manajemen-pedagang.update');
 Route::delete('/admin/manajemen-pedagang/{id}', [PedagangController::class, 'destroy'])->name('admin.manajemen-pedagang.destroy');
+=======
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    # Dashboard
+    Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
+});
+
+Route::middleware(['auth', 'role:pedagang'])->group(function () {
+    # Profile routes for pedagang
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('pedagang.profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('pedagang.profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('pedagang.profile.update');
+    
+    # Ongkir
+    Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('pedagang.manajemen_produk.index');
+    Route::get('/pedagang/manajemen_produk/create', [ProdukPedagangController::class, 'create'])->name('pedagang.manajemen_produk.create');
+    Route::post('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'store'])->name('pedagang.manajemen_produk.store');
+    Route::get('/pedagang/manajemen_produk/{id}/edit', [ProdukPedagangController::class, 'edit'])->name('pedagang.manajemen_produk.edit');
+    Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
+    Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
+});
+>>>>>>> Stashed changes
 
 # Verifikasi routes
 Route::get('/verify-code', [AuthController::class, 'showVerifyCodeForm'])->name('auth.show-verify-code');
