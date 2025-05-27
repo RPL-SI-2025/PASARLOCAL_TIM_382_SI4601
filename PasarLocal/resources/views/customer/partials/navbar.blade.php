@@ -245,6 +245,24 @@
         background: #198754;
         color: white;
     }
+
+    .cart-icon {
+        font-size: 1.2rem;
+        color: #212529;
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        padding: 0.3em 0.5em;
+        font-size: 75%;
+        font-weight: 700;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 0.25rem;
+        line-height: 1;
+    }
 </style>
 
 <!-- Bootstrap CSS -->
@@ -271,8 +289,11 @@
         <div class="d-flex align-items-center gap-4">
             <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
             <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
-            <a href="/cart" class="nav-link">
-                <i class="fas fa-shopping-cart"></i>
+            <a href="{{ route('cart.index') }}" class="position-relative me-3">
+                <i class="fas fa-shopping-cart fs-5 cart-icon"></i>
+                @if(auth()->user()->customer && auth()->user()->customer->carts()->exists())
+                    <span class="cart-badge">{{ auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); }) }}</span>
+                @endif
             </a>
 
             <!-- User Dropdown -->

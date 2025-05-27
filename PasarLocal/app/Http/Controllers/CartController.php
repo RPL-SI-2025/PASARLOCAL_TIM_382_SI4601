@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\ProdukPedagang;
-use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,25 +12,33 @@ use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $customer = Auth::user()->customer;
-
-        if (!$customer || !$customer->id) {
-            return redirect()->back()->with('error', 'Anda belum login.');
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
         }
 
-        $customerId = $customer->id;
-
-        $carts = Cart::with([
-            'pasar',
-            'items.produkPedagang.produk' // Tambahkan relasi produk
-        ])
-            ->where('customer_id', $customerId)
+        // Fetch carts grouped by market
+        $carts = Cart::with(['pasar', 'items.produkPedagang.produk', 'items.produkPedagang.pedagang'])
+            ->where('customer_id', $customer->id)
             ->get()
             ->groupBy('pasar_id');
 
-        return view('cart.index', compact('carts'));
+        // Get selected item IDs from request across all markets
+        $selectedItemIds = $request->input('selected_items', []);
+
+        // Calculate the grand total for all selected items
+        $grandTotal = 0;
+        foreach ($carts as $marketCarts) {
+            foreach ($marketCarts->first()->items as $item) {
+                if (in_array($item->id, $selectedItemIds)) {
+                    $grandTotal += $item->quantity * $item->price;
+                }
+            }
+        }
+
+        return view('customer.cart.index', compact('carts', 'grandTotal', 'selectedItemIds'));
     }
 
     public function addToCart(Request $request)
@@ -43,39 +50,47 @@ class CartController extends Controller
             ]);
 
             $customer = Auth::user()->customer;
-            $customerId = $customer->id;
-            if (!$customerId) {
-                return redirect()->back()->with('error', 'Anda belum login.');
+            if (!$customer) {
+                return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
             }
 
-            // Lock produk
+            // Lock the product for stock checking
             $produkPedagang = ProdukPedagang::where('id_produk_pedagang', $request->produk_pedagang_id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            // Check stock availability
             if ($produkPedagang->stok < $request->quantity) {
                 return redirect()->back()->with('error', 'Stok produk tidak mencukupi.');
             }
 
             $pedagang = $produkPedagang->pedagang;
             if (!$pedagang) {
-                return redirect()->back()->with('error', 'Pedagang tidak ditemukan.');
+                return redirect()->back()->with('error', 'Pedagang untuk produk ini tidak ditemukan.');
             }
 
-            // Gunakan user_id sebagai penanda pemilik keranjang
+            // Get or create cart for this market
             $cart = Cart::firstOrCreate([
-                'customer_id' => $customerId,
+                'customer_id' => $customer->id,
                 'pasar_id' => $pedagang->id_pasar,
             ]);
 
-            // Tambah atau update item di cart
+            // Check if item already exists in cart
             $cartItem = $cart->items()
                 ->where('produk_pedagang_id', $request->produk_pedagang_id)
                 ->first();
 
+            // Update quantity if exists, create new if not
             if ($cartItem) {
+                $newQuantity = $cartItem->quantity + $request->quantity;
+                
+                // Check if new total quantity exceeds available stock
+                if ($newQuantity > $produkPedagang->stok) {
+                    return redirect()->back()->with('error', 'Total kuantitas melebihi stok yang tersedia.');
+                }
+                
                 $cartItem->update([
-                    'quantity' => $cartItem->quantity + $request->quantity,
+                    'quantity' => $newQuantity
                 ]);
             } else {
                 $cart->items()->create([
@@ -85,36 +100,64 @@ class CartController extends Controller
                 ]);
             }
 
-            // Kurangi stok
+            // Update stock
             $produkPedagang->decrement('stok', $request->quantity);
 
             return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang.');
         });
     }
 
-
     public function updateQuantity(Request $request, CartItem $cartItem)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
-        ]);
+        return DB::transaction(function () use ($request, $cartItem) {
+            $request->validate([
+                'quantity' => 'required|integer|min:1'
+            ]);
 
-        $cartItem->update([
-            'quantity' => $request->quantity,
-        ]);
+            // Lock product for stock check
+            $produkPedagang = ProdukPedagang::where('id_produk_pedagang', $cartItem->produk_pedagang_id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        return redirect()->back()->with('success', 'Jumlah produk berhasil diperbarui');
+            $quantityDiff = $request->quantity - $cartItem->quantity;
+
+            // Check if new quantity is valid
+            if ($quantityDiff > 0 && $produkPedagang->stok < $quantityDiff) {
+                $productName = $produkPedagang->produk->nama_produk ?? 'Produk';
+                $pasarName = $produkPedagang->pedagang->pasar->nama_pasar ?? 'Pasar';
+                $availableStock = $produkPedagang->stok + $cartItem->quantity;
+                return redirect()->back()->with('error', $productName . ' dari ' . $pasarName . ' melebihi stok yang tersedia (' . $availableStock . ').');
+            }
+
+            // Update cart item quantity
+            $cartItem->update([
+                'quantity' => $request->quantity
+            ]);
+
+            // Update product stock
+            $produkPedagang->increment('stok', -$quantityDiff);
+
+            return redirect()->back()->with('success', 'Jumlah produk berhasil diperbarui.');
+        });
     }
 
     public function removeItem(CartItem $cartItem)
     {
-        $cartItem->delete();
+        return DB::transaction(function () use ($cartItem) {
+            // Return stock
+            $produkPedagang = ProdukPedagang::findOrFail($cartItem->produk_pedagang_id);
+            $produkPedagang->increment('stok', $cartItem->quantity);
 
-        // If cart is empty, delete it
-        if ($cartItem->cart->items()->count() === 0) {
-            $cartItem->cart->delete();
-        }
+            // Delete cart item
+            $cartItem->delete();
 
-        return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang');
+            // Delete cart if empty
+            $cart = $cartItem->cart;
+            if ($cart->items()->count() === 0) {
+                $cart->delete();
+            }
+
+            return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
+        });
     }
 }

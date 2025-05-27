@@ -13,6 +13,7 @@ use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
+use App\Http\Controllers\Customer\ProductController;
 use App\Http\Controllers\CartController;
 
 
@@ -85,11 +86,17 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     # Riwayat Pemesanan
     Route::get('/history', [RiwayatController::class, 'index'])->name('customer.history');
 
+    # Product Routes
+    Route::get('/product/{id}', [ProductController::class, 'show'])->name('customer.product.show');
+
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
     Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
+
+    # Checkout Route
+    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
