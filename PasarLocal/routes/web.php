@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\AdminPesananController;
 
 
 # Auth
@@ -73,6 +74,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     # Diskon
     Route::resource('diskons', DiskonController::class);
+
+    # Manajemen Pemesanan
+    Route::get('/admin/manajemen-pesanan', [AdminPesananController::class, 'index'])->name('admin.manajemen-pesanan.index');
+    Route::get('/admin/manajemen-pesanan/{id}', [AdminPesananController::class, 'show'])->name('admin.manajemen-pesanan.show');
+    Route::put('/admin/manajemen-pesanan/{id}/update-status', [AdminPesananController::class, 'update'])->name('admin.manajemen-pesanan.update');
+
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
