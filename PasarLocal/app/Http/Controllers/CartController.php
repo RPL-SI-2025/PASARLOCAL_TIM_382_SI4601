@@ -160,4 +160,69 @@ class CartController extends Controller
             return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
         });
     }
+
+    public function showCheckout(Request $request)
+    {
+        $customer = Auth::user()->customer;
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
+        }
+
+        // Ambil selected_items dari request
+        $selectedItemIds = $request->input('selected_items', []);
+        if (empty($selectedItemIds)) {
+            return redirect()->route('cart.index')->with('error', 'Pilih produk yang ingin dibeli terlebih dahulu.');
+        }
+
+        // Ambil cart items beserta relasi produk, pedagang, pasar
+        $cartItems = CartItem::with(['produkPedagang.produk', 'produkPedagang.pedagang.pasar', 'cart'])
+            ->whereIn('id', $selectedItemIds)
+            ->get();
+
+        // Kelompokkan berdasarkan pasar
+        $groupedByPasar = $cartItems->groupBy(function($item) {
+            return $item->produkPedagang->pedagang->pasar->id_pasar;
+        });
+
+        // Ambil data pasar (asumsi satu pasar per checkout, bisa diubah jika multi-pasar)
+        $pasar = null;
+        if ($cartItems->count() > 0) {
+            $pasar = $cartItems->first()->produkPedagang->pedagang->pasar;
+        }
+
+        // Hitung total harga
+        $total = $cartItems->sum(function($item) {
+            return $item->quantity * $item->price;
+        });
+
+        // List kecamatan
+        $kecamatanList = \App\Constants\Kecamatan::getAll();
+
+        // Cari ongkir default (berdasarkan pasar & kecamatan customer)
+        $ongkir = null;
+        if ($pasar && $customer->kecamatan) {
+            $ongkir = \App\Models\ongkir::where('id_pasar', $pasar->id_pasar)
+                ->where('kecamatan_tujuan', $customer->kecamatan)
+                ->first();
+        }
+
+        return view('customer.checkout', compact('customer', 'cartItems', 'pasar', 'total', 'kecamatanList', 'ongkir'));
+    }
+
+    public function ajaxCekOngkir(Request $request)
+    {
+        $id_pasar = $request->input('id_pasar');
+        $kecamatan = $request->input('kecamatan');
+        $ongkir = null;
+        if ($id_pasar && $kecamatan) {
+            $ongkir = \App\Models\ongkir::where('id_pasar', $id_pasar)
+                ->where('kecamatan_tujuan', $kecamatan)
+                ->first();
+        }
+        if ($ongkir) {
+            return response()->json(['ongkir' => $ongkir->ongkir]);
+        } else {
+            return response()->json(['ongkir' => null]);
+        }
+    }
 }

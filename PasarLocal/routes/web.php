@@ -24,9 +24,12 @@ Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name(
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
 
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+# Route profile untuk semua role user yang login
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -96,7 +99,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
 
     # Checkout Route
+    Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
     Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/ajax/cek-ongkir', [CartController::class, 'ajaxCekOngkir'])->name('ajax.cek-ongkir');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {

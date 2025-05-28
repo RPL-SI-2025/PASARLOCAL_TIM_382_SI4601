@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - PasarLocal</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
             margin: 0;
@@ -46,13 +47,51 @@
             margin-bottom: 20px;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 12px;
             border: none;
             border-radius: 25px;
             box-sizing: border-box;
             font-size: 16px;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background-color: white;
+            border: none;
+            border-radius: 25px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 45px;
+            padding-left: 15px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 45px;
+        }
+
+        .select2-dropdown {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 8px;
+        }
+
+        .select2-results__option {
+            padding: 8px 15px;
+        }
+
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #4CAF50;
         }
 
         .divider {
@@ -139,9 +178,24 @@
                 @enderror
             </div>
 
-            {{-- Alamat --}}
+            {{-- Kecamatan --}}
             <div class="form-group">
-                <input type="text" name="nomor_telepon" placeholder="nomor_telepon" required>
+                <select name="kecamatan" id="kecamatan" required>
+                    <option value="">Pilih Kecamatan</option>
+                    @foreach(\App\Constants\Kecamatan::getAll() as $kecamatan)
+                        <option value="{{ $kecamatan }}" {{ old('kecamatan') == $kecamatan ? 'selected' : '' }}>
+                            {{ $kecamatan }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('kecamatan')
+                    <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Nomor Telepon --}}
+            <div class="form-group">
+                <input type="text" name="nomor_telepon" placeholder="Nomor Telepon" required>
                 @error('nomor_telepon')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
@@ -163,5 +217,17 @@
             <button type="submit" class="login-btn">Register</button>
         </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#kecamatan').select2({
+                placeholder: 'Pilih Kecamatan',
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
 </body>
 </html>

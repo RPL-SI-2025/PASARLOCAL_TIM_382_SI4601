@@ -109,6 +109,11 @@
         </div>
     </div>
 
+    <!-- Tombol kembali -->
+    <a href="{{ url()->previous() }}" class="btn btn-secondary float-button" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
+        <i class="fas fa-arrow-left me-2"></i> Kembali
+    </a>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

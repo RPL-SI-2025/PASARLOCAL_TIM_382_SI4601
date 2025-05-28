@@ -15,7 +15,8 @@ class Customer extends Model
         'email',
         'password',
         'alamat',
-        'nomor_telepon'
+        'nomor_telepon',
+        'kecamatan'
     ];
 
     public function user()

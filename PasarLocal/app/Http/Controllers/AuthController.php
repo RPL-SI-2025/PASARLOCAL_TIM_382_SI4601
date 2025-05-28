@@ -42,30 +42,35 @@ class AuthController extends Controller
             'password'       => 'required|string|min:6|confirmed',
             'alamat'         => 'required|string|max:100',
             'nomor_telepon'  => 'required|string|max:100',
+            'kecamatan'      => 'required|string|max:100',
         ]);
 
-        // Buat user dulu, simpan ke variabel agar dapat id-nya
-        $user = User::create([
-            'name'          => $request->name,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'role'          => 'customer',
-            'alamat'        => $request->alamat,
-            'nomor_telepon' => $request->nomor_telepon,
-        ]);
+        try {
+            // Buat user dulu, simpan ke variabel agar dapat id-nya
+            $user = User::create([
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'password'      => Hash::make($request->password),
+                'role'          => 'customer',
+                'alamat'        => $request->alamat,
+                'nomor_telepon' => $request->nomor_telepon,
+            ]);
 
-        // Buat customer dengan foreign key user_id mengacu ke $user->id
-        Customer::create([
-            'user_id'       => $user->id, // ini foreign key ke users.id
-            'nama_customer' => $request->name,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'alamat'        => $request->alamat,
-            'nomor_telepon' => $request->nomor_telepon,
-            // jangan simpan password di sini kalau memang gak perlu
-        ]);
+            // Buat customer dengan foreign key user_id mengacu ke $user->id
+            Customer::create([
+                'user_id'       => $user->id, // ini foreign key ke users.id
+                'nama_customer' => $request->name,
+                'email'         => $request->email,
+                'password'      => Hash::make($request->password),
+                'alamat'        => $request->alamat,
+                'nomor_telepon' => $request->nomor_telepon,
+                'kecamatan'     => $request->kecamatan,
+            ]);
 
-        return redirect('/')->with('success', 'Registration successful! Please login.');
+            return redirect('/')->with('success', 'Registration successful! Please login.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['name' => 'The name is already taken. Please choose a different name.'])->withInput();
+        }
     }
 
     public function login(Request $request)

@@ -311,6 +311,11 @@
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
+                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                            <i class="fas fa-user-edit me-2"></i> Edit Profil
+                        </a>
+                    </li>
+                    <li>
                         <form action="{{ route('auth.logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="dropdown-item text-danger">

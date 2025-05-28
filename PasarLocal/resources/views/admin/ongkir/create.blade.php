@@ -35,7 +35,12 @@
 
                             <div class="my-3">
                                 <label for="Tujuan" class="form-label">Kecamatan Tujuan</label>
-                                <textarea class="form-control" id="Tujuan" name="kecamatan_tujuan" rows="1"required dusk='kecamatan'></textarea>
+                                <select class="form-select" id="Tujuan" name="kecamatan_tujuan" required dusk='kecamatan'>
+                                    <option value="">Pilih Kecamatan</option>
+                                    @foreach(\App\Constants\Kecamatan::getAll() as $kecamatan)
+                                        <option value="{{ $kecamatan }}" {{ old('kecamatan_tujuan') == $kecamatan ? 'selected' : '' }}>{{ $kecamatan }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="ongkir" class="form-label">Biaya Ongkir (Rp)</label>

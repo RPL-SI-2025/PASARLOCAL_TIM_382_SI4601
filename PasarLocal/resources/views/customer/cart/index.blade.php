@@ -124,8 +124,7 @@
                 <div class="mt-4 d-flex flex-column align-items-end">
                     <p class="text-lg font-semibold mb-0">Total</p>
                     <p class="text-lg font-semibold mb-2">Rp {{ number_format($selectedItemsTotal, 0, ',', '.') }}</p>
-                    <form action="{{ route('checkout.process') }}" method="POST" id="checkout-form-{{ $pasarId }}">
-                        @csrf
+                    <form action="{{ route('checkout.show') }}" method="GET" id="checkout-form-{{ $pasarId }}">
                         {{-- Include hidden inputs for selected items for THIS market --}}
                         @foreach($selectedItemIds as $selectedId)
                             @if(in_array($selectedId, $cartItemIds)) {{-- Ensure only selected items from this market are included --}}
