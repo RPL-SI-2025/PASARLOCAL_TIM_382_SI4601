@@ -56,15 +56,30 @@
 
         .market-card {
             height: 240px;
-            border-radius: 12px;
+            border-radius: 18px;
             overflow: hidden;
             position: relative;
+            background-color: #fff;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.25s;
+            border: none;
+        }
+
+        .market-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+            z-index: 2;
         }
 
         .market-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+        }
+
+        .market-card:hover img {
+            transform: scale(1.08);
         }
 
         .market-info {

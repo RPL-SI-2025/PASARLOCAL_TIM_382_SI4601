@@ -91,6 +91,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
     Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
+
+    # Route detail produk untuk customer
+    Route::get('/produk/{id}', [ProdukPedagangController::class, 'detail'])->name('produk.detail');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
@@ -108,6 +111,4 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
 });
-
-Route::get('/produk/{id}', [App\Http\Controllers\ProdukPedagangController::class, 'detail'])->name('produk.detail');
 
