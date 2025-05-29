@@ -20,9 +20,8 @@ class CartController extends Controller
         if (!$customer || !$customer->id) {
             return redirect()->back()->with('error', 'Anda belum login.');
         }
-
         $customerId = $customer->id;
-
+        
         $carts = Cart::with([
             'pasar',
             'items.produkPedagang.produk' // Tambahkan relasi produk

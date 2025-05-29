@@ -253,7 +253,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome (gunakan hanya satu versi) -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
     <div class="container d-flex justify-content-between align-items-center">
@@ -295,6 +294,8 @@
                         <span class="fw-bold">{{ Auth::user()->email }}</span>
                     </li>
                     <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                    <li><a class="dropdown-item" href="/riwayat-transaksi">Pembelian</a></li>
                     <li>
                         <form action="{{ route('auth.logout') }}" method="POST">
                             @csrf
@@ -331,4 +332,3 @@
         </div>
     </div>
 </div>
-

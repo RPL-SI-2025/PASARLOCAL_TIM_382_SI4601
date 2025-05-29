@@ -32,4 +32,4 @@ class ProdukPedagang extends Model
     {
         return $this->belongsTo(Produk::class, 'id_produk', 'id');
     }
-} 
+}

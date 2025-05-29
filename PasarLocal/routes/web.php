@@ -14,14 +14,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\AnalitikController;
 
 # Auth
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name('auth.register.form');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
-Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
+Route::post('/auth/logout', [AuthController::class, 'logout'])
+    ->name('auth.logout')
+    ->middleware('auth');
 
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -73,6 +75,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     # Diskon
     Route::resource('diskons', DiskonController::class);
+
+    # Analytical Dashboard
+    Route::get('/admin/dashboard-analitik',[AnalitikController::class, 'index'] )->name('admin.dashboard-analitik.index');
+    Route::get('/admin/tables', [AnalitikController::class, 'getTables']);
+    Route::get('/admin/columns/{table}', [AnalitikController::class, 'getColumns']);
+    Route::post('/admin/chart-data', [AnalitikController::class, 'getChartData']);
+
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -82,9 +91,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
-    
+
     # Riwayat Pemesanan
-    Route::get('/history', [RiwayatController::class, 'index'])->name('customer.history');
+    Route::get('/riwayat-transaksi', [RiwayatController::class, 'index'])->name('riwayat.transaksi');
 
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -108,4 +117,3 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
 });
-

@@ -16,12 +16,10 @@ class OngkirTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             // Login as admin
-            $browser->visit('/')
-                    ->type('email', 'pasarlocal382@gmail.com')
-                    ->type('password', 'p4sarl0c4l123')
-                    ->select('@role-select', 'pedagang')
-                    ->assertSelected('@role-select', 'pedagang')
-                    ->click('@login')
+            $browser->visit('/login')
+                    ->type('input[name=email]', 'admin@example.com')
+                    ->type('input[name=password]', 'password123')
+                    ->press('@login')
                     ->assertPathIs('/admin/manajemen-produk')
                     ->assertSee('Manajemen Ongkir')
                     ->clickLink('Manajemen Ongkir')
