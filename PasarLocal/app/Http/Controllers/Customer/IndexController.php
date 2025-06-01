@@ -9,7 +9,7 @@ use App\Models\Pasar;
 class IndexController extends Controller
 {
     public function index() {
-        $markets = Pasar::take(4)->get();
+        $markets = Pasar::all();
         return view('customer.dashboard', compact('markets'));
     }
 }

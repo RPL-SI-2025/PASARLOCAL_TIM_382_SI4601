@@ -100,7 +100,16 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
+
+    # Checkout Route
+    Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
+    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/ajax/cek-ongkir', [CartController::class, 'ajaxCekOngkir'])->name('ajax.cek-ongkir');
+    Route::get('/ajax/cek-diskon', [CartController::class, 'ajaxCekDiskon'])->name('ajax.cek-diskon');
+
+    # Search Route
+    Route::get('/ajax/search', [\App\Http\Controllers\Customer\SearchController::class, 'search'])->name('ajax.search');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
