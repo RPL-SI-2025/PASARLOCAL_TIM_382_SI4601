@@ -24,7 +24,7 @@
         }
 
         .logo img {
-            height: 40px;
+            height: 50px;
         }
 
         .register-container {
@@ -145,7 +145,7 @@
 </head>
 <body>
     <div class="logo">
-        <img src="{{ asset('images/logo.png') }}" alt="PasarLocal">
+        <img src="{{ asset('uploads_logo/PASARLOCALLL.png') }}" alt="PasarLocal">
     </div>
 
     <div class="register-container">
@@ -216,6 +216,10 @@
 
             <button type="submit" class="login-btn">Register</button>
         </form>
+
+        <div class="register-link" style="text-align: center; margin-top: 20px;">
+            <a href="{{ route('login') }}" style="color: white; text-decoration: none;">Sudah mempunyai akun? Klik Login disini</a>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
