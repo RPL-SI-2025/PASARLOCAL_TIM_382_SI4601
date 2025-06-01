@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('nama_toko', 100);
             $table->string('nomor_telepon', 100);
             $table->timestamps();
-
             $table->foreign('id_pasar')->references('id_pasar')->on('pasar')->onDelete('cascade');
         });
 
