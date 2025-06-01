@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('ongkir', function (Blueprint $table) {
@@ -18,10 +15,8 @@ return new class extends Migration
             $table->string('kecamatan_tujuan');
             $table->integer('ongkir');
             $table->timestamps();
-            $table->foreign('id_pasar')
-                ->references('id_pasar')
-                ->on('pasar')
-                ->onDelete('cascade'); // opsional: hapus ongkir jika pasar dihapus
+
+            $table->foreign('id_pasar')->references('id_pasar')->on('pasar')->onDelete('cascade');
         });
 
         //Dummy Ongkir
@@ -57,9 +52,6 @@ return new class extends Migration
         ]);
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('ongkir');

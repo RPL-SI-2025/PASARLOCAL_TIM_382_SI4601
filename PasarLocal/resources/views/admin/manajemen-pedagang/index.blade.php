@@ -7,8 +7,8 @@
     <h2 class="mb-4">Manajemen Pedagang</h2>
 
     <div class="search-container mb-4">
-        <form action="{{ route('admin.manajemen-pedagang.index') }}" method="GET" class="d-flex">
-            <select name="pasar" class="form-control me-2" style="width: 200px;">
+        <form action="{{ route('admin.manajemen-pedagang.index') }}" method="GET" class="d-flex" id="searchForm">
+            <select name="pasar" class="form-control me-2" style="width: 200px;" onchange="this.form.submit()">
                 <option value="">Semua Pasar</option>
                 @foreach($pasar as $p)
                     <option value="{{ $p->id_pasar }}" {{ request('pasar') == $p->id_pasar ? 'selected' : '' }}>
@@ -16,7 +16,7 @@
                     </option>
                 @endforeach
             </select>
-            <input type="text" name="search" class="form-control me-2" placeholder="Cari nama pedagang..." value="{{ request('search') }}">
+            <input type="text" name="search" class="form-control me-2" placeholder="Cari nama pedagang..." value="{{ request('search') }}" onkeyup="debounceSearch()">
             <button type="submit" class="btn btn-hijau">Cari</button>
             @if(request('search') || request('pasar'))
                 <a href="{{ route('admin.manajemen-pedagang.index') }}" class="btn btn-secondary ms-2">Reset</a>
@@ -95,4 +95,14 @@
         + Tambah Pedagang
     </a>
 </div>
+
+<script>
+    let timeoutId;
+    function debounceSearch() {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            document.getElementById('searchForm').submit();
+        }, 500); // 500ms delay
+    }
+</script>
 @endsection 

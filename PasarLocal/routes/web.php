@@ -112,6 +112,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
     Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
     Route::get('/ajax/cek-ongkir', [CartController::class, 'ajaxCekOngkir'])->name('ajax.cek-ongkir');
+    Route::get('/ajax/cek-diskon', [CartController::class, 'ajaxCekDiskon'])->name('ajax.cek-diskon');
+
+    # Search Route
+    Route::get('/ajax/search', [\App\Http\Controllers\Customer\SearchController::class, 'search'])->name('ajax.search');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {

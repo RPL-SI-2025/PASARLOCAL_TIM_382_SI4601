@@ -2,7 +2,8 @@
     <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <style>
     body {
         background-color: #f8f9fa;
@@ -340,21 +341,117 @@
 <div class="search-modal" id="searchModal">
     <div class="search-modal-content">
         <div class="search-tabs">
-            <div class="search-tab active" data-tab="products">Produk</div>
-            <div class="search-tab" data-tab="markets">Pasar</div>
+            <div class="search-tab active" data-type="product">Produk</div>
+            <div class="search-tab" data-type="market">Pasar</div>
         </div>
 
         <div class="search-input-group">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Cari produk atau pasar..." id="searchInput">
-        </div>
-
-        <div class="category-tags" id="categoryTags">
-            <!-- Tags dinamis -->
+            <input type="text" placeholder="Cari produk atau pasar..." id="search-input">
         </div>
 
         <div class="search-results" id="searchResults">
-            <!-- Hasil pencarian dinamis -->
+            {{-- Results will be loaded here via AJAX --}}
         </div>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        const searchModal = $('#searchModal');
+        const searchInput = $('#search-input');
+        const searchResults = $('#searchResults');
+        const searchTabs = $('.search-tab');
+        let currentSearchType = 'product'; // Default search type
+
+        // Open search modal
+        $('.search-container input').on('focus', function() {
+            searchModal.fadeIn();
+            searchInput.focus(); // Set focus to the modal input
+        });
+
+        // Close search modal when clicking outside the content
+        searchModal.on('click', function(e) {
+            if ($(e.target).is(searchModal)) {
+                searchModal.fadeOut();
+            }
+        });
+
+        // Handle tab clicks
+        searchTabs.on('click', function() {
+            searchTabs.removeClass('active');
+            $(this).addClass('active');
+            currentSearchType = $(this).data('type');
+            performSearch(); // Perform search again with the new type
+        });
+
+        // Perform search on input change
+        searchInput.on('input', function() {
+            performSearch();
+        });
+
+        function performSearch() {
+            const query = searchInput.val();
+            if (query.length > 2) { // Perform search only if query is at least 3 characters
+                $.ajax({
+                    url: "{{ route('ajax.search') }}",
+                    method: 'GET',
+                    data: {
+                        query: query,
+                        type: currentSearchType
+                    },
+                    success: function(response) {
+                        displayResults(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Search error:', error);
+                        searchResults.html('<p class="text-muted text-center">Terjadi kesalahan saat mencari.</p>');
+                    }
+                });
+            } else {
+                searchResults.empty(); // Clear results if query is too short
+            }
+        }
+
+        function displayResults(results) {
+            searchResults.empty();
+
+            if (currentSearchType === 'product') {
+                if (results.products && results.products.length > 0) {
+                    results.products.forEach(product => {
+                        searchResults.append(`
+                            <a href="${product.url}" class="search-result-item d-flex align-items-center text-decoration-none text-dark">
+                                <img src="${product.image}" alt="${product.name}">
+                                <div class="search-result-info">
+                                    <h6>${product.name}</h6>
+                                    <p>Produk</p>
+                                </div>
+                            </a>
+                        `);
+                    });
+                } else {
+                    searchResults.html('<p class="text-muted text-center">Tidak ada produk ditemukan.</p>');
+                }
+            } else if (currentSearchType === 'market') {
+                 if (results.markets && results.markets.length > 0) {
+                    results.markets.forEach(market => {
+                        searchResults.append(`
+                            <a href="${market.url}" class="search-result-item d-flex align-items-center text-decoration-none text-dark">
+                                <img src="${market.image}" alt="${market.name}">
+                                <div class="search-result-info">
+                                    <h6>${market.name}</h6>
+                                    <p>Pasar</p>
+                                </div>
+                            </a>
+                        `);
+                    });
+                } else {
+                    searchResults.html('<p class="text-muted text-center">Tidak ada pasar ditemukan.</p>');
+                }
+            }
+        }
+    });
+</script>
+

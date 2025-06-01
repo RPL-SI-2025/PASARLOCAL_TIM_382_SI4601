@@ -58,6 +58,33 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label fw-bold">Kode Diskon</label>
+                            <div class="input-group">
+                                <select class="form-select" name="kode_diskon" id="kode_diskon">
+                                    <option value="">Pilih Diskon</option>
+                                    @foreach($availableDiskons as $diskon)
+                                        <option value="{{ $diskon->kode_diskon }}" 
+                                                data-jenis="{{ $diskon->jenis_diskon }}"
+                                                data-max="{{ $diskon->max_diskon }}"
+                                                data-min="{{ $diskon->min_pembelian }}">
+                                            {{ $diskon->nama_diskon }} 
+                                            @if($diskon->jenis_diskon === 'amount')
+                                                - Potongan Rp {{ number_format($diskon->max_diskon, 0, ',', '.') }}
+                                            @else
+                                                - Gratis Ongkir
+                                            @endif
+                                            @if($diskon->min_pembelian)
+                                                (Min. Rp {{ number_format($diskon->min_pembelian, 0, ',', '.') }})
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-outline-success" onclick="applyDiscount()">Terapkan</button>
+                            </div>
+                            <div id="discount-info" class="form-text"></div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label fw-bold">Ongkir</label>
                             @if($ongkir)
                                 <select class="form-select" name="ongkir_type" id="ongkir_type" required>
@@ -74,7 +101,23 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Total Harga</label>
-                            <input type="text" class="form-control" id="totalHarga" value="Rp {{ number_format($total + ($ongkir->ongkir ?? 0), 0, ',', '.') }}" readonly>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Subtotal:</span>
+                                <span id="subtotal">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Diskon:</span>
+                                <span id="discount-amount">Rp 0</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Ongkir:</span>
+                                <span id="shipping-amount">Rp {{ number_format($ongkir->ongkir ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Total:</span>
+                                <span class="fw-bold" id="totalHarga">Rp {{ number_format($total + ($ongkir->ongkir ?? 0), 0, ',', '.') }}</span>
+                            </div>
                         </div>
 
                         <button type="button" class="btn btn-success w-100" onclick="konfirmasiPesan()" @if(!$ongkir) disabled @endif>Pesan</button>
@@ -86,7 +129,7 @@
 </div>
 
 <!-- Tombol kembali -->
-<a href="{{ url()->previous() }}" class="btn btn-secondary float-button" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
+<a href="{{ route('checkout.show', ['selected_items' => request('selected_items')]) }}" class="btn btn-secondary float-button" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
     <i class="fas fa-arrow-left me-2"></i> Kembali
 </a>
 
@@ -102,20 +145,65 @@
             width: '100%'
         });
 
-        // Simpan id_pasar untuk AJAX
-        var idPasar = "{{ $pasar->id_pasar ?? '' }}";
-        var total = {{ $total }};
+        $('#kode_diskon').select2({
+            placeholder: 'Pilih Diskon',
+            allowClear: true,
+            width: '100%'
+        });
 
-        // Saat kecamatan diubah, cek ongkir
+        // Store variables
+        const idPasar = "{{ $pasar->id_pasar ?? '' }}";
+        const total = parseInt("{{ $total }}");
+        let discountAmount = 0;
+        let shippingDiscount = false;
+
+        // Function to update total price
+        function updateTotalHarga() {
+            let ongkir = parseInt($('#ongkir').val());
+            let harga = total;
+            
+            // Apply shipping discount if available
+            if (shippingDiscount) {
+                ongkir = 0;
+            }
+            
+            // Apply regular discount
+            let finalTotal = harga - discountAmount;
+            
+            // Add shipping cost
+            if ($('#ongkir_type').val() === 'prioritas') {
+                ongkir += 10000;
+            }
+            finalTotal += ongkir;
+
+            // Update display
+            $('#subtotal').text('Rp ' + harga.toLocaleString('id-ID'));
+            $('#discount-amount').text('Rp ' + discountAmount.toLocaleString('id-ID'));
+            $('#shipping-amount').text('Rp ' + ongkir.toLocaleString('id-ID'));
+            $('#totalHarga').text('Rp ' + finalTotal.toLocaleString('id-ID'));
+        }
+
+        // Function to set shipping as unavailable
+        function setOngkirUnavailable() {
+            $('#ongkir_type').html('<option>Pengiriman tidak tersedia</option>');
+            $('#ongkir_type').prop('disabled', true);
+            $('#totalHarga').addClass('is-invalid').val('Pengiriman tidak tersedia');
+            $('#checkoutForm button[type=button]').prop('disabled', true);
+        }
+
+        // Handle kecamatan change
         $('#kecamatan').on('change', function() {
-            var kecamatan = $(this).val();
+            const kecamatan = $(this).val();
             if (!kecamatan || !idPasar) {
                 setOngkirUnavailable();
                 return;
             }
-            $.getJSON("{{ route('ajax.cek-ongkir') }}", { id_pasar: idPasar, kecamatan: kecamatan }, function(res) {
+
+            $.getJSON("{{ route('ajax.cek-ongkir') }}", { 
+                id_pasar: idPasar, 
+                kecamatan: kecamatan 
+            }, function(res) {
                 if (res.ongkir !== null) {
-                    // Enable dropdown ongkir, update opsi dan total harga
                     $('#ongkir_type').prop('disabled', false);
                     $('#ongkir').val(res.ongkir);
                     $('#ongkir_type').html(
@@ -123,7 +211,7 @@
                         '<option value="prioritas">Prioritas (Rp ' + (parseInt(res.ongkir)+10000).toLocaleString('id-ID') + ')</option>'
                     );
                     updateTotalHarga();
-                    $('#totalHarga').removeClass('is-invalid').val('Rp ' + (total + parseInt(res.ongkir)).toLocaleString('id-ID'));
+                    $('#totalHarga').removeClass('is-invalid');
                     $('#checkoutForm button[type=button]').prop('disabled', false);
                 } else {
                     setOngkirUnavailable();
@@ -131,31 +219,62 @@
             });
         });
 
-        // Update total harga saat ongkir_type berubah
+        // Handle ongkir type change
         $('#ongkir_type').on('change', function() {
             updateTotalHarga();
         });
 
-        function updateTotalHarga() {
-            let ongkir = parseInt($('#ongkir').val());
-            let harga = total;
-            if ($('#ongkir_type').val() === 'prioritas') {
-                ongkir += 10000;
-            }
-            $('#totalHarga').val('Rp ' + (harga + ongkir).toLocaleString('id-ID'));
-        }
+        // Handle discount selection change
+        $('#kode_diskon').on('change', function() {
+            const selectedOption = $(this).find('option:selected');
+            const jenisDiskon = selectedOption.data('jenis');
+            const maxDiskon = selectedOption.data('max');
+            const minPembelian = selectedOption.data('min');
 
-        function setOngkirUnavailable() {
-            $('#ongkir_type').html('<option>Pengiriman tidak tersedia</option>');
-            $('#ongkir_type').prop('disabled', true);
-            $('#totalHarga').addClass('is-invalid').val('Pengiriman tidak tersedia');
-            $('#checkoutForm button[type=button]').prop('disabled', true);
-        }
+            if (!jenisDiskon) {
+                discountAmount = 0;
+                shippingDiscount = false;
+                updateTotalHarga();
+                return;
+            }
+
+            if (minPembelian && total < minPembelian) {
+                $('#discount-info').html('<span class="text-danger">Minimal pembelian Rp ' + minPembelian.toLocaleString('id-ID') + '</span>');
+                discountAmount = 0;
+                shippingDiscount = false;
+                updateTotalHarga();
+                return;
+            }
+
+            if (jenisDiskon === 'amount') {
+                discountAmount = Math.min(maxDiskon, total);
+                shippingDiscount = false;
+                $('#discount-info').html('<span class="text-success">Diskon Rp ' + discountAmount.toLocaleString('id-ID') + ' berhasil diterapkan</span>');
+            } else if (jenisDiskon === 'shipping') {
+                discountAmount = 0;
+                shippingDiscount = true;
+                $('#discount-info').html('<span class="text-success">Gratis ongkir berhasil diterapkan</span>');
+            }
+
+            updateTotalHarga();
+        });
     });
 
-    // Konfirmasi sebelum submit
+    // Function to apply discount
+    function applyDiscount() {
+        const selectedOption = $('#kode_diskon option:selected');
+        if (!selectedOption.val()) {
+            $('#discount-info').html('<span class="text-danger">Pilih diskon terlebih dahulu</span>');
+            return;
+        }
+
+        // Trigger the change event to apply the discount
+        $('#kode_diskon').trigger('change');
+        }
+
+    // Confirmation before submit
     function konfirmasiPesan() {
-        let konfirmasi = confirm('Apakah Anda yakin ingin memesan produk ini?');
+        const konfirmasi = confirm('Apakah Anda yakin ingin memesan produk ini?');
         if (konfirmasi) {
             document.getElementById('checkoutForm').submit();
         }

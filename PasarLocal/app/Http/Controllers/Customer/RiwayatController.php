@@ -3,27 +3,24 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Transaksi;
+use App\Models\Pemesanan;
 
 class RiwayatController extends Controller
 {
     public function index(Request $request)
     {
-        $transaksis = Transaksi::with(['produkPedagang', 'user', 'pasar'])
-            ->where('id_user', auth()->id())
-            ->when($request->search, fn($q) =>
-                $q->whereHas('produkPedagang', fn($q2) =>
-                    $q2->where('nama_produk', 'like', '%' . $request->search . '%')
-                )
-            )
-            ->when($request->status, fn($q) =>
-                $q->where('status', $request->status)
-            )
+        $customer = Auth::user()->customer;
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
+        }
+
+        $pemesanans = Pemesanan::with(['detailPemesanans.produkPedagang.produk', 'detailPemesanans.produkPedagang.pedagang.pasar'])
+            ->where('customer_id', $customer->id)
             ->latest()
             ->paginate(10);
-
-        return view('customer.riwayat-pemesanan.index', compact('transaksis'));
+        return view('customer.riwayat-pemesanan.index', compact('pemesanans'));
     }
 
 

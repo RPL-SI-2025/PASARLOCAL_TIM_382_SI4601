@@ -41,44 +41,56 @@
     <div class="container py-5">
         <h2 class="mb-4 fw-bold">Riwayat Transaksi</h2>
 
-        @if($transaksis->count())
-            @foreach($transaksis as $transaksi)
-                <div class="card-transaksi border p-4 mb-4 bg-white">
-                    <div class="d-flex justify-content-between small text-muted mb-2">
-                        <div>
-                            Belanja {{ $transaksi->created_at->format('d M Y') }}
-                        </div>
-                        <div>
-                            <span class="badge-status bg-success text-white">{{ ucfirst($transaksi->status ?? 'selesai') }}</span>
-                            <span class="ms-2 text-secondary">INV/{{ $transaksi->id }}</span>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <img src="{{ asset('uploads_produk/' . $transaksi->produkPedagang->produk->gambar) }}" class="img-fluid rounded-start" alt="{{ $transaksi->produkPedagang->produk->nama_produk }}"
-                             alt="Foto Produk" class="img-produk me-3 border" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">{{ $transaksi->produkPedagang->produk->nama_produk ?? '-' }}</h6>
-                            <div class="text-muted small">{{ $transaksi->quantity }} barang x Rp{{ number_format($transaksi->produkPedagang->harga ?? 0, 0, ',', '.') }}</div>
-                            <div class="text-muted small">Pasar: {{ $transaksi->pasar->nama_pasar ?? '-' }}</div>
-                        </div>
-                        <div class="text-end">
-                            <div class="small text-muted">Total Belanja</div>
-                            <div class="fs-5 fw-bold text-success">
-                                Rp{{ number_format(($transaksi->produkPedagang->harga ?? 0) * $transaksi->quantity, 0, ',', '.') }}
+        @if($pemesanans->count())
+            @foreach($pemesanans as $pemesanan)
+                @foreach($pemesanan->detailPemesanans as $detail)
+                    <div class="card-transaksi border p-4 mb-4 bg-white">
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <div>
+                                Belanja {{ $pemesanan->created_at->format('d M Y') }}
+                            </div>
+                            <div>
+                                <span class="badge-status bg-success text-white">{{ ucfirst($pemesanan->status) }}</span>
+                                <span class="ms-2 text-secondary">INV/{{ $pemesanan->id }}</span>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mt-3 d-flex justify-content-end gap-2">
-                        <a href="#" class="btn btn-outline-success btn-sm btn-rounded">Ulas</a>
-                        <a href="#" class="btn btn-success btn-sm btn-rounded">Beli Lagi</a>
+                        <div class="d-flex align-items-center">
+                            @if ($detail->produkPedagang && $detail->produkPedagang->produk)
+                                <img src="{{ asset('uploads_produk/' . $detail->produkPedagang->produk->gambar) }}"
+                                    class="img-produk me-3 border"
+                                    alt="{{ $detail->produkPedagang->produk->nama_produk }}">
+                            @else
+                                <img src="{{ asset('default.jpg') }}" class="img-produk me-3 border" alt="Produk tidak ditemukan">
+                            @endif
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ $detail->produkPedagang->produk->nama_produk ?? '-' }}</h6>
+                                <div class="text-muted small">{{ $detail->jumlah }} barang x Rp{{ number_format($detail->harga, 0, ',', '.') }}</div>
+                                @if ($detail->produkPedagang && $detail->produkPedagang->pedagang && $detail->produkPedagang->pedagang->pasar)
+                                    {{ $detail->produkPedagang->pedagang->pasar->nama_pasar }}
+                                @else
+                                    <span>Pasar tidak tersedia</span>
+                                @endif
+                            </div>
+                            <div class="text-end">
+                                <div class="small text-muted">Total Belanja</div>
+                                <div class="fs-5 fw-bold text-success">
+                                    Rp{{ number_format($detail->jumlah * $detail->harga, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 d-flex justify-content-end gap-2">
+                            <a href="#">Detail</a>
+                            <a href="#" class="btn btn-outline-success btn-sm btn-rounded">Ulas</a>
+                            <a href="#" class="btn btn-success btn-sm btn-rounded">Beli Lagi</a>
+                        </div>
                     </div>
-                </div>
+                @endforeach
             @endforeach
 
             <div class="mt-4">
-                {{ $transaksis->links() }}
+                {{ $pemesanans->links() }}
             </div>
         @else
             <div class="text-center py-5 text-muted">

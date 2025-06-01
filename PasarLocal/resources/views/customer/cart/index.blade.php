@@ -82,7 +82,7 @@
                                             <td class="px-4 py-2">
                                                 <img src="{{ asset('uploads_produk/' . $item->produkPedagang->produk->gambar) }}"
                                                      alt="{{ $item->produkPedagang->produk->nama_produk }}"
-                                                     class="w-12 h-12 object-cover rounded">
+                                                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                             </td>
                                             <td class="px-4 py-2">
                                                 <div class="ml-0">
@@ -92,13 +92,13 @@
                                             </td>
                                             <td class="px-4 py-2">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                                             <td class="px-4 py-2">
-                                                <form action="{{ route('cart.update-quantity', $item) }}" method="POST" class="flex items-center">
+                                                <form action="{{ route('cart.update-quantity', $item) }}" method="POST" class="flex items-center update-quantity-form">
                                                     @csrf
                                                     @method('PUT')
                                                     <input type="number" name="quantity" value="{{ $item->quantity }}"
-                                                           min="1" class="w-20 border rounded px-2 py-1">
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-2">
-                                                        Perbarui
+                                                           min="1" class="w-20 border rounded px-2 py-1 quantity-input">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-2 update-btn">
+                                                        <i class="fas fa-sync-alt me-1"></i> Perbarui
                                                     </button>
                                                 </form>
                                             </td>
@@ -155,6 +155,76 @@
                     itemCheckbox.checked = this.checked;
                 });
                 document.getElementById('cart-form-' + marketId).submit();
+            });
+        });
+
+        // Handle quantity updates with AJAX
+        const updateForms = document.querySelectorAll('.update-quantity-form');
+        updateForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const submitBtn = this.querySelector('.update-btn');
+                const originalText = submitBtn.innerHTML;
+                
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Memperbarui...';
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the subtotal in the table
+                        const row = this.closest('tr');
+                        const subtotalCell = row.querySelector('td:nth-last-child(2)');
+                        subtotalCell.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.subtotal);
+                        
+                        // Show success message
+                        const alert = document.createElement('div');
+                        alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                        alert.style.zIndex = '9999';
+                        alert.innerHTML = `
+                            ${data.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        `;
+                        document.body.appendChild(alert);
+                        
+                        // Remove alert after 3 seconds
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 3000);
+                    } else {
+                        throw new Error(data.message || 'Terjadi kesalahan');
+                    }
+                })
+                .catch(error => {
+                    // Show error message
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alert.style.zIndex = '9999';
+                    alert.innerHTML = `
+                        ${error.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    document.body.appendChild(alert);
+                    
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 3000);
+                })
+                .finally(() => {
+                    // Re-enable button and restore original text
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
             });
         });
     });
