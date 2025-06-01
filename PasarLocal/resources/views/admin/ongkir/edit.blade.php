@@ -47,9 +47,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="kecamatan_tujuan">Kecamatan Tujuan</label>
-                                        <input type="text" class="form-control @error('kecamatan_tujuan') is-invalid @enderror"
-                                               id="kecamatan_tujuan" name="kecamatan_tujuan"
-                                               value="{{ old('kecamatan_tujuan', $ongkir->kecamatan_tujuan) }}" required dusk="update-tujuan">
+                                        <select class="form-select @error('kecamatan_tujuan') is-invalid @enderror" id="kecamatan_tujuan" name="kecamatan_tujuan" required dusk="update-tujuan">
+                                            <option value="">Pilih Kecamatan</option>
+                                            @foreach(\App\Constants\Kecamatan::getAll() as $kecamatan)
+                                                <option value="{{ $kecamatan }}" {{ old('kecamatan_tujuan', $ongkir->kecamatan_tujuan) == $kecamatan ? 'selected' : '' }}>{{ $kecamatan }}</option>
+                                            @endforeach
+                                        </select>
                                         @error('kecamatan_tujuan')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

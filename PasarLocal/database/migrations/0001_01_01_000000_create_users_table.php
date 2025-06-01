@@ -21,6 +21,8 @@ return new class extends Migration
             $table->enum('role', ['admin', 'pedagang', 'customer'])->default('customer');
             $table->string('alamat')->nullable();
             $table->string('nomor_telepon')->nullable();
+            $table->rememberToken();
+            $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
         });
 
@@ -32,6 +34,7 @@ return new class extends Migration
             'role' => 'admin',
             'created_at' => now(),
             'updated_at' => now(),
+            'last_seen_at' => now()
         ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

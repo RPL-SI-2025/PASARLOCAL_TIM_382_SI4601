@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
         });
 
-        DB::table('produk_pedagang')->insert([
+        DB::table('transaksis')->insert([
             ['id_pasar' => 1,
             'id_produk_pedagang' => 1,
             'id_user' => 2,

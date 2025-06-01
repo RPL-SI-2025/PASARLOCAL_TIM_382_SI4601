@@ -1,183 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Dashboard Analitik</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Document</title>
 </head>
-<body class="bg-light">
-<div class="container py-5">
-    <h2 class="mb-4">Dashboard Analitik</h2>
-    <button onclick="addAnalyticCard()" class="btn btn-primary mb-4">+ Tambah Analitik</button>
-    <div id="analytic-container" class="row g-4"></div>
-</div>
 
-<script>
-    let chartId = 0;
-    let chartInstances = {};
+<body>
+    @include('admin.partials.navbar')
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold mb-6">Dashboard Analitik</h2>
 
-    function addAnalyticCard() {
-        chartId++;
-        const container = document.getElementById('analytic-container');
-
-        const col = document.createElement('div');
-        col.className = 'col-md-6';
-
-        const card = document.createElement('div');
-        card.className = 'card p-3 shadow';
-        card.innerHTML = `
-            <div class="mb-2">
-                <label class="form-label">Jenis Chart</label>
-                <select class="form-select chart-type-${chartId}" onchange="autoDetectColumns(${chartId})">
-                    <option value="bar">Bar</option>
-                    <option value="line">Line</option>
-                    <option value="pie">Pie</option>
-                </select>
+        <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap gap-4 mb-6">
+            <input type="date" name="start_date" class="border rounded px-3 py-2" value="{{ $start }}">
+            <input type="date" name="end_date" class="border rounded px-3 py-2" value="{{ $end }}">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+            <div class="ml-auto flex gap-2">
+                <a href="{{ route('dashboard.export.pdf', ['start_date' => $start, 'end_date' => $end]) }}"
+                    class="bg-red-600 text-white px-4 py-2 rounded">Export PDF</a>
+                <a href="{{ route('dashboard.export.excel', ['start_date' => $start, 'end_date' => $end]) }}"
+                    class="bg-green-600 text-white px-4 py-2 rounded">Export Excel</a>
             </div>
-            <div class="mb-2">
-                <label class="form-label">Tabel</label>
-                <select onchange="loadColumns(this, ${chartId})" class="form-select table-select-${chartId}"></select>
+        </form>
+        <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <h3 class="text-lg font-semibold mb-2">Pendapatan per Produk</h3>
+                                <canvas id="revenuePerProduct"></canvas>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="bg-white rounded-lg shadow p-4">
+                                    <h3 class="text-lg font-semibold mb-2">Pendapatan per Pedagang</h3>
+                                    <canvas id="revenuePerPedagang"></canvas>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="bg-white rounded-lg shadow p-4">
+                                    <h3 class="text-lg font-semibold mb-2">Pendapatan per Pasar</h3>
+                                    <canvas id="revenuePerPasar"></canvas>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="bg-white rounded-lg shadow p-4">
+                                    <h3 class="text-lg font-semibold mb-2">Segmentasi Customer (Kecamatan)</h3>
+                                    <canvas id="customerSegmentation"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="mb-2">
-                <label class="form-label">Kolom X</label>
-                <select class="form-select x-column-${chartId}"></select>
+            <div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold mb-2">Customer Online (5 menit terakhir)</h3>
+                </div>
+                <div class="card-body">
+                    <ul id="onlineUsers" class="list-disc pl-5 text-sm text-gray-700"></ul>
+                </div>
             </div>
-            <div class="mb-2">
-                <label class="form-label">Kolom Y</label>
-                <select class="form-select y-column-${chartId}"></select>
-            </div>
-            <div class="mb-2">
-                <label class="form-label">Agregasi</label>
-                <select class="form-select aggregation-${chartId}">
-                    <option value="count">Count</option>
-                    <option value="sum">Sum</option>
-                    <option value="avg">Average</option>
-                </select>
-            </div>
-            <button onclick="generateChart(${chartId})" class="btn btn-success mb-2">Tampilkan</button>
-            <div style="height: 300px;">
-                <canvas id="chartCanvas-${chartId}"></canvas>
-            </div>
-        `;
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch("{{ url('/dashboard/data') }}?start_date={{ $start }}&end_date={{ $end }}")
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    createChart('revenuePerProduct', data.revenuePerProduct.map(r => r.nama_produk), data
+                        .revenuePerProduct.map(r => r.total));
+                    createChart('revenuePerPedagang', data.revenuePerPedagang.map(r => r.nama_toko), data
+                        .revenuePerPedagang.map(r => r.total));
+                    createChart('revenuePerPasar', data.revenuePerPasar.map(r => r.nama_pasar), data
+                        .revenuePerPasar.map(r => r.total));
+                    createChart('customerSegmentation', data.customerSegmentation.map(r => r.kecamatan), data
+                        .customerSegmentation.map(r => r.total));
 
-        col.appendChild(card);
-        container.appendChild(col);
-        loadTables(chartId);
-    }
+                    const ul = document.getElementById('onlineUsers');
+                    data.onlineUsers.forEach(user => {
+                        const li = document.createElement('li');
+                        li.textContent = `${user.name} (${user.email})`;
+                        ul.appendChild(li);
+                    });
+                });
 
-    async function loadTables(id) {
-        const res = await fetch("/admin/tables");
-        const tables = await res.json();
-        const select = document.querySelector(`.table-select-${id}`);
-        select.innerHTML = tables.map(t => `<option value="${t}">${t}</option>`).join("");
-        await loadColumns(select, id);
-        autoDetectColumns(id);
-    }
-    async function autoDetectColumns(id) {
-        const table = document.querySelector(`.table-select-${id}`).value;
-        const chartType = document.querySelector(`.chart-type-${id}`).value;
+            function createChart(id, labels, data) {
+                const backgroundColors = [
+                    '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+                    '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6',
+                    '#eab308', '#f97316', '#a855f7', '#0ea5e9'
+                ].slice(0, data.length);
 
-        const res = await fetch(`/admin/columns/${table}`);
-        const columns = await res.json();
-
-        const timeCols = columns.filter(c =>
-            c.type === 'date' || c.type === 'datetime' || c.name.includes('created') || c.name.includes('tanggal') || c.name.includes('waktu')
-        );
-        const numericCols = columns.filter(c => ['integer', 'bigint', 'decimal', 'float', 'double'].includes(c.type));
-        const categoricalCols = columns.filter(c =>
-            !numericCols.includes(c) && !timeCols.includes(c) && !c.name.includes('id')
-        );
-
-        let x = '', y = '', agg = 'sum';
-
-        if (chartType === 'pie') {
-            x = categoricalCols[0]?.name || 'id';
-            y = numericCols[0]?.name || 'id';
-            agg = 'sum';
-        } else if (chartType === 'line') {
-            x = timeCols[0]?.name || 'created_at';
-            y = numericCols[0]?.name || 'id';
-            agg = 'sum';
-        } else { // bar
-            x = categoricalCols[0]?.name || 'id';
-            y = numericCols[0]?.name || 'id';
-            agg = 'count';
-        }
-
-        const xSelect = document.querySelector(`.x-column-${id}`);
-        const ySelect = document.querySelector(`.y-column-${id}`);
-        const aggSelect = document.querySelector(`.aggregation-${id}`);
-
-        if (xSelect && ySelect && aggSelect) {
-            xSelect.value = x;
-            ySelect.value = y;
-            aggSelect.value = agg;
-        }
-    }
-
-    async function loadColumns(selectEl, id) {
-        const table = selectEl.value;
-        const res = await fetch(`/admin/columns/${table}`);
-        const columns = await res.json();
-        console.log(columns);  // <-- tambahkan ini untuk cek data kolom yang didapat
-        document.querySelector(`.x-column-${id}`).innerHTML = columns.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
-    document.querySelector(`.y-column-${id}`).innerHTML = columns.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
-    }
-
-    async function generateChart(id) {
-        const table = document.querySelector(`.table-select-${id}`).value;
-        const x = document.querySelector(`.x-column-${id}`).value;
-        const y = document.querySelector(`.y-column-${id}`).value;
-        const aggregation = document.querySelector(`.aggregation-${id}`).value;
-        const chartType = document.querySelector(`.chart-type-${id}`).value;
-
-        const res = await fetch('/admin/chart-data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ table, x, y, aggregation })
-        });
-
-        const data = await res.json();
-
-        const labels = data.map(item => item.x);
-        const values = data.map(item => item.value);
-
-        const ctx = document.getElementById(`chartCanvas-${id}`).getContext('2d');
-        if (chartInstances[id]) chartInstances[id].destroy();
-
-        // Label dataset lebih dinamis: kalau agregasi count, cukup tampilkan "COUNT"
-        let datasetLabel;
-        if (aggregation.toLowerCase() === 'count') {
-            datasetLabel = 'COUNT';
-        } else {
-            datasetLabel = `${aggregation.toUpperCase()} of ${y}`;
-        }
-
-        chartInstances[id] = new Chart(ctx, {
-            type: chartType,
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: datasetLabel,
-                    data: values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+                new Chart(document.getElementById(id), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Jumlah',
+                            data: data,
+                            backgroundColor: backgroundColors.slice(0, data.length)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                color: function(context) {
+                                    // warna label sama dengan warna batang
+                                    return backgroundColors[context.dataIndex];
+                                },
+                                anchor: 'end',
+                                align: 'bottom',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
             }
         });
-    }
-
-</script>
+    </script>
 </body>
+
 </html>

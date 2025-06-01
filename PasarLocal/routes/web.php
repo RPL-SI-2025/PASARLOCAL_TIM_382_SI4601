@@ -13,6 +13,7 @@ use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
+use App\Http\Controllers\Customer\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AnalitikController;
 
@@ -25,9 +26,12 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])
     ->name('auth.logout')
     ->middleware('auth');
 
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+# Route profile untuk semua role user yang login
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -77,10 +81,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('diskons', DiskonController::class);
 
     # Analytical Dashboard
-    Route::get('/admin/dashboard-analitik',[AnalitikController::class, 'index'] )->name('admin.dashboard-analitik.index');
-    Route::get('/admin/tables', [AnalitikController::class, 'getTables']);
-    Route::get('/admin/columns/{table}', [AnalitikController::class, 'getColumns']);
-    Route::post('/admin/chart-data', [AnalitikController::class, 'getChartData']);
+    Route::get('/dashboard', [AnalitikController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/data', [AnalitikController::class, 'data']);
+    Route::get('/dashboard/export/pdf', [AnalitikController::class, 'exportPdf'])->name('dashboard.export.pdf');
+    Route::get('/dashboard/export/excel', [AnalitikController::class, 'exportExcel'])->name('dashboard.export.excel');
 
 });
 
@@ -95,11 +99,19 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     # Riwayat Pemesanan
     Route::get('/riwayat-transaksi', [RiwayatController::class, 'index'])->name('riwayat.transaksi');
 
+    # Product Routes
+    Route::get('/product/{id}', [ProductController::class, 'show'])->name('customer.product.show');
+
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
     Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
+
+    # Checkout Route
+    Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
+    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
+    Route::get('/ajax/cek-ongkir', [CartController::class, 'ajaxCekOngkir'])->name('ajax.cek-ongkir');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
@@ -117,3 +129,11 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
 });
+
+Route::get('/cek-middleware', function () {
+    if (Auth::check()) {
+        Auth::user()->update(['last_seen_at' => now()]);
+        return 'last_seen_at updated';
+    }
+    return 'not logged in';
+})->middleware(['web', \App\Http\Middleware\UpdateUserLastSeen::class]);

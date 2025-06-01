@@ -15,7 +15,7 @@ class DiskonController extends Controller
     public function index()
     {
         $diskons = Diskon::latest()->paginate(10);
-        return view('diskons.index', compact('diskons'));
+        return view('admin.diskons.index', compact('diskons'));
     }
 
     /**
@@ -66,7 +66,7 @@ class DiskonController extends Controller
     public function show($id)
     {
         $diskon = Diskon::findOrFail($id);
-        return view('diskons.show', compact('diskon'));
+        return view('admin.diskons.show', compact('diskon'));
     }
 
     /**

@@ -1,21 +1,35 @@
-@extends('layouts.app')
+@extends('admin.layouts.app')
 
 @section('content')
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Manajemen Diskon</h3>
-                    <div class="card-tools">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Manajemen Diskon</h5>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create">
                             <i class="fas fa-plus"></i> Tambah Diskon
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Kode Diskon</th>
@@ -84,13 +98,13 @@
 </div>
 
 <!-- Modal Create -->
-<div class="modal fade" id="modal-create" tabindex="-1" aria-labelledby="modal-create-label" aria-hidden="true">
+<div class="modal fade" id="modal-create" tabindex="-1" role="dialog" aria-labelledby="modal-create-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="{{ route('diskons.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal-create-label">Tambah Diskon Baru</h5>
+                    <h5 class="modal-title" id="modal-create-label">Tambah Diskon</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -145,9 +159,7 @@
                 @method('PUT')
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal-edit-label-{{ $diskon->id_diskon }}">Edit Diskon</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group mb-2">
@@ -183,7 +195,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </form>
@@ -200,15 +212,13 @@
                 @method('DELETE')
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal-delete-label-{{ $diskon->id_diskon }}">Konfirmasi Hapus</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Apakah Anda yakin ingin menghapus diskon "{{ $diskon->nama_diskon }}"?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-danger">Hapus</button>
                 </div>
             </form>
@@ -262,32 +272,14 @@
 //                     newStatusClass = 'bg-success';
 //                 }
 
-//                 // Update the badge
-//                 statusBadge.innerText = newStatusText;
+//                 // Update the status badge
+//                 statusBadge.textContent = newStatusText;
 //                 statusBadge.className = `badge ${newStatusClass} text-white`;
-
-//                 // Update the button text and title based on the new 'aktif' state
-//                 const newButtonTitle = updatedDiskon.aktif ? 'Nonaktifkan Diskon' : 'Aktifkan Diskon';
-//                 const newButtonText = updatedDiskon.aktif ? 'Nonaktifkan' : 'Aktifkan';
-
-//                 // Remove the old button and add the new one to potentially change text/icon
-//                 const oldButton = row.querySelector('button.btn-warning'); // Find the old button
-//                 if (oldButton) {
-//                     oldButton.title = newButtonTitle;
-//                     const buttonTextSpan = oldButton.querySelector('i + *');
-//                      if (buttonTextSpan) {
-//                         buttonTextSpan.innerText = ' ' + newButtonText;
-//                     }
-//                 }
-
-//                 alert('Status diskon berhasil diperbarui');
-//             } else {
-//                 alert('Gagal mengubah status diskon');
 //             }
 //         })
 //         .catch(error => {
 //             console.error('Error:', error);
-//             alert('Terjadi kesalahan saat mengubah status diskon');
+//             alert('Terjadi kesalahan saat mengubah status diskon.');
 //         });
 //     }
 // }

@@ -185,7 +185,7 @@
     <a class="nav-link {{ request()->is('admin/kategori-produk*') ? 'active' : '' }}" href="{{ route('admin.kategori-produk.index') }}">
         <i class="fas fa-tags"></i> <span>Manajemen Kategori</span>
     </a>
-    <a class="nav-link {{ request()->is('diskons*') ? 'active' : '' }}" href="{{ route('diskons.index') }}">
+    <a class="nav-link {{ request()->is('admin/diskons*') ? 'active' : '' }}" href="{{ route('diskons.index') }}">
         <i class="fas fa-bullhorn"></i> <span>Manajemen Diskon</span>
     </a>
     <a class="nav-link {{ request()->is('admin/ongkir*') ? 'active' : '' }}" href="{{ route('admin.ongkir.index') }}">
@@ -197,7 +197,7 @@
     <a class="nav-link {{ request()->is('admin/manajemen-pedagang*') ? 'active' : '' }}" href="{{ route('admin.manajemen-pedagang.index') }}">
         <i class="fas fa-users"></i> <span>Manajemen Pedagang</span>
     </a>
-    <a class="nav-link {{ request()->is('/admin/dashboard-analitik*') ? 'active' : '' }}" href="{{ route('admin.dashboard-analitik.index') }}">
+    <a class="nav-link {{ request()->is('/admin/dashboard-analitik*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
         <i class="fas fa-users"></i> <span>Dashboard Analitik</span>
     </a>
 
@@ -210,7 +210,7 @@
         <ul class="dropdown-menu">
             <li class="px-3 pt-2 pb-0">
                 <small class="text-muted">Signed in as</small><br>
-                <span class="fw-bold">{{ Auth::user()->email }}</span>
+                <span class="fw-bold">{{  auth()->user()->email}}</span>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>

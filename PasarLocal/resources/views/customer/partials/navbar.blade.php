@@ -247,6 +247,24 @@
         background: #198754;
         color: white;
     }
+
+    .cart-icon {
+        font-size: 1.2rem;
+        color: #212529;
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        padding: 0.3em 0.5em;
+        font-size: 75%;
+        font-weight: 700;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 0.25rem;
+        line-height: 1;
+    }
 </style>
 
 <!-- Bootstrap CSS -->
@@ -274,7 +292,7 @@
             <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
             <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
             <a href="{{ route('cart.index') }}" class="position-relative me-3">
-                <i class="fas fa-shopping-cart"></i>
+                <i class="fas fa-shopping-cart fs-5 cart-icon"></i>
                 @if(auth()->user()->customer && auth()->user()->customer->carts()->exists())
                     <span class="cart-badge">{{ auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); }) }}</span>
                 @endif
@@ -294,8 +312,16 @@
                         <span class="fw-bold">{{ Auth::user()->email }}</span>
                     </li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                    <li><a class="dropdown-item" href="/riwayat-transaksi">Pembelian</a></li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('riwayat.transaksi') }}">
+                            <i class="fas fa-box me-2"></i> Riwayat Pemesanan
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                            <i class="fas fa-user-edit me-2"></i> Edit Profil
+                        </a>
+                    </li>
                     <li>
                         <form action="{{ route('auth.logout') }}" method="POST">
                             @csrf

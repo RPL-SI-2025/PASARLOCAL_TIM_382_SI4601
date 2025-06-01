@@ -1,136 +1,160 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-
+use App\Models\User;
+use App\Models\Customer;
+use App\Models\Cart;
+use App\Models\CartItem;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ExportExcel;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AnalitikController extends Controller
 {
-    // Menampilkan halaman dashboard analitik
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.analitik.index');
+        $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->toDateString();
+        $end = $request->input('end_date') ?? Carbon::now()->endOfMonth()->toDateString();
+
+        return view('admin.analitik.index', compact('start', 'end'));
     }
 
-    // Mengambil semua nama tabel dari database
-    public function getTables()
+    public function data(Request $request)
     {
-        $databaseName = DB::getDatabaseName();
-        $tables = DB::select('SHOW TABLES');
-        $tableKey = 'Tables_in_' . $databaseName;
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
 
-        $tableNames = array_map(function ($item) use ($tableKey) {
-            return $item->$tableKey;
-        }, $tables);
+        // Filter carts
+        $cartIds = DB::table('carts')
+            ->whereBetween('created_at', [$start, $end])
+            ->pluck('id');
 
-        return response()->json($tableNames);
-    }
-
-    // Mengambil nama kolom dari tabel tertentu
-    public function getColumns($table)
-    {
-        $columns = Schema::getColumnListing($table);
-        $columnData = [];
-
-        foreach ($columns as $col) {
-            $type = DB::getSchemaBuilder()->getColumnType($table, $col);
-            $columnData[] = [
-                'name' => $col,
-                'type' => $type
-            ];
-        }
-
-        // Ambil foreign key
-        $foreignKeyData = DB::table('information_schema.KEY_COLUMN_USAGE')
-            ->where('TABLE_NAME', $table)
-            ->where('TABLE_SCHEMA', DB::getDatabaseName())
-            ->whereNotNull('REFERENCED_TABLE_NAME')
+        // Pendapatan per produk
+        $revenuePerProduct = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('produk', 'produk.id', '=', 'produk_pedagang.id_produk')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('produk.nama_produk', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('produk.nama_produk')
             ->get();
 
-        foreach ($foreignKeyData as $fk) {
-            $refCols = Schema::getColumnListing($fk->REFERENCED_TABLE_NAME);
-            foreach ($refCols as $refCol) {
-                $type = DB::getSchemaBuilder()->getColumnType($fk->REFERENCED_TABLE_NAME, $refCol);
-                $columnData[] = [
-                    'name' => $fk->REFERENCED_TABLE_NAME . '.' . $refCol,
-                    'type' => $type
-                ];
-            }
-        }
-
-        return response()->json($columnData);
-    }
-
-    // Mengambil data untuk ditampilkan di chart
-    public function getChartData(Request $request)
-    {
-        $table = $request->table;
-        $x = $request->x;
-        $y = $request->y;
-        $aggregation = strtolower($request->aggregation);
-
-        // Validasi agregasi (optional, supaya aman)
-        $allowedAgg = ['sum', 'avg', 'count', 'min', 'max'];
-        if (!in_array($aggregation, $allowedAgg)) {
-            return response()->json(['error' => 'Invalid aggregation type'], 400);
-        }
-
-        $query = DB::table($table);
-
-        // Ambil foreign key relasi dari information_schema
-        $foreignKeyData = DB::table('information_schema.KEY_COLUMN_USAGE')
-            ->where('TABLE_NAME', $table)
-            ->where('TABLE_SCHEMA', DB::getDatabaseName())
-            ->whereNotNull('REFERENCED_TABLE_NAME')
+        // Pendapatan per pedagang
+        $revenuePerPedagang = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('pedagang.nama_toko', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('pedagang.nama_toko')
             ->get();
 
-        $fkMap = [];
-        foreach ($foreignKeyData as $fk) {
-            $fkMap[$fk->REFERENCED_TABLE_NAME] = [
-                'local' => $fk->COLUMN_NAME,
-                'foreign' => $fk->REFERENCED_COLUMN_NAME,
-            ];
-        }
+        // Pendapatan per pasar
+        $revenuePerPasar = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
+            ->join('pasar', 'pasar.id_pasar', '=', 'pedagang.id_pasar')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('pasar.nama_pasar', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('pasar.nama_pasar')
+            ->get();
 
-        // Cek apakah kolom x dan y mengandung nama tabel lain (format: tabel.kolom)
-        foreach ([$x, $y] as $col) {
-            if (str_contains($col, '.')) {
-                [$joinTable, $joinCol] = explode('.', $col);
-                if (isset($fkMap[$joinTable])) {
-                    // Join hanya sekali per tabel agar tidak double join
-                    $query->leftJoin($joinTable, "$table.{$fkMap[$joinTable]['local']}", '=', "$joinTable.{$fkMap[$joinTable]['foreign']}");
-                }
-            }
-        }
+        // Segmentasi customer
+        $customerSegmentation = DB::table('carts')
+            ->join('customers', 'carts.customer_id', '=', 'customers.id')
+            ->whereBetween('carts.created_at', [$start, $end])
+            ->select('customers.kecamatan', DB::raw('count(*) as total'))
+            ->groupBy('customers.kecamatan')
+            ->get();
 
-        // Cek tipe kolom x (kalau ada join, kolom bisa berupa tabel.kolom, ambil kolomnya saja)
-        $xParts = explode('.', $x);
-        $xTable = count($xParts) > 1 ? $xParts[0] : $table;
-        $xCol = end($xParts);
+        // Customer online
+        $onlineUsers = User::where('role', 'customer')
+                        ->where('last_seen_at', '>=', Carbon::now()->subMinutes(5)) // Ganti 'updated_at' jadi 'last_seen_at'
+                        ->select('name', 'email')
+                        ->get();
 
-        $columnsInfo = DB::select("SHOW COLUMNS FROM `$xTable` WHERE Field = ?", [$xCol]);
-        $typeX = $columnsInfo[0]->Type ?? '';
+        return response()->json([
+            'revenuePerProduct' => $revenuePerProduct,
+            'revenuePerPedagang' => $revenuePerPedagang,
+            'revenuePerPasar' => $revenuePerPasar,
+            'customerSegmentation' => $customerSegmentation,
+            'onlineUsers' => $onlineUsers
+        ]);
+    }
 
-        if (strpos($typeX, 'date') !== false || strpos($typeX, 'timestamp') !== false || strpos($typeX, 'datetime') !== false) {
-            // Kalau x adalah tanggal, gunakan DATE() dan COUNT(*)
-            $query->selectRaw("DATE($x) as x, COUNT(*) as value")
-                ->groupBy('x');
-        } else {
-            // Default gunakan agregasi yg dipilih
-            $query->selectRaw("$x as x, $aggregation($y) as value")
-                ->groupBy('x');
-        }
+    public function exportPdf(Request $request)
+    {
+        $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->toDateString();
+        $end = $request->input('end_date') ?? Carbon::now()->endOfMonth()->toDateString();
 
-        $data = $query->get()->map(fn($item) => [
-            'x' => $item->x,
-            'value' => $item->value,
+        $data = $this->getAnalyticData($start, $end);
+
+        $pdf = Pdf::loadView('admin.analitik.exportpdf', [
+            'data' => $data,
+            'start' => $start,
+            'end' => $end,
         ]);
 
-        return response()->json($data);
+        return $pdf->download('dashboard.pdf');
     }
 
+    public function exportExcel(Request $request)
+    {
+        $data = $this->data($request)->getData(true);
 
+        return Excel::download(new ExportExcel($data), 'Analitik.xlsx');
+    }
+    private function getAnalyticData($start, $end)
+    {
+        $cartIds = DB::table('carts')
+            ->whereBetween('created_at', [$start, $end])
+            ->pluck('id');
+
+        $revenuePerProduct = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('produk', 'produk.id', '=', 'produk_pedagang.id_produk')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('produk.nama_produk', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('produk.nama_produk')
+            ->get();
+
+        $revenuePerPedagang = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('pedagang.nama_toko', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('pedagang.nama_toko')
+            ->get();
+
+        $revenuePerPasar = DB::table('cart_items')
+            ->join('produk_pedagang', 'cart_items.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
+            ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
+            ->join('pasar', 'pasar.id_pasar', '=', 'pedagang.id_pasar')
+            ->whereIn('cart_items.cart_id', $cartIds)
+            ->select('pasar.nama_pasar', DB::raw('SUM(cart_items.price * cart_items.quantity) as total'))
+            ->groupBy('pasar.nama_pasar')
+            ->get();
+
+        $customerSegmentation = DB::table('carts')
+            ->join('customers', 'carts.customer_id', '=', 'customers.id')
+            ->whereBetween('carts.created_at', [$start, $end])
+            ->select('customers.kecamatan', DB::raw('count(*) as total'))
+            ->groupBy('customers.kecamatan')
+            ->get();
+
+        $onlineUsers = User::where('role', 'customer')
+            ->where('updated_at', '>=', Carbon::now()->subMinutes(5))
+            ->select('name', 'email')
+            ->get();
+
+        return [
+            'revenuePerProduct' => $revenuePerProduct,
+            'revenuePerPedagang' => $revenuePerPedagang,
+            'revenuePerPasar' => $revenuePerPasar,
+            'customerSegmentation' => $customerSegmentation,
+            'onlineUsers' => $onlineUsers
+        ];
+    }
 }
-

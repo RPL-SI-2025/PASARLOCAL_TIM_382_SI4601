@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('alamat');
             $table->string('nomor_telepon');
+            $table->string('kecamatan');
             $table->timestamps();
         });
+
+        
     }
 
     public function down(): void
