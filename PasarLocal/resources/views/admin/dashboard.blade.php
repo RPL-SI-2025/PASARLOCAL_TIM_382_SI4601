@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
 <body>
-    <div class="container-fluid px-4 mt-4">
-        <h1>Dashboard</h1>
+    @include('admin.partials.navbar')
+    <div class="container px-4 mt-4">
+        <h1>Homepage Admin</h1>
         <p>Selamat datang di halaman Admin PasarLocal!</p>
 
         <div class="row">
@@ -27,6 +28,14 @@
                     <div class="card-body">
                         <h5>Jumlah Pedagang</h5>
                         <h2>{{ $jumlahPedagang }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                        <h5>Jumlah Pasar</h5>
+                        <h2>{{ $jumlahPasar }}</h2>
                     </div>
                 </div>
             </div>

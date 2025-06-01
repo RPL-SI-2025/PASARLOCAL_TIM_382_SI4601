@@ -95,7 +95,7 @@ class AuthController extends Controller
 
             if (Hash::check($request->password, $user->password)) {
                 Auth::login($user);
-                return redirect()->route('admin.manajemen-produk.index');
+                return redirect()->route('admin.dashboard');
             }
         }
 

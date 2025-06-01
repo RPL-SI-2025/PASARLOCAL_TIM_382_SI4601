@@ -13,12 +13,9 @@ use App\Http\Controllers\Customer\RiwayatController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
-use App\Http\Controllers\Customer\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminPesananController;
-use App\Http\Controllers\Admin\DashboardController;
-
-
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 
 # Auth
@@ -28,12 +25,9 @@ Route::get('/auth/register', [AuthController::class, 'showRegisterForm'])->name(
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout')->middleware('auth');
 
-# Route profile untuk semua role user yang login
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
-});
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -88,7 +82,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/manajemen-pesanan/{id}/update-status', [AdminPesananController::class, 'update'])->name('admin.manajemen-pesanan.update');
 
     # Dashboard Admin
-   Route::get('/admin/dashboard', [Admin/DashboardController::class, 'index'])->name('admin.dashboard');
+   Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
@@ -101,19 +95,12 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     # Riwayat Pemesanan
     Route::get('/history', [RiwayatController::class, 'index'])->name('customer.history');
 
-    # Product Routes
-    Route::get('/product/{id}', [ProductController::class, 'show'])->name('customer.product.show');
 
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::put('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update-quantity');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove-item');
-
-    # Checkout Route
-    Route::get('/checkout', [CartController::class, 'showCheckout'])->name('checkout.show');
-    Route::post('/checkout', [CartController::class, 'processCheckout'])->name('checkout.process');
-    Route::get('/ajax/cek-ongkir', [CartController::class, 'ajaxCekOngkir'])->name('ajax.cek-ongkir');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
