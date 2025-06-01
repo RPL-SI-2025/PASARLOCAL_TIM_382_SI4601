@@ -52,7 +52,6 @@
                             <label class="form-label fw-bold">Metode Pembayaran</label>
                             <select class="form-select" name="metode_pembayaran" required>
                                 <option value="">Pilih Metode Pembayaran</option>
-                                <option value="COD" {{ old('metode_pembayaran') == 'COD' ? 'selected' : '' }}>Cash on Delivery</option>
                                 <option value="QRIS" {{ old('metode_pembayaran') == 'QRIS' ? 'selected' : '' }}>QRIS</option>
                             </select>
                         </div>
