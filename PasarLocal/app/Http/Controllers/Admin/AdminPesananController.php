@@ -4,58 +4,59 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use App\Models\Pemesanan;
 
 class AdminPesananController extends Controller
 {
-  public function index(Request $request)
-{
-    $data = collect([
-        (object)[
-            'id' => 1,
-            'customer' => (object)['nama_customer' => 'Mariska Harindra'],
-            'total' => 120000,
-            'status_pesanan' => 'Belum Diproses',
-            'pembayaran' => (object)['status_pembayaran' => 'Belum Lunas'],
-        ],
-        (object)[
-            'id' => 2,
-            'customer' => (object)['nama_customer' => 'Alan Darendra'],
-            'total' => 200000,
-            'status_pesanan' => 'Dikirim',
-            'pembayaran' => (object)['status_pembayaran' => 'Lunas'],
-        ],
-        (object)[
-            'id' => 3,
-            'customer' => (object)['nama_customer' => 'Dewi Sartika'],
-            'total' => 90000,
-            'status_pesanan' => 'Diproses',
-            'pembayaran' => (object)['status_pembayaran' => 'Lunas'],
-        ],
-    ]);
+    // Daftar status yang valid (pastikan sama dengan database / enum)
+    private $statuses = ['belum proses', 'diproses', 'dikirim', 'selesai', 'batal'];
 
-    $search = $request->query('search');
+    public function index(Request $request)
+    {
+        $search = $request->query('search');
 
-    if ($search) {
-        $data = $data->filter(function ($order) use ($search) {
-            return stripos($order->customer->nama_customer, $search) !== false;
-        })->values();
+        $query = Pemesanan::with(['customer', 'detailPemesanans.produk', 'ongkir']);
+
+        if ($search) {
+            $query->whereHas('customer', function ($q) use ($search) {
+                $q->where('nama_customer', 'like', '%' . $search . '%');
+            });
+        }
+
+        $orders = $query->latest()->get();
+
+        // Group berdasarkan status
+        $groupedOrders = $orders->groupBy('status');
+
+        return view('admin.manajemen-pesanan.index', [
+            'groupedOrders' => $groupedOrders,
+            'search' => $search,
+            'statuses' => $this->statuses,
+        ]);
     }
 
-    $groupedOrders = $data->groupBy('status_pesanan');
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status_pesanan' => 'required|string|in:' . implode(',', $this->statuses),
+        ]);
 
-    return view('admin.manajemen-pesanan.index', compact('groupedOrders', 'search'));
-}
+        $pemesanan = Pemesanan::findOrFail($id);
 
-public function update(Request $request, $id)
-{
-    // Dummy update simulation (tidak simpan ke database)
-    $status = $request->input('status_pesanan');
+        $pemesanan->status = $request->status_pesanan;
+        $pemesanan->save();
 
-    // Redirect balik ke index dengan status sukses
-    return redirect()->route('admin.manajemen-pesanan.index')
-        ->with('success', "Status pesanan #$id berhasil diperbarui menjadi '$status'.");
-}
+        return redirect()->route('admin.manajemen-pesanan.index')
+            ->with('success', "Status pesanan #$id berhasil diperbarui menjadi '{$pemesanan->status}'.");
+    }
+
+    public function show($id)
+    {
+        // Ambil data pemesanan beserta relasi yang dibutuhkan
+        $pemesanan = Pemesanan::with(['detailPemesanans.produk', 'customer', 'ongkir'])
+                    ->findOrFail($id);
+
+        return view('admin.manajemen-pesanan.show', compact('pemesanan'));
+    }
 
 }

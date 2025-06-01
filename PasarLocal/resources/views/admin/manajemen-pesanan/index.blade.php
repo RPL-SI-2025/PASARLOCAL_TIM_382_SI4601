@@ -55,7 +55,7 @@
                             <td>#{{ $order->id }}</td>
                             <td>{{ $order->customer->nama_customer }}</td>
                             <td>Rp{{ number_format($order->total, 0, ',', '.') }}</td>
-                            <td>{{ $order->pembayaran->status_pembayaran }}</td>
+                            <td>{{ $order->status_pembayaran }}</td>
                             <td>
                                 <form action="{{ route('admin.manajemen-pesanan.update', $order->id) }}" method="POST" class="d-flex align-items-center">
                                     @csrf
