@@ -15,6 +15,9 @@ use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminPesananController;
+use App\Http\Controllers\Admin\DashboardController;
+
+
 
 
 # Auth
@@ -80,6 +83,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/manajemen-pesanan/{id}', [AdminPesananController::class, 'show'])->name('admin.manajemen-pesanan.show');
     Route::put('/admin/manajemen-pesanan/{id}/update-status', [AdminPesananController::class, 'update'])->name('admin.manajemen-pesanan.update');
 
+    # Dashboard Admin
+   Route::get('/admin/dashboard', [Admin/DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
