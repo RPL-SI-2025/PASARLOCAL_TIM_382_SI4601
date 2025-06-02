@@ -59,6 +59,12 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .market-card:hover {
+            transform: scale(1.05);
         }
 
         .market-card img {
@@ -500,6 +506,7 @@
 
                     displayResults(filtered, 'product');
                 } else {
+                    
                     // Market search
                     const markets = [
                         { name: 'Pasar Kordon', location: 'Buahbatu, Bandung', image: 'pasar_temanggung.jpg', hours: '00.00 - 12.00' },

@@ -48,9 +48,9 @@ return new class extends Migration
         DB::table('produk_pedagang')->insert([
             ['id_pedagang' => 2, 'id_produk' => 1, 'stok' => 30, 'jumlah_satuan' => 1, 'satuan' => 'ikat', 'harga' => 5000, 'foto_produk' => 'bayam_hijau.jpg', 'created_at' => now(), 'updated_at' => now()],
             ['id_pedagang' => 2, 'id_produk' => 2, 'stok' => 25, 'jumlah_satuan' => 1, 'satuan' => 'ikat', 'harga' => 6000, 'foto_produk' => 'kangkung.jpg', 'created_at' => now(), 'updated_at' => now()],
-            ['id_pedagang' => 2, 'id_produk' => 21, 'stok' => 25, 'jumlah_satuan' => 1, 'satuan' => 'kg', 'harga' => 35000, 'foto_produk' => 'apel_merah.jpg', 'created_at' => now(), 'updated_at' => now()],
-            ['id_pedagang' => 2, 'id_produk' => 22, 'stok' => 30, 'jumlah_satuan' => 1, 'satuan' => 'sisir', 'harga' => 25000, 'foto_produk' => 'pisang_ambon.jpg', 'created_at' => now(), 'updated_at' => now()],
-            ['id_pedagang' => 2, 'id_produk' => 23, 'stok' => 20, 'jumlah_satuan' => 1, 'satuan' => 'kg', 'harga' => 30000, 'foto_produk' => 'mangga_harummanis.jpg', 'created_at' => now(), 'updated_at' => now()],
+            ['id_pedagang' => 2, 'id_produk' => 3, 'stok' => 25, 'jumlah_satuan' => 1, 'satuan' => 'kg', 'harga' => 12000, 'foto_produk' => 'wortel.jpg', 'created_at' => now(), 'updated_at' => now()],
+            ['id_pedagang' => 2, 'id_produk' => 4, 'stok' => 30, 'jumlah_satuan' => 1, 'satuan' => 'ikat', 'harga' => 8000, 'foto_produk' => 'kacang_panjang.jpg', 'created_at' => now(), 'updated_at' => now()],
+            ['id_pedagang' => 2, 'id_produk' => 5, 'stok' => 20, 'jumlah_satuan' => 1, 'satuan' => 'kg', 'harga' => 17000, 'foto_produk' => 'tomat_merah.jpg', 'created_at' => now(), 'updated_at' => now()],
             ['id_pedagang' => 2, 'id_produk' => 24, 'stok' => 35, 'jumlah_satuan' => 1, 'satuan' => 'kg', 'harga' => 28000, 'foto_produk' => 'jeruk_medan.jpg', 'created_at' => now(), 'updated_at' => now()],
             ['id_pedagang' => 2, 'id_produk' => 25, 'stok' => 15, 'jumlah_satuan' => 1, 'satuan' => 'buah', 'harga' => 45000, 'foto_produk' => 'semangka_merah.jpg', 'created_at' => now(), 'updated_at' => now()],
             ['id_pedagang' => 2, 'id_produk' => 26, 'stok' => 20, 'jumlah_satuan' => 1, 'satuan' => 'buah', 'harga' => 35000, 'foto_produk' => 'melon_hijau.jpg', 'created_at' => now(), 'updated_at' => now()],

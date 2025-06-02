@@ -51,6 +51,15 @@
     <div class="container py-4">
         <h2 class="mb-4">{{ $pasar->nama_pasar }}</h2>
         <p class="mb-4">{{ $pasar->alamat }}</p>
+
+        <!-- Form pencarian produk -->
+        <form method="GET" action="" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Cari produk..." value="{{ request('q') }}">
+                <button class="btn btn-success" type="submit">Cari</button>
+            </div>
+        </form>
+
         <div class="row">
             @forelse($produkPedagang as $item)
                 <div class="col-md-3 col-sm-6 mb-4">
