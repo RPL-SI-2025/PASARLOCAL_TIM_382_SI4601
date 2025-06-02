@@ -392,7 +392,19 @@ class CartController extends Controller
                 ' . $file->getClientOriginalName();
                 $destinationPath = public_path('bukti_pembayaran');
 
+                // Ensure the directory exists
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                // Sanitize the filename
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+
+                // Move the file
                 $file->move($destinationPath, $filename);
+
+                // Debugging log to verify file path
+                Log::info('File saved to: ' . $destinationPath . '/' . $filename);
 
                 $order->update(['bukti_pembayaran' => 'bukti_pembayaran/' . $filename]);
                 } else {

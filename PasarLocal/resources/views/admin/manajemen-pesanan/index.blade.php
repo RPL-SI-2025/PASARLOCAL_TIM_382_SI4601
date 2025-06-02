@@ -73,12 +73,11 @@
 
                         {{-- Kolom bukti bayar dengan nama file --}}
                         <td>
-                            @if($order->bukti_pembayaran)
+                            @if($order->bukti_pembayaran && file_exists(public_path($order->bukti_pembayaran)))
                                 <div class="d-flex flex-column align-items-center">
-                                    <a href="{{ asset('bukti_pembayaran/' . $order->bukti_pembayaran) }}" target="_blank">
-                                        <img src="{{ asset('bukti_pembayaran/' . $order->bukti_pembayaran) }}" alt="Bukti Bayar" height="60" class="mb-1">
+                                    <a href="{{ asset($order->bukti_pembayaran) }}" target="_blank">
+                                        <img src="{{ asset($order->bukti_pembayaran) }}" alt="Bukti Bayar" height="60" class="mb-1">
                                     </a>
-                                    <small class="text-muted">{{ $order->bukti_pembayaran }}</small>
                                 </div>
                             @else
                                 <span class="text-muted">Belum ada</span>
