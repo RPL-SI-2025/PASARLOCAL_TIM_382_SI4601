@@ -23,8 +23,8 @@
                                     <th>No</th>
                                     <th>Produk</th>
                                     <th>Pembeli</th>
-                                    <th>Rating</th>
-                                    <th>Komentar</th>
+                                    <th>Penilaian</th>
+                                    <th>Feedback</th>
                                     <th>Tanggal</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -36,17 +36,50 @@
                                         <td>{{ $review->produk->nama_produk }}</td>
                                         <td>{{ $review->user->name }}</td>
                                         <td>
-                                            <div class="rating">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= $review->rating)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
+                                            <div class="ratings">
+                                                <div class="mb-1">
+                                                    <small class="text-muted">Keseluruhan:</small>
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $review->rating)
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <div class="mb-1">
+                                                    <small class="text-muted">Kualitas:</small>
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $review->kualitas_produk)
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <div class="mb-1">
+                                                    <small class="text-muted">Layanan:</small>
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $review->layanan_pedagang)
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
                                             </div>
                                         </td>
-                                        <td>{{ Str::limit($review->comment, 50) }}</td>
+                                        <td>
+                                            @if($review->kritik)
+                                                <strong>Kritik:</strong> {{ Str::limit($review->kritik, 50) }}<br>
+                                            @endif
+                                            @if($review->saran)
+                                                <strong>Saran:</strong> {{ Str::limit($review->saran, 50) }}
+                                            @endif
+                                            @if($review->comment)
+                                                <br><em>{{ Str::limit($review->comment, 50) }}</em>
+                                            @endif
+                                        </td>
                                         <td>{{ $review->created_at->format('d M Y') }}</td>
                                         <td>
                                             <a href="{{ route('pedagang.review.show', $review->id) }}" class="btn btn-info btn-sm">

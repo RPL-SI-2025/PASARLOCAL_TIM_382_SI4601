@@ -79,7 +79,6 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-outline-success" onclick="applyDiscount()">Terapkan</button>
                             </div>
                             <div id="discount-info" class="form-text"></div>
                         </div>
@@ -106,13 +105,10 @@
                                 <span id="subtotal">Rp {{ number_format($total, 0, ',', '.') }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Diskon:</span>
-                                <span id="discount-amount">Rp 0</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>Ongkir:</span>
                                 <span id="shipping-amount">Rp {{ number_format($ongkir->ongkir ?? 0, 0, ',', '.') }}</span>
                             </div>
+                            <div id="diskon-bar"></div>
                             <hr>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">Total:</span>
@@ -137,6 +133,8 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $('#kecamatan').select2({
@@ -178,9 +176,15 @@
 
             // Update display
             $('#subtotal').text('Rp ' + harga.toLocaleString('id-ID'));
-            $('#discount-amount').text('Rp ' + discountAmount.toLocaleString('id-ID'));
             $('#shipping-amount').text('Rp ' + ongkir.toLocaleString('id-ID'));
             $('#totalHarga').text('Rp ' + finalTotal.toLocaleString('id-ID'));
+            // Tampilkan baris diskon hanya jika ada diskon
+            if (discountAmount > 0 || shippingDiscount) {
+                let diskonText = shippingDiscount ? '- Gratis Ongkir' : '- Rp ' + discountAmount.toLocaleString('id-ID');
+                $('#diskon-bar').html('<div class="d-flex justify-content-between align-items-center mb-2"><span>Diskon:</span><span id="discount-amount">' + diskonText + '</span></div>');
+            } else {
+                $('#diskon-bar').html('');
+            }
         }
 
         // Function to set shipping as unavailable
@@ -274,9 +278,32 @@
 
     // Confirmation before submit
     function konfirmasiPesan() {
-        const konfirmasi = confirm('Apakah Anda yakin ingin memesan produk ini?');
-        if (konfirmasi) {
+        // Ambil value field wajib
+        const alamat = $('input[name="alamat"]').val().trim();
+        const kecamatan = $('select[name="kecamatan"]').val();
+        const metode = $('select[name="metode_pembayaran"]').val();
+        const ongkir = $('select[name="ongkir_type"]').val();
+
+        if (!alamat || !kecamatan || !metode || !ongkir) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lengkapi Data!',
+                text: 'Silakan lengkapi semua data wajib sebelum memesan.',
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Konfirmasi Pesanan',
+            text: 'Apakah Anda yakin ingin memesan produk ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Pesan',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
             document.getElementById('checkoutForm').submit();
         }
+        });
     }
 </script> 

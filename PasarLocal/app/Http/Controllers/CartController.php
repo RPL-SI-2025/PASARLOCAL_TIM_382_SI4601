@@ -140,9 +140,18 @@ class CartController extends Controller
             }
 
             // Update cart item quantity
-            $cartItem->update([
+            $updated = $cartItem->update([
                 'quantity' => $request->quantity
             ]);
+            if (!$updated) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal memperbarui jumlah produk. Silakan coba lagi.'
+                    ]);
+                }
+                return redirect()->back()->with('error', 'Gagal memperbarui jumlah produk. Silakan coba lagi.');
+            }
 
             // Update product stock
             $produkPedagang->increment('stok', -$quantityDiff);

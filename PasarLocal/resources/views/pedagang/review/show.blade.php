@@ -35,7 +35,7 @@
 
                     <div class="row mb-4">
                         <div class="col-md-4">
-                            <strong>Rating:</strong>
+                            <strong>Rating Keseluruhan:</strong>
                         </div>
                         <div class="col-md-8">
                             <div class="rating">
@@ -52,10 +52,79 @@
 
                     <div class="row mb-4">
                         <div class="col-md-4">
-                            <strong>Komentar:</strong>
+                            <strong>Kualitas Produk:</strong>
                         </div>
                         <div class="col-md-8">
-                            {{ $review->comment }}
+                            <div class="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $review->kualitas_produk)
+                                        <i class="fas fa-star text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-warning"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <strong>Layanan Pedagang:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $review->layanan_pedagang)
+                                        <i class="fas fa-star text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-warning"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <strong>Kesesuaian Deskripsi:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $review->kesesuaian_deskripsi)
+                                        <i class="fas fa-star text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-warning"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <strong>Kritik:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ $review->kritik }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <strong>Saran:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ $review->saran }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <strong>Komentar Tambahan:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            {{ $review->comment ?: '-' }}
                         </div>
                     </div>
 
@@ -81,6 +150,9 @@
     }
     .rating i {
         font-size: 1.5em;
+    }
+    .ratings i {
+        font-size: 0.9em;
     }
 </style>
 @endpush

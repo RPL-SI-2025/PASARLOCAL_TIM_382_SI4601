@@ -16,6 +16,8 @@ class Pemesanan extends Model
         'metode_pembayaran',
         'bukti_pembayaran',
         'status',
+        'alamat',
+        'kecamatan',
     ];
 
     public function detailPemesanans()
@@ -31,5 +33,10 @@ class Pemesanan extends Model
     public function ongkir()
     {
         return $this->belongsTo(Ongkir::class, 'ongkir_id');
+    }
+    
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'pemesanan_id', 'id');
     }
 }

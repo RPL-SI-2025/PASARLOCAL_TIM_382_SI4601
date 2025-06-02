@@ -12,11 +12,15 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        if (!$user || !($user instanceof \App\Models\User)) {
-            abort(403, 'Unauthorized access');
-        }
+
+        // Check if user is authenticated
         if (!$user) {
             return redirect('/auth/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Check if authenticated user is a valid User model instance
+        if (!($user instanceof \App\Models\User)) {
+            abort(403, 'Invalid user object'); // Provide a slightly different error for clarity
         }
 
         if ($user->role === 'customer') {
@@ -39,6 +43,7 @@ class ProfileController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
+                'password' => 'nullable|string|min:8|confirmed',
                 'nomor_telepon' => 'nullable|string|max:20',
                 'alamat' => 'nullable|string|max:255',
                 'kecamatan' => 'required|string|max:100',
@@ -48,6 +53,7 @@ class ProfileController extends Controller
             $validated = $request->validate([
                 'nama_pemilik' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
+                'password' => 'nullable|string|min:8|confirmed',
                 'nomor_telepon' => 'nullable|string|max:20',
                 'alamat' => 'nullable|string|max:255',
                 'nama_toko' => 'nullable|string|max:255',
@@ -57,13 +63,56 @@ class ProfileController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        if ($request->hasFile('profile_image')) {
-            $validated['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
+        // Update user data based on role
+        if ($user->role === 'customer') {
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            $user->nomor_telepon = $validated['nomor_telepon'] ?? null;
+            $user->alamat = $validated['alamat'] ?? null;
+            $user->kecamatan = $validated['kecamatan'];
+
+            // Handle password update if provided
+            if (!empty($validated['password'])) {
+                $user->password = bcrypt($validated['password']);
+            }
+
+            // Handle profile image update if provided for customer
+            if ($request->hasFile('profile_image')) {
+                // Delete old image if exists
+                if ($user->profile_image && file_exists(public_path('profil_customer/' . $user->profile_image))) {
+                    unlink(public_path('profil_customer/' . $user->profile_image));
+                }
+                $image = $request->file('profile_image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('profil_customer'), $imageName);
+                $user->profile_image = $imageName;
+            }
+
+        } elseif ($user->role === 'pedagang') {
+            $user->nama_pemilik = $validated['nama_pemilik'];
+            $user->email = $validated['email'];
+            $user->nomor_telepon = $validated['nomor_telepon'] ?? null;
+            $user->alamat = $validated['alamat'] ?? null;
+            $user->nama_toko = $validated['nama_toko'] ?? null;
+
+            // Handle password update if provided
+            if (!empty($validated['password'])) {
+                $user->password = bcrypt($validated['password']);
+            }
+
+            // Handle profile image update if provided for pedagang
+            if ($request->hasFile('profile_image')) {
+                // Delete old image if exists
+                if ($user->profile_image && file_exists(public_path('profil_pedagang/' . $user->profile_image))) {
+                    unlink(public_path('profil_pedagang/' . $user->profile_image));
+                }
+                $image = $request->file('profile_image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('profil_pedagang'), $imageName);
+                $user->profile_image = $imageName;
+            }
         }
 
-        foreach ($validated as $key => $value) {
-            $user->$key = $value;
-        }
         $user->save();
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');

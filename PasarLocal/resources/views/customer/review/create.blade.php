@@ -1,80 +1,71 @@
-
-
-@section('content')
-<div class="container py-4">
-    <div class="card">
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0">Berikan Review</h4>
-        </div>
-        <div class="card-body">
-            @if(session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-
-            <form action="{{ route('customer.review.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="pemesanan_id" value="{{ $pemesanan->id }}">
-                <input type="hidden" name="produk_id" value="{{ $produk_id }}">
-
-                <div class="mb-3">
-                    <label for="rating" class="form-label">Rating</label>
-                    <div class="rating">
-                        @for($i = 5; $i >= 1; $i--)
-                            <input type="radio" name="rating" value="{{ $i }}" id="star{{ $i }}" class="d-none" {{ old('rating') == $i ? 'checked' : '' }}>
-                            <label for="star{{ $i }}" class="fas fa-star text-warning" style="cursor: pointer; font-size: 24px;"></label>
-                        @endfor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Beri Review</title>
+</head>
+<body>
+    @include('customer.partials.navbar')
+    
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Beri Review</h5>
                     </div>
-                    @error('rating')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h6>Detail Produk yang Dipesan:</h6>
+                            {{-- Debugging: Tampilkan nilai pedagang dan foto_produk --}}
+                            {{-- {{ dd(['pedagang' => $produkPedagang->pedagang, 'foto_produk' => $produkPedagang->foto_produk]) }} --}}
 
-                <div class="mb-3">
-                    <label for="komentar" class="form-label">Komentar (Opsional)</label>
-                    <textarea name="komentar" id="komentar" rows="4" class="form-control @error('komentar') is-invalid @enderror">{{ old('komentar') }}</textarea>
-                    @error('komentar')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                            @if ($produkPedagang->foto_produk)
+                                <div class="mb-3 text-center">
+                                    <img src="{{ asset('uploads_produk/' . $produkPedagang->foto_produk) }}" alt="Gambar Produk" class="img-fluid" style="max-width: 200px;">
+                                </div>
+                            @endif
+                            <p class="mb-1"><strong>Pasar:</strong> {{ $produkPedagang->pedagang->pasar->nama_pasar }}</p>
+                            <p class="mb-1"><strong>Pedagang:</strong> {{ $produkPedagang->pedagang->nama_toko }}</p>
+                            <p class="mb-1"><strong>Nama Pemilik:</strong> {{ $produkPedagang->pedagang->nama_pemilik }}</p>
+                            <p class="mb-1"><strong>Nama Produk:</strong> {{ $produkPedagang->produk->nama_produk }}</p>
+                            @if ($detail)
+                                <p class="mb-1"><strong>Harga Satuan:</strong> Rp {{ number_format($detail->harga, 0, ',', '.') }}/{{ $produkPedagang->satuan }}</p>
+                                <p class="mb-1"><strong>Jumlah:</strong> {{ $detail->jumlah }} {{ $produkPedagang->satuan }}</p>
+                                <p class="mb-1"><strong>Subtotal:</strong> Rp {{ number_format($detail->jumlah * $detail->harga, 0, ',', '.') }}</p>
+                            @else
+                                <p class="mb-1 text-danger">Detail pemesanan untuk produk ini tidak ditemukan.</p>
+                            @endif
+                        </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="{{ route('customer.riwayat.show', $pemesanan->id) }}" class="btn btn-secondary">Kembali</a>
-                    <button type="submit" class="btn btn-success">Kirim Review</button>
+                        <form action="{{ route('customer.review.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="pemesanan_id" value="{{ $pemesanan->id }}">
+                            <input type="hidden" name="produk_pedagang_id" value="{{ $produkPedagang->id_produk_pedagang }}">
+
+                            <div class="mb-3">
+                                <label for="feedback" class="form-label">Kritik / Saran</label>
+                                <textarea class="form-control @error('feedback') is-invalid @enderror"
+                                    id="feedback" name="feedback" rows="4" required>{{ old('feedback') }}</textarea>
+                                @error('feedback')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ route('riwayat.transaksi') }}" class="btn btn-secondary">Kembali</a>
+                                <button type="submit" class="btn btn-primary">Kirim Review</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
 
-@push('scripts')
-<script>
-document.querySelectorAll('.rating label').forEach((star, index) => {
-    star.addEventListener('mouseover', () => {
-        document.querySelectorAll('.rating label').forEach((s, i) => {
-            if (i <= index) {
-                s.classList.add('text-warning');
-            } else {
-                s.classList.remove('text-warning');
-            }
-        });
-    });
-});
-
-document.querySelector('.rating').addEventListener('mouseleave', () => {
-    const selectedRating = document.querySelector('input[name="rating"]:checked');
-    if (selectedRating) {
-        const index = parseInt(selectedRating.value) - 1;
-        document.querySelectorAll('.rating label').forEach((s, i) => {
-            if (i <= index) {
-                s.classList.add('text-warning');
-            } else {
-                s.classList.remove('text-warning');
-            }
-        });
-    } else {
-        document.querySelectorAll('.rating label').forEach(s => s.classList.remove('text-warning'));
-    }
-});
-</script>
-@endpush
-@endsection
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

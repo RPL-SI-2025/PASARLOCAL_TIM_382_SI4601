@@ -16,11 +16,20 @@ class RiwayatController extends Controller
             return redirect()->back()->with('error', 'Akun Anda tidak terdaftar sebagai customer.');
         }
 
-        $pemesanans = Pemesanan::with(['detailPemesanans.produkPedagang.produk', 'detailPemesanans.produkPedagang.pedagang.pasar'])
-            ->where('customer_id', $customer->id)
-            ->latest()
+        $status = $request->input('status'); // Get status from request
+
+        $pemesanans = Pemesanan::with(['detailPemesanans.produkPedagang.produk', 'detailPemesanans.produkPedagang.pedagang.pasar', 'reviews'])
+            ->where('customer_id', $customer->id);
+
+        // Add filter by status if status is provided in the request
+        if ($status) {
+            $pemesanans->where('status', $status);
+        }
+
+        $pemesanans = $pemesanans->latest()
             ->paginate(10);
-        return view('customer.riwayat-pemesanan.index', compact('pemesanans'));
+
+        return view('customer.riwayat-pemesanan.index', compact('pemesanans', 'status')); // Pass status to the view
     }
 
     public function show(Pemesanan $pemesanan)

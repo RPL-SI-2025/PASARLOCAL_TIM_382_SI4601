@@ -16,9 +16,10 @@ use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPesananController;
-use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AnalitikController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Customer\ReviewController;
+use App\Http\Controllers\PedagangReviewController;
 
 
 # Auth
@@ -104,9 +105,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:customer'])->group(function () {
     # Dashboard
     Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    # Customer Profile
+    Route::get('/customer/profile/edit', [ProfileController::class, 'edit'])->name('customer.profile.edit');
+    Route::get('/customer/profile', [ProfileController::class, 'show'])->name('customer.profile.show');
+    Route::match(['post', 'put'], '/customer/profile', [ProfileController::class, 'update'])->name('customer.profile.update');
     Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
 
     # Riwayat Pemesanan
@@ -114,9 +116,13 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/riwayat-transaksi/{pemesanan}', [RiwayatController::class, 'show'])->name('customer.riwayat.show');
 
     # Review Routes
-    Route::get('/review/create/{pemesanan}/{produk}', [ReviewController::class, 'create'])->name('customer.review.create');
-    Route::post('/review', [ReviewController::class, 'store'])->name('customer.review.store');
-
+    Route::prefix('review')->name('customer.review.')->group(function () {
+        Route::get('/create/{pemesanan}/{produk}', [ReviewController::class, 'create'])->name('create');
+        Route::post('/store', [ReviewController::class, 'store'])->name('store');
+        Route::get('/edit/{review}', [ReviewController::class, 'edit'])->name('edit');
+        Route::put('/update/{review}', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/destroy/{review}', [ReviewController::class, 'destroy'])->name('destroy');
+    });
 
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -132,15 +138,16 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     # Search Route
     Route::get('/ajax/search', [\App\Http\Controllers\Customer\SearchController::class, 'search'])->name('ajax.search');
-    # Tambahkan route untuk detail produk pedagang (customer.product.show)
-    Route::get('/produk-pedagang/{id}', [App\Http\Controllers\Customer\ProdukPedagangController::class, 'show'])->name('customer.product.show');
+    
+    # Product Detail Route
+    Route::get('/produk-pedagang/{id}', [App\Http\Controllers\ProdukPedagangController::class, 'show'])->name('customer.product.show');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
-    # Edit Profile
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    # Pedagang Profile
+    Route::get('/pedagang/profile/edit', [ProfileController::class, 'edit'])->name('pedagang.profile.edit');
+    Route::get('/pedagang/profile', [ProfileController::class, 'show'])->name('pedagang.profile.show');
+    Route::match(['post', 'put'], '/pedagang/profile', [ProfileController::class, 'update'])->name('pedagang.profile.update');
 
     # Manajemen Produk
     Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('pedagang.manajemen_produk.index');
@@ -150,6 +157,9 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
+
+    # Pedagang Reviews
+    Route::get('/pedagang/reviews', [\App\Http\Controllers\PedagangReviewController::class, 'index'])->name('pedagang.reviews.index');
 });
 
 Route::get('/cek-middleware', function () {

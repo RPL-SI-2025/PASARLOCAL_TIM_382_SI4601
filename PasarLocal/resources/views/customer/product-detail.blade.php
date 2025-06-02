@@ -26,7 +26,7 @@
                                 <div>
                                     <strong>{{ $item->pedagang->pasar->nama_pasar ?? 'Pasar tidak diketahui' }}</strong> - {{ $item->pedagang->nama_pemilik ?? 'Pedagang tidak diketahui' }}
                                     <br>
-                                    Harga: <span class="text-success">Rp {{ number_format($item->harga, 0, ',', '.') }}</span>
+                                    Harga: <span class="text-success">Rp {{ number_format($item->harga, 0, ',', '.') }}/{{ $item->satuan }}</span>
                                     <br>
                                     Stok: {{ $item->stok }}
                                 </div>

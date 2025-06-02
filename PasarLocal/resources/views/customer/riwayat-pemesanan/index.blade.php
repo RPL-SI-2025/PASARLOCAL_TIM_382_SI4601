@@ -41,6 +41,22 @@
     <div class="container py-5">
         <h2 class="mb-4 fw-bold">Riwayat Transaksi</h2>
 
+        <form action="{{ route('riwayat.transaksi') }}" method="GET">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Filter Status:</label>
+                    <select class="form-select" id="statusFilter" onchange="this.form.submit()" name="status">
+                        <option value="">Semua Status</option>
+                        <option value="pending" {{ $status == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="processing" {{ $status == 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="selesai" {{ $status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        <option value="cancelled" {{ $status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        {{-- Add other statuses if needed --}}
+                    </select>
+                </div>
+            </div>
+        </form>
+
         {{-- Display session error messages --}}
         @if(session('error'))
             <div class="alert alert-danger">
@@ -105,14 +121,36 @@
                                             @endif
                                             <div class="flex-grow-1">
                                                 <h6 class="mb-1">{{ $detail->produkPedagang->produk->nama_produk ?? '-' }}</h6>
-                                                <div class="text-muted small">{{ $detail->jumlah }} barang x Rp{{ number_format($detail->harga, 0, ',', '.') }}</div>
+                                                <div class="text-muted small">Toko: {{ $detail->produkPedagang->pedagang->nama_toko ?? '-' }}</div>
+                                                <div class="text-muted small">Pedagang: {{ $detail->produkPedagang->pedagang->nama_pemilik ?? '-' }}</div>
+                                                <div class="text-muted small">
+                                                    {{ $detail->jumlah }} {{ $detail->produkPedagang->satuan ?? '-' }} x Rp {{ number_format($detail->harga, 0, ',', '.') }}
+                                                </div>
                                             </div>
                                             <div class="text-end">
                                                 <div class="fs-6 fw-bold text-success">
                                                     Rp{{ number_format($detail->jumlah * $detail->harga, 0, ',', '.') }}
                                                 </div>
-                                                
-                                                <a href="{{ route('customer.review.create', ['pemesanan' => $pemesanan->id, 'produk' => $detail->produkPedagang->produk->id]) }}" class="btn btn-outline-success btn-sm mt-2">Ulas</a>
+                                                @if(strtolower($pemesanan->status) === 'selesai')
+                                                    @php
+                                                        // Cari review yang cocok untuk detail pemesanan ini dalam koleksi review pemesanan
+                                                        $existingReview = $pemesanan->reviews->firstWhere('produk_pedagang_id', $detail->produk_pedagang_id);
+                                                    @endphp
+                                                    <div class="d-flex flex-column align-items-end mt-2">
+                                                        @if($existingReview)
+                                                            {{-- Jika sudah ada review, tampilkan tombol Edit Ulas dan Hapus Ulas --}}
+                                                            <a href="{{ route('customer.review.edit', ['review' => $existingReview->id]) }}" class="btn btn-outline-secondary btn-sm mb-1">Edit Ulas</a>
+                                                            <form action="{{ route('customer.review.destroy', ['review' => $existingReview->id]) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus review ini?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-outline-danger btn-sm">Hapus Ulas</button>
+                                                            </form>
+                                                        @else
+                                                            {{-- Jika belum ada review, tampilkan tombol Ulas --}}
+                                                            <a href="{{ route('customer.review.create', ['pemesanan' => $pemesanan->id, 'produk' => $detail->produk_pedagang_id]) }}" class="btn btn-outline-success btn-sm">Ulas</a>
+                                                        @endif
+                                                    </div>
+                                                @endif
                                             </div>
                                         </li>
                                     @endforeach

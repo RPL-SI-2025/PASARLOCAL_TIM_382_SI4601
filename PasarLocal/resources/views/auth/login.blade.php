@@ -120,7 +120,7 @@
 </head>
 <body>
     <div class="logo">
-        <img src="{{ asset('images/logo.png') }}" alt="PasarLocal">
+        <img src="{{ asset('uploads_logo/PASARLOCALLL.png') }}" alt="PasarLocal" style="height:50px;">
     </div>
 
     <div class="login-container">
