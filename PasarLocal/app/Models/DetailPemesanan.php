@@ -20,4 +20,9 @@ class DetailPemesanan extends Model
     {
         return $this->belongsTo(Pemesanan::class, 'pemesanan_id');
     }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'produk_id');
+    }
 }
