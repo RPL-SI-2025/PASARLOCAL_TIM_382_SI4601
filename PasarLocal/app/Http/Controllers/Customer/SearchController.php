@@ -26,12 +26,18 @@ class SearchController extends Controller
                 ->get();
 
             $results['products'] = $productResults->map(function ($item) {
+                $produk = $item->produk;
+                $pedagang = $item->pedagang;
+                $pasar = $pedagang && $pedagang->pasar ? $pedagang->pasar : null;
                 return [
-                    'id' => $item->produk_id,
-                    'name' => $item->produk->nama_produk,
-                    'image' => asset('uploads_produk/' . $item->produk->gambar),
-                    'url' => route('customer.product.show', $item->produk_id),
-                    'market_name' => $item->pedagang->pasar->nama_pasar ?? 'Pasar tidak diketahui'
+                    'id_produk_pedagang' => $item->id_produk_pedagang, // gunakan id_produk_pedagang sebagai id utama
+                    'name' => $produk ? $produk->nama_produk : '-',
+                    'image' => $produk && $produk->gambar ? asset('uploads_produk/' . $produk->gambar) : asset('default.jpg'),
+                    'url' => route('customer.product.show', $item->id_produk_pedagang), // gunakan id_produk_pedagang untuk url detail
+                    'market_name' => $pasar ? $pasar->nama_pasar : 'Pasar tidak diketahui',
+                    'pedagang' => $pedagang ? $pedagang->nama_pemilik : '-',
+                    'harga' => $item->harga ?? 0,
+                    'stok' => $item->stok ?? 0,
                 ];
             });
         }

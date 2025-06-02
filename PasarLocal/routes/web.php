@@ -120,6 +120,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     # Search Route
     Route::get('/ajax/search', [\App\Http\Controllers\Customer\SearchController::class, 'search'])->name('ajax.search');
+    # Tambahkan route untuk detail produk pedagang (customer.product.show)
+    Route::get('/produk-pedagang/{id}', [App\Http\Controllers\Customer\ProdukPedagangController::class, 'show'])->name('customer.product.show');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
