@@ -82,6 +82,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/manajemen-pesanan', [AdminPesananController::class, 'index'])->name('admin.manajemen-pesanan.index');
     Route::get('/admin/manajemen-pesanan/{id}/show', [AdminPesananController::class, 'show'])->name('admin.manajemen-pesanan.show');
     Route::put('/admin/manajemen-pesanan/{id}', [AdminPesananController::class, 'update'])->name('admin.manajemen-pesanan.update');
+    Route::post('/manajemen-pesanan/{id}/upload-bukti', [AdminPesananController::class, 'uploadBuktiPembayaran'])->name('admin.manajemen-pesanan.upload-bukti');
 
     # Dashboard Admin
    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
