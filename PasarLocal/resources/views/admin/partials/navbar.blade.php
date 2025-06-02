@@ -179,6 +179,11 @@
     </div>
 
     <!-- Navigasi -->
+
+    </a>
+    <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+    <i class="fas fa-home"></i> <span>Homepage</span>
+    </a>
     <a class="nav-link {{ request()->is('admin/manajemen-produk*') ? 'active' : '' }}" href="{{ route('admin.manajemen-produk.index') }}">
         <i class="fas fa-box"></i> <span>Manajemen Produk</span>
     </a>
@@ -197,9 +202,9 @@
     <a class="nav-link {{ request()->is('admin/manajemen-pedagang*') ? 'active' : '' }}" href="{{ route('admin.manajemen-pedagang.index') }}">
         <i class="fas fa-users"></i> <span>Manajemen Pedagang</span>
     </a>
-    <a class="nav-link {{ request()->is('/admin/dashboard-analitik*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-        <i class="fas fa-users"></i> <span>Dashboard Analitik</span>
-    </a>
+    <a class="nav-link {{ request()->is('admin/manajemen-pesanan*') ? 'active' : '' }}" href="{{ route('admin.manajemen-pesanan.index') }}">
+    <i class="fas fa-receipt"></i> <span>Manajemen Pesanan</span>
+
 
     <!-- Admin Info -->
     <div class="admin-section">

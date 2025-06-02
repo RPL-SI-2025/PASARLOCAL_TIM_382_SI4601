@@ -25,11 +25,4 @@ class DetailPemesanan extends Model
     {
         return $this->belongsTo(ProdukPedagang::class, 'produk_pedagang_id', 'id_produk_pedagang');
     }
-
-    public function pasar()
-    {
-        return $this->produkPedagang
-            ? $this->produkPedagang->pedagang->pasar
-            : null;
-    }
 }

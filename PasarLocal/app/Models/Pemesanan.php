@@ -27,4 +27,9 @@ class Pemesanan extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function ongkir()
+    {
+        return $this->belongsTo(Ongkir::class, 'ongkir_id');
+    }
 }
