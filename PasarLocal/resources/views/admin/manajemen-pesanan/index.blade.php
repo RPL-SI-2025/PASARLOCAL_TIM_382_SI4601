@@ -44,6 +44,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nama Pelanggan</th>
+                            <th>Bukti Pemabayar</th>
                             <th>Total</th>
                             <th>Status Bayar</th>
                             <th>Status Pesanan</th>
@@ -56,6 +57,9 @@
                         <tr>
                             <td>INV/{{ $order->id }}</td>
                             <td>{{ $order->customer->nama_customer }}</td>
+                            <td>
+                                <img src="{{ asset('storage/bukti_pembayaran/' . $order->bukti_pembayaran) }}" alt="Bukti Pembayaran" width="300">
+                            </td>
                             <td>Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
                             <td>{{ $order->status }}</td>
                             <td>

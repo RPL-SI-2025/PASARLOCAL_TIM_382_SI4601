@@ -368,7 +368,7 @@ class CartController extends Controller
                 'alamat' => $request->alamat,
                 'kecamatan' => $request->kecamatan,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status' => $request->metode_pembayaran === 'QRIS' ? 'menunggu verifikasi' : 'pending'
+                'status' => $request->metode_pembayaran === 'QRIS' ? 'pending' : 'pending'
             ]);
 
             // Create order items (detail_pemesanans)
