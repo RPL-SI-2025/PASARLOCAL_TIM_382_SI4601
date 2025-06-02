@@ -47,8 +47,9 @@
                             <th>Bukti Pemabayar</th>
                             <th>Total</th>
                             <th>Status Bayar</th>
+                            <th>Bukti Pembayaran</th>
                             <th>Status Pesanan</th>
-                            <th>Aksi</th>
+
                         </tr>
                     </thead>
                     <tbody>
