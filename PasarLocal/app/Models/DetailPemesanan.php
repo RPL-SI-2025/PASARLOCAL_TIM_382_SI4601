@@ -14,6 +14,7 @@ class DetailPemesanan extends Model
         'produk_pedagang_id',
         'jumlah',
         'harga',
+        'id_pasar', // tambahkan agar mass-assignment id_pasar bisa
     ];
 
     public function pemesanan()

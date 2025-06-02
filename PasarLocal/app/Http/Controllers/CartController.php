@@ -377,7 +377,8 @@ class CartController extends Controller
                     $order->items()->create([
                         'produk_pedagang_id' => $item->produk_pedagang_id,
                         'harga' => $item->price,
-                        'jumlah' => $item->quantity
+                        'jumlah' => $item->quantity,
+                        'id_pasar' => $item->produkPedagang->pedagang->pasar->id_pasar // tambahkan id_pasar
                     ]);
                 } else {
                     Log::error('Produk tidak ditemukan untuk cart item: ' . $item->id);

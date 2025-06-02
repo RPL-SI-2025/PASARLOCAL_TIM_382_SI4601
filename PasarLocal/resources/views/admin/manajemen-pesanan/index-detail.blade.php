@@ -44,22 +44,50 @@
                 <h5 class="card-title">Pelanggan: {{ $order->customer->nama_customer }}</h5>
                 <p><strong>Total:</strong> Rp{{ number_format($order->total_harga, 0, ',', '.') }}</p>
                 <p><strong>Status Bayar:</strong> {{ $order->status }}</p>
-
+                <p><strong>Waktu Pemesanan:</strong> {{ $order->created_at->format('d M Y H:i') }}</p>
+                <p><strong>Metode Pembayaran:</strong> {{ $order->metode_pembayaran }}</p>
+                <p><strong>Ongkir:</strong> {{ $order->ongkir->harga ?? '-' }}</p>
+                <p><strong>Alamat:</strong> {{ $order->alamat ?? '-' }}</p>
                 <form action="{{ route('admin.manajemen-pesanan.update', $order->id) }}" method="POST" class="mb-3">
                     @csrf
                     @method('PUT')
-
                     <label for="status" class="form-label"><strong>Status Pesanan</strong></label>
                     <select name="status" id="status_pesanan" class="form-select" required>
-                        <option value="Diproses" {{ $order->status == 'Diproses' ? 'selected' : '' }}>Diproses</option>
-                        <option value="Dikirim" {{ $order->status == 'Dikirim' ? 'selected' : '' }}>Dikirim</option>
-                        <option value="Batal" {{ $order->status == 'Batal' ? 'selected' : '' }}>Batal</option>
+                        @foreach($statuses as $status)
+                            <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                        @endforeach
                     </select>
-
                     <button type="submit" class="btn btn-hijau mt-3">Update Status</button>
                 </form>
-
                 <a href="{{ route('admin.manajemen-pesanan.index') }}" class="btn btn-secondary">Kembali ke Daftar Pesanan</a>
+            </div>
+        </div>
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Detail Produk yang Dibeli</h5>
+                <ul class="list-group">
+                    @foreach($order->detailPemesanans as $detail)
+                        <li class="list-group-item d-flex align-items-center">
+                            @if ($detail->produkPedagang && $detail->produkPedagang->produk)
+                                <img src="{{ asset('uploads_produk/' . $detail->produkPedagang->produk->gambar) }}" class="img-produk me-3 border" alt="{{ $detail->produkPedagang->produk->nama_produk }}" style="width:60px;height:60px;">
+                            @else
+                                <img src="{{ asset('default.jpg') }}" class="img-produk me-3 border" alt="Produk tidak ditemukan" style="width:60px;height:60px;">
+                            @endif
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ $detail->produkPedagang->produk->nama_produk ?? '-' }}</h6>
+                                <div class="text-muted small">{{ $detail->jumlah }} barang x Rp{{ number_format($detail->harga, 0, ',', '.') }}</div>
+                                <div class="text-muted small">Pedagang: {{ $detail->produkPedagang->pedagang->nama_toko ?? '-' }}</div>
+                                <div class="text-muted small">Pasar: {{ $detail->produkPedagang->pedagang->pasar->nama_pasar ?? '-' }}</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fs-6 fw-bold text-success">
+                                    Rp{{ number_format($detail->jumlah * $detail->harga, 0, ',', '.') }}
+                                </div>
+                                <a href="#" class="btn btn-outline-success btn-sm mt-2">Ulas</a>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>

@@ -46,10 +46,16 @@ class AdminPesananController extends Controller
     public function show($id)
     {
         // Ambil data pemesanan beserta relasi yang dibutuhkan
-        $order = Pemesanan::with(['customer', 'detailPemesanans.produkPedagang', 'ongkir'])
-                    ->findOrFail($id);
-
-        return view('admin.manajemen-pesanan.index-detail', compact('order'));
+        $order = Pemesanan::with([
+            'customer',
+            'detailPemesanans.produkPedagang.produk',
+            'detailPemesanans.produkPedagang.pedagang.pasar',
+            'ongkir',
+        ])->findOrFail($id);
+        return view('admin.manajemen-pesanan.index-detail', [
+            'order' => $order,
+            'statuses' => $this->statuses,
+        ]);
     }
 
 }
