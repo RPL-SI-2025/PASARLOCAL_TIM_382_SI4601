@@ -15,13 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         $this->call([
+            UserSeeder::class, // pastikan user dibuat dulu
             PedagangSeeder::class,
+            TransaksiSeeder::class, // seed transaksi setelah user dan pedagang
         ]);
     }
     public function ran(): void

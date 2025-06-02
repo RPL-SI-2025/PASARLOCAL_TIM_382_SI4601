@@ -368,7 +368,7 @@ class CartController extends Controller
                 'alamat' => $request->alamat,
                 'kecamatan' => $request->kecamatan,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status' => $request->metode_pembayaran === 'QRIS' ? 'menunggu verifikasi' : 'pending'
+                'status' => $request->metode_pembayaran === 'QRIS' ? 'pending' : 'pending'
             ]);
 
             // Create order items (detail_pemesanans)
@@ -377,7 +377,8 @@ class CartController extends Controller
                     $order->items()->create([
                         'produk_pedagang_id' => $item->produk_pedagang_id,
                         'harga' => $item->price,
-                        'jumlah' => $item->quantity
+                        'jumlah' => $item->quantity,
+                        'id_pasar' => $item->produkPedagang->pedagang->pasar->id_pasar // tambahkan id_pasar
                     ]);
                 } else {
                     Log::error('Produk tidak ditemukan untuk cart item: ' . $item->id);
@@ -386,8 +387,28 @@ class CartController extends Controller
 
             // Handle payment proof if QRIS
             if ($request->metode_pembayaran === 'QRIS' && $request->hasFile('bukti_pembayaran')) {
-                $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
-                $order->update(['bukti_pembayaran' => $path]);
+                $file = $request->file('bukti_pembayaran');
+                $filename = time() . '_
+                ' . $file->getClientOriginalName();
+                $destinationPath = public_path('bukti_pembayaran');
+
+                // Ensure the directory exists
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0755, true);
+                }
+
+                // Sanitize the filename
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+
+                // Move the file
+                $file->move($destinationPath, $filename);
+
+                // Debugging log to verify file path
+                Log::info('File saved to: ' . $destinationPath . '/' . $filename);
+
+                $order->update(['bukti_pembayaran' => 'bukti_pembayaran/' . $filename]);
+                } else {
+                    $order->update(['bukti_pembayaran' => null]);
             }
 
             // Clear cart items
