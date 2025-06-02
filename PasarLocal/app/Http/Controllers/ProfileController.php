@@ -11,7 +11,14 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        $user = auth()->user();
+        $user = Auth::user();
+        if (!$user || !($user instanceof \App\Models\User)) {
+            abort(403, 'Unauthorized access');
+        }
+        if (!$user) {
+            return redirect('/auth/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
         if ($user->role === 'customer') {
             return view('customer.profile.edit', compact('user'));
         } elseif ($user->role === 'pedagang') {
@@ -23,6 +30,10 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user || !($user instanceof \App\Models\User)) {
+            abort(403, 'Unauthorized access');
+        }
 
         if ($user->role === 'customer') {
             $validated = $request->validate([
@@ -50,17 +61,24 @@ class ProfileController extends Controller
             $validated['profile_image'] = $request->file('profile_image')->store('profiles', 'public');
         }
 
-        $user->update($validated);
+        foreach ($validated as $key => $value) {
+            $user->$key = $value;
+        }
+        $user->save();
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
     public function show()
     {
-        $user = auth()->user();
+        $user = Auth::user();
+        if (!$user) {
+            return redirect('/auth/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
         if ($user->role === 'customer') {
-            return view('customer.profile.show');
+            return view('customer.profile.show', compact('user'));
         } elseif ($user->role === 'pedagang') {
-            return view('pedagang.profile.show');
+            return view('pedagang.profile.show', compact('user'));
         }
         return redirect('/')->with('error', 'Halaman profil hanya untuk customer atau pedagang.');
     }

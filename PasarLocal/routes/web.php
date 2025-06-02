@@ -16,6 +16,9 @@ use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPesananController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\AnalitikController;
+use Illuminate\Support\Facades\Auth;
 
 
 # Auth
@@ -27,9 +30,12 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])
     ->name('auth.logout')
     ->middleware('auth');
 
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+# Profile routes for authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -104,6 +110,11 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     # Riwayat Pemesanan
     Route::get('/riwayat-transaksi', [RiwayatController::class, 'index'])->name('riwayat.transaksi');
+    Route::get('/riwayat-transaksi/{pemesanan}', [RiwayatController::class, 'show'])->name('customer.riwayat.show');
+
+    # Review Routes
+    Route::get('/review/create/{pemesanan}/{produk}', [ReviewController::class, 'create'])->name('customer.review.create');
+    Route::post('/review', [ReviewController::class, 'store'])->name('customer.review.store');
 
 
     # Cart Routes
@@ -140,7 +151,9 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
 
 Route::get('/cek-middleware', function () {
     if (Auth::check()) {
-        Auth::user()->update(['last_seen_at' => now()]);
+        $user = \App\Models\User::find(Auth::id());
+        $user->last_seen_at = now();
+        $user->save();
         return 'last_seen_at updated';
     }
     return 'not logged in';

@@ -41,6 +41,13 @@
     <div class="container py-5">
         <h2 class="mb-4 fw-bold">Riwayat Transaksi</h2>
 
+        {{-- Display session error messages --}}
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if($pemesanans->count())
             @foreach($pemesanans as $pemesanan)
                 <div class="card-transaksi border p-4 mb-4 bg-white">
@@ -104,7 +111,8 @@
                                                 <div class="fs-6 fw-bold text-success">
                                                     Rp{{ number_format($detail->jumlah * $detail->harga, 0, ',', '.') }}
                                                 </div>
-                                                <a href="#" class="btn btn-outline-success btn-sm mt-2">Ulas</a>
+                                                
+                                                <a href="{{ route('customer.review.create', ['pemesanan' => $pemesanan->id, 'produk' => $detail->produkPedagang->produk->id]) }}" class="btn btn-outline-success btn-sm mt-2">Ulas</a>
                                             </div>
                                         </li>
                                     @endforeach

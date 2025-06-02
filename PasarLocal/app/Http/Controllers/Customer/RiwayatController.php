@@ -23,5 +23,10 @@ class RiwayatController extends Controller
         return view('customer.riwayat-pemesanan.index', compact('pemesanans'));
     }
 
-
+    public function show(Pemesanan $pemesanan)
+    {
+        // You can add checks here if needed, e.g., if the order belongs to the logged-in user
+        // For now, we assume route model binding and middleware handle most of it.
+        return view('customer.riwayat-pemesanan.show', compact('pemesanan'));
+    }
 }
