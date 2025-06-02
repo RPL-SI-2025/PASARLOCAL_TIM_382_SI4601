@@ -368,7 +368,7 @@ class CartController extends Controller
                 'alamat' => $request->alamat,
                 'kecamatan' => $request->kecamatan,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status' => $request->metode_pembayaran === 'QRIS' ? 'menunggu verifikasi' : 'pending'
+                'status' => $request->metode_pembayaran === 'QRIS' ? 'pending' : 'pending'
             ]);
 
             // Create order items (detail_pemesanans)
@@ -387,8 +387,16 @@ class CartController extends Controller
 
             // Handle payment proof if QRIS
             if ($request->metode_pembayaran === 'QRIS' && $request->hasFile('bukti_pembayaran')) {
-                $path = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
-                $order->update(['bukti_pembayaran' => $path]);
+                $file = $request->file('bukti_pembayaran');
+                $filename = time() . '_
+                ' . $file->getClientOriginalName();
+                $destinationPath = public_path('bukti_pembayaran');
+
+                $file->move($destinationPath, $filename);
+
+                $order->update(['bukti_pembayaran' => 'bukti_pembayaran/' . $filename]);
+                } else {
+                    $order->update(['bukti_pembayaran' => null]);
             }
 
             // Clear cart items

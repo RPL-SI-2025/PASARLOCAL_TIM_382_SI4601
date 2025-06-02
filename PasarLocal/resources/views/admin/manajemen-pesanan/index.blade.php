@@ -46,38 +46,51 @@
                             <th>Nama Pelanggan</th>
                             <th>Total</th>
                             <th>Status Bayar</th>
+                            <th>Bukti Pembayaran</th>
                             <th>Status Pesanan</th>
-                            <th>Aksi</th>
+
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach($orders as $order)
+                <tbody>
+                    @foreach($orders as $order)
+                    <tr>
+                        <td>INV/{{ $order->id }}</td>
+                        <td>{{ $order->customer->nama_customer }}</td>
+                        <td>Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                        <td>{{ $order->status }}</td>
+                        <td>
+                            <form action="{{ route('admin.manajemen-pesanan.update', $order->id) }}" method="POST" class="d-flex align-items-center">
+                                @csrf
+                                @method('PUT')
+                                <select name="status" class="form-select me-2" required>
+                                    @foreach($statuses as $opt)
+                                        <option value="{{ $opt }}" {{ $opt == $order->status ? 'selected' : '' }}>{{ $opt }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>
+                        </td>
 
-                        <tr>
-                            <td>INV/{{ $order->id }}</td>
-                            <td>{{ $order->customer->nama_customer }}</td>
-                            <td>Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                            <td>{{ $order->status }}</td>
-                            <td>
-                                <form action="{{ route('admin.manajemen-pesanan.update', $order->id) }}" method="POST" class="d-flex align-items-center">
-                                    @csrf
-                                    @method('PUT')
-                                    <select name="status" class="form-select me-2" required>
-                                        @foreach($statuses as $opt)
-                                            <option value="{{ $opt }}" {{ $opt == $order->status ? 'selected' : '' }}>
-                                                {{ $opt }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
-                                </form>
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.manajemen-pesanan.show', $order->id) }}" class="btn btn-secondary btn-sm">Detail</a>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
+                        {{-- Kolom bukti bayar dengan nama file --}}
+                        <td>
+                            @if($order->bukti_pembayaran)
+                                <div class="d-flex flex-column align-items-center">
+                                    <a href="{{ asset('bukti_pembayaran/' . $order->bukti_pembayaran) }}" target="_blank">
+                                        <img src="{{ asset('bukti_pembayaran/' . $order->bukti_pembayaran) }}" alt="Bukti Bayar" height="60" class="mb-1">
+                                    </a>
+                                    <small class="text-muted">{{ $order->bukti_pembayaran }}</small>
+                                </div>
+                            @else
+                                <span class="text-muted">Belum ada</span>
+                            @endif
+                        </td>
+
+                        <td>
+                            <a href="{{ route('admin.manajemen-pesanan.show', $order->id) }}" class="btn btn-secondary btn-sm">Detail</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
                 </table>
                 @else
                     <div class="alert alert-info">Tidak ada pesanan dalam status <strong>{{ $status }}</strong>.</div>
