@@ -203,7 +203,11 @@
         <i class="fas fa-users"></i> <span>Manajemen Pedagang</span>
     </a>
     <a class="nav-link {{ request()->is('admin/manajemen-pesanan*') ? 'active' : '' }}" href="{{ route('admin.manajemen-pesanan.index') }}">
-    <i class="fas fa-receipt"></i> <span>Manajemen Pesanan</span>
+        <i class="fas fa-receipt"></i> <span>Manajemen Pesanan</span>
+    </a>
+    <a class="nav-link {{ request()->is('/dashboard/analytic*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+        <i class="fa-solid fa-chart-simple"></i> <span>Dashboard Analytic</span>
+    </a>
 
 
     <!-- Admin Info -->

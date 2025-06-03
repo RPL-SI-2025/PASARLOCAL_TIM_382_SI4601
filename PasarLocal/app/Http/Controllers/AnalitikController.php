@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\Customer;
-use App\Models\Pemesanan;
-use App\Models\DetailPemesanan;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\ExportExcel;
@@ -27,60 +24,113 @@ class AnalitikController extends Controller
         $start = $request->input('start_date');
         $end = $request->input('end_date');
 
-        // Filter pemesanans
+        // Jika tidak ada input tanggal, beri default (awal dan akhir bulan ini)
+        if (!$start || !$end) {
+            $start = Carbon::now()->startOfMonth()->toDateString();
+            $end = Carbon::now()->endOfMonth()->toDateString();
+        }
+
+        // Konversi ke datetime lengkap (start dan end of day)
+        $startDateTime = Carbon::parse($start)->startOfDay()->toDateTimeString();
+        $endDateTime = Carbon::parse($end)->endOfDay()->toDateTimeString();
+
+        // Ambil pemesanan dengan status 'Selesai' dan tanggal di rentang
         $pemesananIds = DB::table('pemesanans')
-            ->whereBetween('created_at', [$start, $end])
+            ->whereBetween('created_at', [$startDateTime, $endDateTime])
+            ->where('status', 'Selesai')
             ->pluck('id');
 
-        // Pendapatan per produk
+        if ($pemesananIds->isEmpty()) {
+            // Kalau gak ada pemesanan selesai di rentang itu, return array kosong supaya front gak error
+            return response()->json([
+                'revenuePerProduct' => [],
+                'revenuePerPedagang' => [],
+                'revenuePerPasar' => [],
+                'customerSegmentation' => [],
+                'onlineUsers' => [],
+                'dailyRevenue' => [],
+            ]);
+        }
+
         $revenuePerProduct = DB::table('detail_pemesanans')
             ->join('produk_pedagang', 'detail_pemesanans.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
             ->join('produk', 'produk.id', '=', 'produk_pedagang.id_produk')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('produk.nama_produk', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('produk.nama_produk', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('produk.nama_produk')
             ->get();
 
-        // Pendapatan per pedagang
         $revenuePerPedagang = DB::table('detail_pemesanans')
             ->join('produk_pedagang', 'detail_pemesanans.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
             ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('pedagang.nama_toko', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('pedagang.nama_toko', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('pedagang.nama_toko')
             ->get();
 
-        // Pendapatan per pasar
         $revenuePerPasar = DB::table('detail_pemesanans')
             ->join('produk_pedagang', 'detail_pemesanans.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
             ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
             ->join('pasar', 'pasar.id_pasar', '=', 'pedagang.id_pasar')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('pasar.nama_pasar', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('pasar.nama_pasar', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('pasar.nama_pasar')
             ->get();
 
-        // Segmentasi customer
         $customerSegmentation = DB::table('pemesanans')
             ->join('customers', 'pemesanans.customer_id', '=', 'customers.id')
-            ->whereBetween('pemesanans.created_at', [$start, $end])
+            ->whereBetween('pemesanans.created_at', [$startDateTime, $endDateTime])
             ->select('customers.kecamatan', DB::raw('count(*) as total'))
             ->groupBy('customers.kecamatan')
             ->get();
 
-        // Customer online
         $onlineUsers = User::where('role', 'customer')
-                        ->where('last_seen_at', '>=', Carbon::now()->subMinutes(5))
-                        ->select('name', 'email')
-                        ->get();
+            ->where('updated_at', '>=', Carbon::now()->subMinutes(5))
+            ->select('name', 'email')
+            ->get();
 
+        $dailyRevenue = $this->getDailyRevenue($startDateTime, $endDateTime);
+
+        $paymentMethodUsage = DB::table('pemesanans')
+            ->whereIn('id', $pemesananIds)
+            ->select('metode_pembayaran', DB::raw('COUNT(*) as total'))
+            ->groupBy('metode_pembayaran')
+            ->get();
         return response()->json([
             'revenuePerProduct' => $revenuePerProduct,
             'revenuePerPedagang' => $revenuePerPedagang,
             'revenuePerPasar' => $revenuePerPasar,
             'customerSegmentation' => $customerSegmentation,
-            'onlineUsers' => $onlineUsers
+            'onlineUsers' => $onlineUsers,
+            'dailyRevenue' => $dailyRevenue,
+            'paymentMethodUsage' => $paymentMethodUsage,
         ]);
+    }
+
+    private function getDailyRevenue($startDateTime, $endDateTime)
+    {
+        $pemesananIds = DB::table('pemesanans')
+            ->whereBetween('created_at', [$startDateTime, $endDateTime])
+            ->where('status', 'Selesai')
+            ->pluck('id');
+
+        if ($pemesananIds->isEmpty()) {
+            return collect();
+        }
+
+        $dailyRevenue = DB::table('detail_pemesanans')
+            ->join('pemesanans', 'detail_pemesanans.pemesanan_id', '=', 'pemesanans.id')
+            ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
+            ->whereBetween('pemesanans.created_at', [$startDateTime, $endDateTime])
+            ->select(
+                DB::raw('DATE(pemesanans.created_at) as tanggal'),
+                DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total')
+            )
+            ->groupBy(DB::raw('DATE(pemesanans.created_at)'))
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        return $dailyRevenue;
     }
 
     public function exportPdf(Request $request)
@@ -88,7 +138,10 @@ class AnalitikController extends Controller
         $start = $request->input('start_date') ?? Carbon::now()->startOfMonth()->toDateString();
         $end = $request->input('end_date') ?? Carbon::now()->endOfMonth()->toDateString();
 
-        $data = $this->getAnalyticData($start, $end);
+        $startDateTime = Carbon::parse($start)->startOfDay()->toDateTimeString();
+        $endDateTime = Carbon::parse($end)->endOfDay()->toDateTimeString();
+
+        $data = $this->getAnalyticData($startDateTime, $endDateTime);
 
         $pdf = Pdf::loadView('admin.analitik.exportpdf', [
             'data' => $data,
@@ -99,24 +152,29 @@ class AnalitikController extends Controller
         return $pdf->download('dashboard.pdf');
     }
 
-    public function exportExcel(Request $request)
-    {
-        $data = $this->data($request)->getData(true);
-
-        return Excel::download(new ExportExcel($data), 'Analitik.xlsx');
-    }
-
-    private function getAnalyticData($start, $end)
+    private function getAnalyticData($startDateTime, $endDateTime)
     {
         $pemesananIds = DB::table('pemesanans')
-            ->whereBetween('created_at', [$start, $end])
+            ->whereBetween('created_at', [$startDateTime, $endDateTime])
+            ->where('status', 'Selesai')
             ->pluck('id');
+
+        if ($pemesananIds->isEmpty()) {
+            return [
+                'revenuePerProduct' => [],
+                'revenuePerPedagang' => [],
+                'revenuePerPasar' => [],
+                'customerSegmentation' => [],
+                'onlineUsers' => [],
+                'dailyRevenue' => [],
+            ];
+        }
 
         $revenuePerProduct = DB::table('detail_pemesanans')
             ->join('produk_pedagang', 'detail_pemesanans.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
             ->join('produk', 'produk.id', '=', 'produk_pedagang.id_produk')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('produk.nama_produk', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('produk.nama_produk', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('produk.nama_produk')
             ->get();
 
@@ -124,7 +182,7 @@ class AnalitikController extends Controller
             ->join('produk_pedagang', 'detail_pemesanans.produk_pedagang_id', '=', 'produk_pedagang.id_produk_pedagang')
             ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('pedagang.nama_toko', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('pedagang.nama_toko', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('pedagang.nama_toko')
             ->get();
 
@@ -133,13 +191,13 @@ class AnalitikController extends Controller
             ->join('pedagang', 'pedagang.id_pedagang', '=', 'produk_pedagang.id_pedagang')
             ->join('pasar', 'pasar.id_pasar', '=', 'pedagang.id_pasar')
             ->whereIn('detail_pemesanans.pemesanan_id', $pemesananIds)
-            ->select('pasar.nama_pasar', DB::raw('SUM(detail_pemesanans.price * detail_pemesanans.quantity) as total'))
+            ->select('pasar.nama_pasar', DB::raw('SUM(detail_pemesanans.harga * detail_pemesanans.jumlah) as total'))
             ->groupBy('pasar.nama_pasar')
             ->get();
 
         $customerSegmentation = DB::table('pemesanans')
             ->join('customers', 'pemesanans.customer_id', '=', 'customers.id')
-            ->whereBetween('pemesanans.created_at', [$start, $end])
+            ->whereBetween('pemesanans.created_at', [$startDateTime, $endDateTime])
             ->select('customers.kecamatan', DB::raw('count(*) as total'))
             ->groupBy('customers.kecamatan')
             ->get();
@@ -149,12 +207,22 @@ class AnalitikController extends Controller
             ->select('name', 'email')
             ->get();
 
+        $dailyRevenue = $this->getDailyRevenue($startDateTime, $endDateTime);
+
+        $paymentMethodUsage = DB::table('pemesanans')
+            ->whereIn('id', $pemesananIds)
+            ->select('metode_pembayaran', DB::raw('COUNT(*) as total'))
+            ->groupBy('metode_pembayaran')
+            ->get();
+
         return [
             'revenuePerProduct' => $revenuePerProduct,
             'revenuePerPedagang' => $revenuePerPedagang,
             'revenuePerPasar' => $revenuePerPasar,
             'customerSegmentation' => $customerSegmentation,
-            'onlineUsers' => $onlineUsers
+            'onlineUsers' => $onlineUsers,
+            'dailyRevenue' => $dailyRevenue,
+            'paymentMethodUsage' => $paymentMethodUsage
         ];
     }
 }

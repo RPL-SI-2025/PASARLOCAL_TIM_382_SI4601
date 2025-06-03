@@ -368,16 +368,18 @@ class CartController extends Controller
                 'alamat' => $request->alamat,
                 'kecamatan' => $request->kecamatan,
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status' => $request->metode_pembayaran === 'QRIS' ? 'menunggu verifikasi' : 'pending'
+                'status' => $request->metode_pembayaran === 'QRIS' ? 'pending' : 'pending'
             ]);
 
             // Create order items (detail_pemesanans)
+
             foreach ($cartItems as $item) {
                 if ($item->produkPedagang && $item->produkPedagang->produk) {
                     $order->items()->create([
                         'produk_pedagang_id' => $item->produk_pedagang_id,
                         'harga' => $item->price,
-                        'jumlah' => $item->quantity
+                        'jumlah' => $item->quantity,
+                        'id_pasar' => $item->produkPedagang->pedagang->id_pasar,
                     ]);
                 } else {
                     Log::error('Produk tidak ditemukan untuk cart item: ' . $item->id);

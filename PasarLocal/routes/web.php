@@ -16,6 +16,7 @@ use App\Http\Controllers\Customer\PasarController as CustomerPasarController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPesananController;
+use App\Http\Controllers\AnalitikController;
 
 
 # Auth
@@ -87,10 +88,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     # Analytical Dashboard
-    Route::get('/dashboard', [AnalitikController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/data', [AnalitikController::class, 'data']);
-    Route::get('/dashboard/export/pdf', [AnalitikController::class, 'exportPdf'])->name('dashboard.export.pdf');
-    Route::get('/dashboard/export/excel', [AnalitikController::class, 'exportExcel'])->name('dashboard.export.excel');
+    Route::get('/dashboard/analytic', [AnalitikController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/analytic/data', [AnalitikController::class, 'data']);
+    Route::get('/dashboard/analytic/export/pdf', [AnalitikController::class, 'exportPdf'])->name('dashboard.export.pdf');
+    Route::get('/dashboard/analytic/export/excel', [AnalitikController::class, 'exportExcel'])->name('dashboard.export.excel');
 
 });
 

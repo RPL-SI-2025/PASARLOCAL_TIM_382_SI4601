@@ -126,6 +126,44 @@
             @endforeach
         </tbody>
     </table>
+    <h3>Laporan Pendapatan Harian</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Total Pendapatan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @foreach ($data['dailyRevenue'] as $revenue)
+                    <tr>
+                        <td>{{ $revenue->tanggal }}</td>
+                        <td>Rp {{ number_format($revenue->total, 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
+            </tr>
+        </tbody>
+        <h3>Metode Pembayaran</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Jenis Pembayaran</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @foreach ($data['paymentMethodUsage'] as $payment)
+
+                    <tr>
+                        <td>{{ $payment->metode_pembayaran }}</td>
+                        <td>{{ $payment->total}}</td>
+                    </tr>
+                @endforeach
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>
