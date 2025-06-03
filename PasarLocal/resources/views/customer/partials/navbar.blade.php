@@ -273,29 +273,27 @@
 <!-- Font Awesome (gunakan hanya satu versi) -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
+@yield('styles')
+
+<body>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top py-2">
     <div class="container d-flex justify-content-between align-items-center">
         <!-- Logo dan Search -->
         <div class="d-flex align-items-center gap-4">
             <a href="/home">
                 <img src="{{ asset('uploads_logo/PASARLOCALLL.png') }}" alt="PasarLocal" class="brand-logo">
             </a>
-            <div class="search-container">
-                <div class="position-relative">
-                    <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
-                    <input type="text" class="form-control" placeholder="Cari produk atau pasar..." id="searchTrigger">
-                </div>
-            </div>
         </div>
 
         <!-- Ikon & Profil -->
         <div class="d-flex align-items-center gap-4">
-            <a href="/user/messages" class="text-dark"><i class="far fa-comment-alt fs-5"></i></a>
-            <a href="/user/notifications" class="text-dark"><i class="far fa-bell fs-5"></i></a>
             <a href="{{ route('cart.index') }}" class="position-relative me-3">
                 <i class="fas fa-shopping-cart fs-5 cart-icon"></i>
-                @if(auth()->user()->customer && auth()->user()->customer->carts()->exists())
-                    <span class="cart-badge">{{ auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); }) }}</span>
+                @php
+                    $cartCount = auth()->user()->customer && auth()->user()->customer->carts->sum(function($cart) { return $cart->items->count(); });
+                @endphp
+                @if($cartCount > 0)
+                    <span class="cart-badge">{{ $cartCount }}</span>
                 @endif
             </a>
 
@@ -303,9 +301,13 @@
             <div class="dropdown">
                 <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="user-avatar">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        @if(Auth::user()->profile_image)
+                            <img src="{{ asset('profil_customer/' . Auth::user()->profile_image) }}" alt="Profile Image" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        @endif
                     </div>
-                    <span>{{ Auth::user()->name }}</span>
+                    <span class="ms-2">{{ Auth::user()->name }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li class="px-3 pt-2 pb-0">
@@ -319,7 +321,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                        <a class="dropdown-item" href="{{ route('customer.profile.edit') }}">
                             <i class="fas fa-user-edit me-2"></i> Edit Profil
                         </a>
                     </li>
@@ -337,121 +339,13 @@
     </div>
 </nav>
 
-<!-- Search Modal -->
-<div class="search-modal" id="searchModal">
-    <div class="search-modal-content">
-        <div class="search-tabs">
-            <div class="search-tab active" data-type="product">Produk</div>
-            <div class="search-tab" data-type="market">Pasar</div>
-        </div>
-
-        <div class="search-input-group">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Cari produk atau pasar..." id="search-input">
-        </div>
-
-        <div class="search-results" id="searchResults">
-            {{-- Results will be loaded here via AJAX --}}
-        </div>
-    </div>
-</div>
+<main>
+    @yield('content')
+</main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-<script>
-    $(document).ready(function() {
-        const searchModal = $('#searchModal');
-        const searchInput = $('#search-input');
-        const searchResults = $('#searchResults');
-        const searchTabs = $('.search-tab');
-        let currentSearchType = 'product'; // Default search type
-
-        // Open search modal
-        $('.search-container input').on('focus', function() {
-            searchModal.fadeIn();
-            searchInput.focus(); // Set focus to the modal input
-        });
-
-        // Close search modal when clicking outside the content
-        searchModal.on('click', function(e) {
-            if ($(e.target).is(searchModal)) {
-                searchModal.fadeOut();
-            }
-        });
-
-        // Handle tab clicks
-        searchTabs.on('click', function() {
-            searchTabs.removeClass('active');
-            $(this).addClass('active');
-            currentSearchType = $(this).data('type');
-            performSearch(); // Perform search again with the new type
-        });
-
-        // Perform search on input change
-        searchInput.on('input', function() {
-            performSearch();
-        });
-
-        function performSearch() {
-            const query = searchInput.val();
-            if (query.length > 2) { // Perform search only if query is at least 3 characters
-                $.ajax({
-                    url: "{{ route('ajax.search') }}",
-                    method: 'GET',
-                    data: {
-                        query: query,
-                        type: currentSearchType
-                    },
-                    success: function(response) {
-                        displayResults(response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Search error:', error);
-                        searchResults.html('<p class="text-muted text-center">Terjadi kesalahan saat mencari.</p>');
-                    }
-                });
-            } else {
-                searchResults.empty(); // Clear results if query is too short
-            }
-        }
-
-        function displayResults(results) {
-            searchResults.empty();
-
-            if (currentSearchType === 'product') {
-                if (results.products && results.products.length > 0) {
-                    results.products.forEach(product => {
-                        searchResults.append(`
-                            <a href="${product.url}" class="search-result-item d-flex align-items-center text-decoration-none text-dark">
-                                <img src="${product.image}" alt="${product.name}">
-                                <div class="search-result-info">
-                                    <h6>${product.name}</h6>
-                                    <p>Produk</p>
-                                </div>
-                            </a>
-                        `);
-                    });
-                } else {
-                    searchResults.html('<p class="text-muted text-center">Tidak ada produk ditemukan.</p>');
-                }
-            } else if (currentSearchType === 'market') {
-                 if (results.markets && results.markets.length > 0) {
-                    results.markets.forEach(market => {
-                        searchResults.append(`
-                            <a href="${market.url}" class="search-result-item d-flex align-items-center text-decoration-none text-dark">
-                                <img src="${market.image}" alt="${market.name}">
-                                <div class="search-result-info">
-                                    <h6>${market.name}</h6>
-                                    <p>Pasar</p>
-                                </div>
-                            </a>
-                        `);
-                    });
-                } else {
-                    searchResults.html('<p class="text-muted text-center">Tidak ada pasar ditemukan.</p>');
-                }
-            }
-        }
-    });
-</script>
+@yield('scripts')
+</body>
+</html>
 

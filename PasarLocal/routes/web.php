@@ -17,6 +17,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminPesananController;
 use App\Http\Controllers\AnalitikController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Customer\ReviewController;
+use App\Http\Controllers\PedagangReviewController;
 
 
 # Auth
@@ -28,9 +31,12 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])
     ->name('auth.logout')
     ->middleware('auth');
 
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+# Profile routes for authenticated users
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 # Semua route admin dikelompokkan dan dibatasi role admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -38,7 +44,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/ongkir', [OngkirController::class, 'index'])->name('admin.ongkir.index');
     Route::get('/tambah-ongkir', [OngkirController::class, 'create'])->name('admin.ongkir.create');
     Route::get('/detail-ongkir/{id}', [OngkirController::class, 'detail'])->name('admin.ongkir.detail');
-    Route::post('/store', [OngkirController::class, 'sto    re'])->name('admin.ongkir.store');
+    Route::post('/store', [OngkirController::class, 'store'])->name('admin.ongkir.store');
     Route::get('/ongkir/{id}/edit', [OngkirController::class, 'edit'])->name('admin.ongkir.edit');
     Route::put('/ongkir/{ongkir}', [OngkirController::class, 'update'])->name('admin.ongkir.update');
     Route::delete('/ongkir/{ongkir}', [OngkirController::class, 'destroy'])->name('admin.ongkir.destroy');
@@ -83,6 +89,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/manajemen-pesanan', [AdminPesananController::class, 'index'])->name('admin.manajemen-pesanan.index');
     Route::get('/admin/manajemen-pesanan/{id}/show', [AdminPesananController::class, 'show'])->name('admin.manajemen-pesanan.show');
     Route::put('/admin/manajemen-pesanan/{id}', [AdminPesananController::class, 'update'])->name('admin.manajemen-pesanan.update');
+    Route::post('/manajemen-pesanan/{id}/upload-bukti', [AdminPesananController::class, 'uploadBuktiPembayaran'])->name('admin.manajemen-pesanan.upload-bukti');
 
     # Dashboard Admin
    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
@@ -98,14 +105,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:customer'])->group(function () {
     # Dashboard
     Route::get('/home', [IndexController::class, 'index'])->name('customer.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    # Customer Profile
+    Route::get('/customer/profile/edit', [ProfileController::class, 'edit'])->name('customer.profile.edit');
+    Route::get('/customer/profile', [ProfileController::class, 'show'])->name('customer.profile.show');
+    Route::match(['post', 'put'], '/customer/profile', [ProfileController::class, 'update'])->name('customer.profile.update');
     Route::get('/pasar/{id}', [CustomerPasarController::class, 'show'])->name('customer.pasar.show');
 
     # Riwayat Pemesanan
     Route::get('/riwayat-transaksi', [RiwayatController::class, 'index'])->name('riwayat.transaksi');
+    Route::get('/riwayat-transaksi/{pemesanan}', [RiwayatController::class, 'show'])->name('customer.riwayat.show');
 
+    # Review Routes
+    Route::prefix('review')->name('customer.review.')->group(function () {
+        Route::get('/create/{pemesanan}/{produk}', [ReviewController::class, 'create'])->name('create');
+        Route::post('/store', [ReviewController::class, 'store'])->name('store');
+        Route::get('/edit/{review}', [ReviewController::class, 'edit'])->name('edit');
+        Route::put('/update/{review}', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/destroy/{review}', [ReviewController::class, 'destroy'])->name('destroy');
+    });
 
     # Cart Routes
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -121,13 +138,16 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     # Search Route
     Route::get('/ajax/search', [\App\Http\Controllers\Customer\SearchController::class, 'search'])->name('ajax.search');
+
+    # Product Detail Route
+    Route::get('/produk-pedagang/{id}', [App\Http\Controllers\ProdukPedagangController::class, 'show'])->name('customer.product.show');
 });
 
 Route::middleware(['auth', 'role:pedagang'])->group(function () {
-    # Edit Profile
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::match(['post', 'put'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    # Pedagang Profile
+    Route::get('/pedagang/profile/edit', [ProfileController::class, 'edit'])->name('pedagang.profile.edit');
+    Route::get('/pedagang/profile', [ProfileController::class, 'show'])->name('pedagang.profile.show');
+    Route::match(['post', 'put'], '/pedagang/profile', [ProfileController::class, 'update'])->name('pedagang.profile.update');
 
     # Manajemen Produk
     Route::get('/pedagang/manajemen_produk', [ProdukPedagangController::class, 'index'])->name('pedagang.manajemen_produk.index');
@@ -137,11 +157,16 @@ Route::middleware(['auth', 'role:pedagang'])->group(function () {
     Route::put('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'update'])->name('pedagang.manajemen_produk.update');
     Route::delete('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'destroy'])->name('pedagang.manajemen_produk.destroy');
     Route::get('/pedagang/manajemen_produk/{id}', [ProdukPedagangController::class, 'show'])->name('pedagang.manajemen_produk.show');
+
+    # Pedagang Reviews
+    Route::get('/pedagang/reviews', [\App\Http\Controllers\PedagangReviewController::class, 'index'])->name('pedagang.reviews.index');
 });
 
 Route::get('/cek-middleware', function () {
     if (Auth::check()) {
-        Auth::user()->update(['last_seen_at' => now()]);
+        $user = \App\Models\User::find(Auth::id());
+        $user->last_seen_at = now();
+        $user->save();
         return 'last_seen_at updated';
     }
     return 'not logged in';

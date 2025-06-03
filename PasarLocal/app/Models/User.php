@@ -22,7 +22,11 @@ class User extends Authenticatable
         'password',
         'role',
         'alamat',
+        'kecamatan',
         'nomor_telepon',
+        'nama_toko',
+        'nama_pemilik',
+        'profile_image',
         'last_seen_at'
     ];
 
@@ -79,6 +83,6 @@ class User extends Authenticatable
     // Relasi jika pedagang punya produk
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Produk::class);
     }
 }

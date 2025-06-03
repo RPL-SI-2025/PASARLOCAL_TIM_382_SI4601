@@ -7,6 +7,14 @@
     <!-- Tambahkan link CSS Bootstrap atau custom CSS di sini -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
     @include('admin.partials.navbar')
@@ -44,6 +52,14 @@
                     <div class="card-body">
                         <h5>Jumlah Kategori</h5>
                         <h2>{{ $jumlahKategori }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-secondary text-white mb-4">
+                    <div class="card-body">
+                        <h5>Pesanan Pending</h5>
+                        <h2>{{ $jumlahPending }}</h2>
                     </div>
                 </div>
             </div>
@@ -123,6 +139,17 @@
                         <div class="card-body">
                             <i class="fas fa-receipt fa-2x text-info mb-2"></i>
                             <h6>Manajemen Pesanan</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-3 mt-3">
+                <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                    <div class="card border-info shadow h-100 py-2 text-center">
+                        <div class="card-body">
+                            <i class="fa fa-bar-chart fa-2x text-info mb-2"></i>
+                            <h6>Dashboard Analytic</h6>
                         </div>
                     </div>
                 </a>

@@ -108,24 +108,6 @@
             @endforeach
         </tbody>
     </table>
-
-    <h3>Customer Online (5 menit terakhir)</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($data['onlineUsers'] as $user)
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
     <h3>Laporan Pendapatan Harian</h3>
     <table>
         <thead>
@@ -144,26 +126,6 @@
                 @endforeach
             </tr>
         </tbody>
-        <h3>Metode Pembayaran</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Jenis Pembayaran</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                @foreach ($data['paymentMethodUsage'] as $payment)
-
-                    <tr>
-                        <td>{{ $payment->metode_pembayaran }}</td>
-                        <td>{{ $payment->total}}</td>
-                    </tr>
-                @endforeach
-            </tr>
-        </tbody>
-    </table>
 </body>
 
 </html>

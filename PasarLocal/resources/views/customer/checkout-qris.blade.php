@@ -51,12 +51,44 @@
     </div>
 </div>
 
+<!-- Tambahkan SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Preview image before upload
     document.querySelector('input[type="file"]').addEventListener('change', function(e) {
         if (e.target.files[0].size > 2 * 1024 * 1024) {
-            alert('Ukuran file terlalu besar. Maksimal 2MB');
+            Swal.fire({
+                icon: 'error',
+                title: 'Ukuran file terlalu besar',
+                text: 'Maksimal 2MB',
+            });
             e.target.value = '';
         }
+    });
+
+    // Konfirmasi pembayaran dengan SweetAlert2
+    document.querySelector('button[type="submit"]').addEventListener('click', function(e) {
+        e.preventDefault();
+        const fileInput = document.querySelector('input[type="file"]');
+        if (!fileInput.value) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload Bukti Pembayaran!',
+                text: 'Silakan upload bukti pembayaran terlebih dahulu.',
+            });
+            return;
+        }
+        Swal.fire({
+            title: 'Konfirmasi Bukti Pembayaran',
+            text: 'Apakah bukti pembayaran sesuai?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Konfirmasi',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fileInput.closest('form').submit();
+            }
+        });
     });
 </script> 

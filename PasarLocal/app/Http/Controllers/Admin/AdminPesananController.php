@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pemesanan;
+use Illuminate\Support\Collection;
 
 class AdminPesananController extends Controller
 {
     // Daftar status yang valid (pastikan sama dengan database / enum)
-    private $statuses = ['belum proses', 'pending', 'dikirim', 'selesai', 'batal'];
+    private $statuses = ['Pending', 'Diproses', 'Dikirim', 'Selesai', 'Batal'];
 
     public function index(Request $request)
     {
@@ -25,8 +26,14 @@ class AdminPesananController extends Controller
 
         $orders = $query->latest()->get();
 
-        // Group berdasarkan status
-        $groupedOrders = $orders->groupBy('status');
+        // Initialize empty collection for each status and fill with orders
+        $groupedOrders = collect();
+        foreach ($this->statuses as $status) {
+            $groupedOrders[$status] = $orders->filter(function($order) use ($status) {
+                return strtolower($order->status) === strtolower($status);
+            })->values();
+        }
+
         return view('admin.manajemen-pesanan.index', [
             'groupedOrders' => $groupedOrders,
             'search' => $search,
@@ -46,10 +53,15 @@ class AdminPesananController extends Controller
     public function show($id)
     {
         // Ambil data pemesanan beserta relasi yang dibutuhkan
-        $order = Pemesanan::with(['customer', 'detailPemesanans.produkPedagang', 'ongkir'])
-                    ->findOrFail($id);
-
-        return view('admin.manajemen-pesanan.index-detail', compact('order'));
+        $order = Pemesanan::with([
+            'customer',
+            'detailPemesanans.produkPedagang.produk',
+            'detailPemesanans.produkPedagang.pedagang.pasar',
+            'ongkir',
+        ])->findOrFail($id);
+        return view('admin.manajemen-pesanan.index-detail', [
+            'order' => $order,
+            'statuses' => $this->statuses,
+        ]);
     }
-
 }

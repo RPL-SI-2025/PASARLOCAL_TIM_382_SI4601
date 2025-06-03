@@ -100,10 +100,8 @@
     }
 
     .nav-link.active {
-        background-color: #e9f9ef;
-        border: 2px solid #28a745;
-        color: #28a745;
-        font-weight: bold;
+        color: #666;
+        font-weight: normal;
     }
 
     .sidebar.collapsed .nav-link span {
@@ -181,7 +179,7 @@
     <!-- Navigasi -->
 
     </a>
-    <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+    <a class="nav-link {{ request()->is('admin/dashboard') && !request()->is('admin/dashboard/*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
     <i class="fas fa-home"></i> <span>Homepage</span>
     </a>
     <a class="nav-link {{ request()->is('admin/manajemen-produk*') ? 'active' : '' }}" href="{{ route('admin.manajemen-produk.index') }}">
@@ -206,7 +204,7 @@
         <i class="fas fa-receipt"></i> <span>Manajemen Pesanan</span>
     </a>
     <a class="nav-link {{ request()->is('/dashboard/analytic*') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-        <i class="fa-solid fa-chart-simple"></i> <span>Dashboard Analytic</span>
+        <i class="fa fa-bar-chart" aria-hidden="true"></i> <span>Dashboard Analytic</span>
     </a>
 
 

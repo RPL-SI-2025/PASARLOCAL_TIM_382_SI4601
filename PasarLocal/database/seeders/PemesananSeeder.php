@@ -17,6 +17,8 @@ class PemesananSeeder extends Seeder
         $ongkirIds = [1, 2, 3, 4]; // id ongkir yang tersedia
         $produkPedagangIds = [1, 2, 3]; // contoh id produk_pedagang
         $pasarIds = [1, 2, 3]; // contoh id pasar
+        $metode = ['COD', 'QRIS'];
+        $statusPembayaran = ['Pending', 'Diproses', 'Dikirim', 'Selesai', 'Batal'];
 
         // Buat pemesanan dengan tanggal bervariasi dalam 30 hari terakhir
         for ($i = 1; $i <= 10; $i++) {
@@ -28,8 +30,8 @@ class PemesananSeeder extends Seeder
                 'ongkir_id' => $ongkirIds[array_rand($ongkirIds)],
                 'total_harga' => 0, // nanti update setelah insert detail
                 'bukti_pembayaran' => NULL,
-                'metode_pembayaran' => 'COD',
-                'status' => 'Selesai',
+                'metode_pembayaran' => $metode[array_rand($metode)],
+                'status' => $statusPembayaran[array_rand($statusPembayaran)],
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
             ]);

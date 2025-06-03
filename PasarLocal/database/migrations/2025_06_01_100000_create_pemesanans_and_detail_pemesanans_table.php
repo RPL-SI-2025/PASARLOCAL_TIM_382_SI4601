@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('metode_pembayaran');
             $table->string('bukti_pembayaran')->nullable();
             $table->string('status')->default('belum proses');
+            $table->string('alamat')->nullable();
+            $table->string('kecamatan')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');

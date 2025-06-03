@@ -67,19 +67,7 @@
                 <div class="bg-white rounded-lg shadow p-4">
                     <h3 class="text-lg font-semibold mb-2">Tren Pendapatan Harian</h3>
                     <canvas id="dailyRevenueChart"></canvas>
-                </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-lg font-semibold mb-2">Metode Pembayaran</h3>
-                    <canvas id="paymentMethodsChart"></canvas>
-                    <div id="noDataPayment" class="text-center text-sm text-gray-500 hidden">Tidak ada data metode pembayaran</div>
-                </div>
-                <div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
-                    <div class="card-header">
-                        <h3 class="text-lg font-semibold mb-2">Customer Online (5 menit terakhir)</h3>
-                    </div>
-                    <div class="card-body">
-                        <ul id="onlineUsers" class="list-disc pl-5 text-sm text-gray-700"></ul>
-                    </div>
+                    <div id="noDataRevenue" class="text-center text-sm text-gray-500 hidden">Belum ada data</div>
                 </div>
             </div>
         </div>
@@ -113,10 +101,6 @@
                     createLineChart('dailyRevenueChart',
                         data.dailyRevenue.map(r => r.tanggal),
                         data.dailyRevenue.map(r => r.total));
-                    togglePieChart('paymentMethodsChart', 'noDataPayment',
-                        data.paymentMethodUsage.map(r => r.metode_pembayaran),
-                        data.paymentMethodUsage.map(r => r.total));
-
                     // Handle online users
                     const ul = document.getElementById('onlineUsers');
                     ul.innerHTML = '';
@@ -223,57 +207,6 @@
                             }
                         }
                     }
-                });
-            }
-            function togglePieChart(id, noDataId, labels, data) {
-                const canvas = document.getElementById(id);
-                const noDataDiv = document.getElementById(noDataId);
-
-                if (!labels.length || !data.length) {
-                    canvas.style.display = "none";
-                    noDataDiv.classList.remove("hidden");
-                    return;
-                }
-
-                canvas.style.display = "block";
-                noDataDiv.classList.add("hidden");
-
-                const backgroundColors = [
-                    '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
-                    '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6',
-                    '#eab308', '#f97316', '#a855f7', '#0ea5e9'
-                ].slice(0, data.length);
-
-                new Chart(canvas, {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: data,
-                            backgroundColor: backgroundColors
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            },
-                            datalabels: {
-                                color: '#fff',
-                                formatter: (value, ctx) => {
-                                    let sum = ctx.chart._metasets[ctx.datasetIndex].total;
-                                    let percentage = (value * 100 / sum).toFixed(1) + '%';
-                                    return percentage;
-                                },
-                                font: {
-                                    weight: 'bold',
-                                    size: 14,
-                                }
-                            }
-                        }
-                    },
-                    plugins: [ChartDataLabels]
                 });
             }
 

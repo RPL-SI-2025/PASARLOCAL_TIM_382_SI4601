@@ -22,9 +22,13 @@
                     @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="mb-3">
-                    <label for="nomor_telepon" class="form-label">Nomor Telepon</label>
-                    <input type="text" name="nomor_telepon" class="form-control @error('nomor_telepon') is-invalid @enderror" value="{{ old('nomor_telepon', auth()->user()->nomor_telepon) }}">
-                    @error('nomor_telepon')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <label for="password" class="form-label">Password (Biarkan kosong jika tidak ingin mengubah)</label>
+                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
+                    @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" class="form-control">
                 </div>
                 <div class="mb-3">
                     <label for="alamat" class="form-label">Alamat</label>
@@ -38,16 +42,16 @@
                 </div>
                 <div class="mb-3">
                     <label for="profile_image" class="form-label">Foto Profil (opsional)</label>
-                    <input type="file" name="profile_image" class="form-control @error('profile_image') is-invalid @enderror">
+                    <input type="file" name="profile_image" class="form-control @error('profile_image') is-invalid @enderror" accept="image/*">
                     @error('profile_image')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     @if (auth()->user()->profile_image)
                         <div class="mt-2">
-                            <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Foto Profil" width="120" class="img-thumbnail">
+                            <img src="{{ asset('profil_pedagang/' . auth()->user()->profile_image) }}" alt="Foto Profil" width="120" class="img-thumbnail">
                         </div>
                     @endif
                 </div>
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('profile.show') }}" class="btn btn-secondary">Kembali</a>
+                    <button type="button" onclick="window.history.back()" class="btn btn-secondary">Kembali</button>
                     <button type="submit" class="btn btn-success">Perbarui Profil</button>
                 </div>
             </form>

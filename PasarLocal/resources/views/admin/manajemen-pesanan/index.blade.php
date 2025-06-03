@@ -17,7 +17,7 @@
 
         {{-- Navigasi Tab Status --}}
         @php
-            $statuses = ['Belum Diproses', 'pending', 'Dikirim', 'Selesai', 'Batal'];
+            $statuses = ['Pending', 'Diproses', 'Dikirim', 'Selesai', 'Batal'];
         @endphp
         <ul class="nav nav-pills mb-3" id="status-tabs" role="tablist">
             @foreach ($statuses as $key => $status)
@@ -36,21 +36,20 @@
                 <div class="tab-pane fade @if ($key == 0) show active @endif"
                     id="content-{{ $key }}" role="tabpanel">
                     @php
-                        $orders = $groupedOrders[$status] ?? [];
+                        $orders = $groupedOrders[$status] ?? collect();
                     @endphp
 
-                    @if (count($orders))
+                    @if ($orders->isNotEmpty())
                         <table class="table table-bordered align-middle">
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Nama Pelanggan</th>
-                                    <th>Bukti Pemabayar</th>
+                                    <th>Bukti Pembayaran</th>
                                     <th>Total</th>
                                     <th>Status Bayar</th>
-                                    <th>Bukti Pembayaran</th>
                                     <th>Status Pesanan</th>
-
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,8 +58,25 @@
                                         <td>INV/{{ $order->id }}</td>
                                         <td>{{ $order->customer->nama_customer }}</td>
                                         <td>
-                                            <img src="{{ asset('storage/bukti_pembayaran/' . $order->bukti_pembayaran) }}"
-                                                alt="Bukti Pembayaran" width="300">
+                                            @if($order->bukti_pembayaran && file_exists(public_path($order->bukti_pembayaran)))
+                                                <img src="{{ asset($order->bukti_pembayaran) }}" alt="Bukti Pembayaran" style="width:120px; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;" data-bs-toggle="modal" data-bs-target="#zoomBuktiModal{{ $order->id }}">
+                                                <!-- Modal Zoom Bukti Pembayaran -->
+                                                <div class="modal fade" id="zoomBuktiModal{{ $order->id }}" tabindex="-1" aria-labelledby="zoomBuktiLabel{{ $order->id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="zoomBuktiLabel{{ $order->id }}">Bukti Pembayaran</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-center">
+                                                                <img src="{{ asset($order->bukti_pembayaran) }}" alt="Bukti Pembayaran Besar" style="max-width:100%; max-height:70vh; border-radius:12px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                -
+                                            @endif
                                         </td>
                                         <td>Rp{{ number_format($order->total_harga, 0, ',', '.') }}</td>
                                         <td>{{ $order->status }}</td>

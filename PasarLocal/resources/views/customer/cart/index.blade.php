@@ -1,4 +1,5 @@
 @include('customer.partials.navbar')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <div class="container mx-auto px-10 py-10">
     @if (session('success'))
@@ -15,18 +16,25 @@
         </div>
     @endif
 
-    @if($carts->isEmpty())
-        <div class="bg-white rounded-lg shadow p-6 text-center">
-            <p class="text-gray-600">Keranjang belanja Anda kosong</p>
-            <a href="{{ route('customer.index') }}" class="btn btn-success mt-4">
+    @php
+        $allItemsCount = $carts->flatten()->reduce(function($carry, $cart) {
+            return $carry + ($cart->items->count() ?? 0);
+        }, 0);
+    @endphp
+    @if($carts->isEmpty() || $allItemsCount === 0)
+        <div class="bg-white rounded-lg shadow p-6 text-center my-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" alt="Cart Empty" style="width:100px;opacity:0.5;">
+            <h3 class="mt-3 mb-2 text-muted">Keranjang belanja Anda kosong</h3>
+            <p class="text-muted mb-4">Yuk, mulai belanja produk kebutuhanmu di PasarLocal!</p>
+            <a href="{{ route('customer.index') }}" class="btn btn-success btn-lg px-4">
                 Belanja Sekarang
             </a>
         </div>
-
     @else
         @foreach($carts as $pasarId => $marketCarts)
             @php
                 $cart = $marketCarts->first();
+                if ($cart->items->isEmpty()) continue;
                 $pasar = $cart->pasar;
                 $cartItemIds = $cart->items->pluck('id')->toArray();
                 $selectedItemIds = array_intersect(request()->input('selected_items', []), $cartItemIds);
@@ -90,17 +98,18 @@
                                                     <p class="text-sm text-gray-500">{{ $item->produkPedagang->pedagang->nama_pedagang }}</p>
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-2">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                                            <td class="px-4 py-2">Rp {{ number_format($item->price, 0, ',', '.') }}/{{ $item->produkPedagang->satuan }}</td>
                                             <td class="px-4 py-2">
-                                                <form action="{{ route('cart.update-quantity', $item) }}" method="POST" class="flex items-center update-quantity-form">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="number" name="quantity" value="{{ $item->quantity }}"
-                                                           min="1" class="w-20 border rounded px-2 py-1 quantity-input">
-                                                    <button type="submit" class="btn btn-outline-primary btn-sm ml-2 update-btn">
-                                                        <i class="fas fa-sync-alt me-1"></i> Perbarui
-                                                    </button>
-                                                </form>
+                                                <div class="flex items-center">
+                                                    <form action="{{ route('cart.update-quantity', $item->id) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" class="w-20 border rounded px-2 py-1 quantity-input">
+                                                        <button type="submit" class="btn btn-outline-primary btn-sm ml-2">
+                                                            <i class="fas fa-sync-alt me-1"></i> Perbarui
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                             <td class="px-4 py-2 font-semibold text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                                             <td class="px-4 py-2 text-right">
@@ -125,12 +134,6 @@
                     <p class="text-lg font-semibold mb-0">Total</p>
                     <p class="text-lg font-semibold mb-2">Rp {{ number_format($selectedItemsTotal, 0, ',', '.') }}</p>
                     <form action="{{ route('checkout.show') }}" method="GET" id="checkout-form-{{ $pasarId }}">
-                        {{-- Include hidden inputs for selected items for THIS market --}}
-                        @foreach($selectedItemIds as $selectedId)
-                            @if(in_array($selectedId, $cartItemIds)) {{-- Ensure only selected items from this market are included --}}
-                                <input type="hidden" name="selected_items[]" value="{{ $selectedId }}">
-                            @endif
-                        @endforeach
                         <button type="submit"
                            class="btn btn-success text-white px-6 py-2 rounded hover:bg-green-600">
                             Checkout
@@ -142,95 +145,149 @@
     @endif
 </div>
 
-{{-- JavaScript checkbox select all --}}
+{{-- JavaScript for Cart Functionality --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectAllCheckboxes = document.querySelectorAll('.select-all-checkbox');
+    function updateMarketTotal(marketId) {
+        const marketGroup = document.querySelector(`[data-market-id="${marketId}"]`).closest('.bg-white');
+        let selectedTotal = 0;
+        const checkedItems = marketGroup.querySelectorAll('input[type="checkbox"]:checked');
+        checkedItems.forEach(checkbox => {
+            const itemRow = checkbox.closest('tr');
+            if (itemRow) {
+                const subtotalText = itemRow.querySelector('td:nth-last-child(2)').textContent;
+                const subtotal = parseInt(subtotalText.replace(/[^0-9]/g, '')) || 0;
+                selectedTotal += subtotal;
+            }
+        });
+        const totalElem = marketGroup.querySelector('.text-lg.font-semibold.mb-2');
+        if (totalElem) {
+            totalElem.textContent = 'Rp ' + formatNumber(selectedTotal);
+        }
+    }
 
-        selectAllCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const marketId = this.dataset.marketId;
-                const itemCheckboxes = document.querySelectorAll('.item-checkbox-' + marketId);
-                itemCheckboxes.forEach(itemCheckbox => {
-                    itemCheckbox.checked = this.checked;
-                });
-                document.getElementById('cart-form-' + marketId).submit();
+    function showMessage(message, isSuccess = true) {
+        // Remove existing alerts
+        document.querySelectorAll('.alert').forEach(alert => alert.remove());
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${isSuccess ? 'success' : 'danger'} alert-dismissible fade show`;
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '1050';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    function formatNumber(number) {
+        return new Intl.NumberFormat('id-ID').format(number);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle quantity update forms
+        document.querySelectorAll('.quantity-update-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                // Ambil input number di baris yang sama
+                const row = form.closest('tr');
+                const qtyInput = row.querySelector('input.quantity-input');
+                const hiddenInput = form.querySelector('input.quantity-hidden-input');
+                if (qtyInput && hiddenInput) {
+                    hiddenInput.value = qtyInput.value;
+                }
             });
         });
 
-        // Handle quantity updates with AJAX
-        const updateForms = document.querySelectorAll('.update-quantity-form');
-        updateForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const submitBtn = this.querySelector('.update-btn');
-                const originalText = submitBtn.innerHTML;
-                
-                // Disable button and show loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Memperbarui...';
+        // Handle select all checkboxes
+        const selectAllCheckboxes = document.querySelectorAll('.select-all-checkbox');
+        selectAllCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const marketId = this.dataset.marketId;
+                const itemCheckboxes = document.querySelectorAll('.item-checkbox-' + marketId);
+                const isChecked = this.checked;
 
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the subtotal in the table
-                        const row = this.closest('tr');
-                        const subtotalCell = row.querySelector('td:nth-last-child(2)');
-                        subtotalCell.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.subtotal);
-                        
-                        // Show success message
-                        const alert = document.createElement('div');
-                        alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-                        alert.style.zIndex = '9999';
-                        alert.innerHTML = `
-                            ${data.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        `;
-                        document.body.appendChild(alert);
-                        
-                        // Remove alert after 3 seconds
-                        setTimeout(() => {
-                            alert.remove();
-                        }, 3000);
-                    } else {
-                        throw new Error(data.message || 'Terjadi kesalahan');
-                    }
-                })
-                .catch(error => {
-                    // Show error message
-                    const alert = document.createElement('div');
-                    alert.className = 'alert alert-danger alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
-                    alert.style.zIndex = '9999';
-                    alert.innerHTML = `
-                        ${error.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
-                    document.body.appendChild(alert);
-                    
-                    // Remove alert after 3 seconds
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 3000);
-                })
-                .finally(() => {
-                    // Re-enable button and restore original text
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
+                itemCheckboxes.forEach(itemCheckbox => {
+                    itemCheckbox.checked = isChecked;
+                });
+
+                updateMarketTotal(marketId);
+            });
+        });
+
+        // Handle individual item checkboxes
+        document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const marketId = this.closest('.bg-white').querySelector('.select-all-checkbox').dataset.marketId;
+                const itemCheckboxes = document.querySelectorAll('.item-checkbox-' + marketId);
+                const selectAllCheckbox = document.querySelector(`[data-market-id="${marketId}"]`);
+
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                }
+
+                updateMarketTotal(marketId);
+            });
+        });
+
+        // Initially update all market totals
+        selectAllCheckboxes.forEach(checkbox => {
+            updateMarketTotal(checkbox.dataset.marketId);
+        });
+
+        // Handle checkout form submit: ambil semua checkbox produk yang dicentang di pasar ini
+        document.querySelectorAll('form[id^="checkout-form-"]').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                // Hapus input hidden selected_items[] sebelumnya
+                form.querySelectorAll('input[name="selected_items[]"]').forEach(el => el.remove());
+                // Ambil semua checkbox produk yang dicentang di pasar ini
+                const marketId = form.id.replace('checkout-form-', '');
+                const checked = document.querySelectorAll('.item-checkbox-' + marketId + ':checked');
+                if (checked.length === 0) {
+                    e.preventDefault();
+                    showMessage('Pilih produk yang ingin dibeli terlebih dahulu.', false);
+                    return;
+                }
+                checked.forEach(cb => {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'selected_items[]';
+                    hidden.value = cb.value;
+                    form.appendChild(hidden);
                 });
             });
+        });
+
+        // Konfirmasi sebelum update quantity
+        document.querySelectorAll('form.inline').forEach(function(form) {
+            const updateBtn = form.querySelector('button[type="submit"]');
+            if (updateBtn) {
+                updateBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Perbarui Jumlah?',
+                        text: 'Apakah Anda yakin ingin memperbarui jumlah produk ini?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, perbarui',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                            setTimeout(function(){ window.location.reload(); }, 800);
+                        }
+                    });
+                });
+            }
         });
     });
 </script>
 
 {{-- Tombol kembali --}}
-<a href="{{ url()->previous() }}" class="btn btn-secondary float-button" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
+<a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary float-button" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
     <i class="fas fa-arrow-left me-2"></i> Kembali
 </a>
